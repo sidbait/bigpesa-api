@@ -1,0 +1,50 @@
+{
+    "app": {
+      "host": "0.0.0.0",
+      "port": "3000",
+      "client_key": "yXzLPeD4f3FXHsK33aExnuKyBHAFr8AmxYyWMAvaH2jaMhMTap",
+      "app_id": "387198134678028289"
+    },
+    "web_url":"http://stg.bigpesa.in",
+    "api_url":"https://stg-api.bigpesa.in/",
+    "uri_server": "http://localhost:4091/v1/",
+    "jwt_sessions": {      
+      "expires_in": 3600,
+      "refresh_time": 300
+    },        
+    "logger": {
+      "level": "info",
+      "filename": "bigpesa.log"
+    },
+    "debug_db_result": true,
+    "db_connectionString": {
+      "cockroach": {
+        "user": "bigpesa",
+        "password":"YP8mhNqxaZBbDtjQrS6m",
+        "host": "13.126.241.0",
+        "database": "rmg_db_test",
+        "port": 5432
+      }
+    },
+    "db_connectionString_production": {
+      "cockroach": {
+        "user": "root",
+        "host": "13.232.101.230",
+        "database": "rmg_db",
+        "port": 26257
+      }
+    },
+    "airpay": {
+      "walletToken": "qZRpv1BKfqg2XaXDrQgFlMynEW4ZO4MP",
+      "merchantId": "25427",
+      "username": "5992658",
+      "password": "6TCRDCbb",
+      "apiKey": "amfAvNPdtpp4VHdK",
+      "outputFormat": "json",
+      "baseHost": "payments.airpay.co.in",
+      "topUpURL": "https://payments.airpay.co.in/pay/index.php"
+    },
+    "webapp_api_server": "http://13.126.241.0:4091/",
+    "client_key": "yXzLPeD4f3FXHsK33aExnuKyBHAFr8AmxYyWMAvaH2jaMhMTap" 
+  }
+  
