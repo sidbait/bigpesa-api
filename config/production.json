@@ -7,7 +7,7 @@
   },
   "web_url": "https://bigpesa.in",
   "api_url": "https://api.bigpesa.in/",
-  "uri_server": "http://13.126.241.0:4091/v1/",
+  "uri_server": "http://localhost:4091/v1/",
   "jwt_sessions": {
     "expires_in": 3600,
     "refresh_time": 300
@@ -21,7 +21,7 @@
     "cockroach": {
       "user": "bigpesa",
       "password": "YP8mhNqxaZBbDtjQrS6m",
-      "host": "13.126.241.0",
+      "host": "localhost",
       "database": "rmg_db",
       "port": 5432,
       "ssl": true,
@@ -48,6 +48,6 @@
     "baseHost": "payments.airpay.co.in",
     "topUpURL": "https://payments.airpay.co.in/pay/index.php"
   },
-  "webapp_api_server": "http://13.126.241.0:4091/",
+  "webapp_api_server": "http://localhost:4091/",
   "client_key": "yXzLPeD4f3FXHsK33aExnuKyBHAFr8AmxYyWMAvaH2jaMhMTap"
 }
