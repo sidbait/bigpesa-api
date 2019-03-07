@@ -89,7 +89,7 @@ module.exports = {
             response.Success = false;
             response.Message = message;
         }
-        console.log( response)
+       // console.log( response)
         //res.write(JSON.stringify(response, null) + "\n");
         res.send(response)
         res.end();
