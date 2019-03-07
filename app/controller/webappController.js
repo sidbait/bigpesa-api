@@ -734,17 +734,8 @@ module.exports = {
                         airpayToken = deails.airpay_token;
                         let contestDetails = "select * from vw_apps_contests where contest_id = " + contestId;
                         //let winnerDetails = "select * from vw_contest_rank_details where contest_id = " + contestId + " order by player_rank ";
-                        let winnerDetails = ` select * from ( select contest_id, tbl_contest_leader_board.app_id, tbl_contest_leader_board.player_id,
-                        case  when (full_name is null) or (full_name = '') then replace(phone_number, substring(phone_number, 5, 6),
-                        'XXXXXX') else full_name end as full_name, first_name, last_name, email_id, phone_number, photo,
-                        total_score, rank() over (partition by contest_id  order by tbl_contest_leader_board.total_score desc,
-                        tbl_contest_leader_board.created_at asc) as player_rank from rmg_db.public.tbl_contest_leader_board
-                        inner join rmg_db.public.tbl_player on tbl_player.player_id = tbl_contest_leader_board.player_id
-                        where  contest_id = ${contestId}  group by contest_id, tbl_contest_leader_board.app_id,
-                        tbl_contest_leader_board.player_id, full_name,  first_name, last_name, email_id, phone_number,
-                        photo, contest_date, total_score, tbl_contest_leader_board.created_at order by (rank() 
-                        over (partition by contest_id order by total_score desc)) asc )t order by player_rank;; `;
-                        let contestRankquery = " select * from tbl_contest_rank  where contest_id = " + contestId + " order by upper_rank asc;";
+                        let winnerDetails = ` select * from vw_last7days_winner  where  contest_id = ${contestId} ; `;
+                        let contestRankquery = ` select * from tbl_contest_rank  where contest_id = " + contestId + " order by upper_rank asc; `;
                         console.log(contestDetails)
                         async.parallel({
                             contestDetails: function (callback) {
