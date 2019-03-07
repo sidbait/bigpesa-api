@@ -113,7 +113,7 @@ module.exports = {
                             ' tbl_visitbonus_master.credit_bonus, ' +
                             ' tbl_visitbonus_master.fromtime, ' +
                             ' tbl_visitbonus_master.totime ,\'TIMESLOT\' as type, ' +
-                            ' count(*) from tbl_visitors ' +
+                            ' count(*) from vw_todays_visitors  as tbl_visitors ' +
                             ' inner join tbl_visitbonus_master ' +
                             ' on (tbl_visitors.visit_date + (330 * interval \'1 minute\'))  ::time ' +
                             ' between tbl_visitbonus_master.fromtime::time  ' +
@@ -131,7 +131,7 @@ module.exports = {
                             ' select  tbl_visitbonus_master.credit_type, ' +
                             ' tbl_visitbonus_master.credit_bonus, ' +
                             ' \'20:00:00\'::time as fromtime, \'20:00:00\'::time as totime,\'DAILY\' as type , ' +
-                            ' count(*) from tbl_visitors ' +
+                            ' count(*) from vw_todays_visitors  as tbl_visitors ' +
                             ' inner join tbl_visitbonus_master  on  ' +
                             ' tbl_visitbonus_master.type = \'DAILY\' ' +
                             ' where  playerid = ' + playerId + ' ' +
