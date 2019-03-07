@@ -451,10 +451,8 @@ module.exports = {
                                 " app_id,total_score,'ACTIVE',contest_date, RANK() " +
                                 " OVER (partition by contest_id  ORDER BY total_score desc ,created_at asc)  " +
                                 " as player_rank from  tbl_contest_leader_board " +
-                                //" where total_score > 0 and created_at::date = now()::date )t " +
                                 " where total_score > 0 and created_at::date = now()::date )t" +
-                                " where  player_id = " + playerId + "  ";
-                            //" where total_score > 0 and created_at > (now()::timestamptz - (15::int * '1d'::interval)) )t" +
+                                " where  player_id = " + playerId + "  "; 
                             if (appId != '') {
                                 contestquery = contestquery + " and tbl_contest_winner.app_id = " + appId;
                                 applistquery = applistquery + " and tbl_app.app_id = " + appId;
@@ -476,7 +474,7 @@ module.exports = {
                                 applistquery: function (callback) {
                                     dbConnection.executeQuery(applistquery, "rmg_db", function (err, dbResult) {
                                         callback(err, dbResult);
-                                    });
+                                    },true,100);
                                 },
                                 liveContestRankQuery: function (callback) {
                                     dbConnection.executeQuery(liveContestRankQuery, "rmg_db", function (err, dbResult) {
