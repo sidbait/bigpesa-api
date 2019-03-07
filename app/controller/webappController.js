@@ -735,7 +735,7 @@ module.exports = {
                         let contestDetails = "select * from vw_apps_contests where contest_id = " + contestId;
                         //let winnerDetails = "select * from vw_contest_rank_details where contest_id = " + contestId + " order by player_rank ";
                         let winnerDetails = ` select * from vw_last7days_winner  where  contest_id = ${contestId} ; `;
-                        let contestRankquery = ` select * from tbl_contest_rank  where contest_id = " + contestId + " order by upper_rank asc; `;
+                        let contestRankquery = ` select * from tbl_contest_rank  where contest_id = ${contestId} order by upper_rank asc; `;
                         console.log(contestDetails)
                         async.parallel({
                             contestDetails: function (callback) {
