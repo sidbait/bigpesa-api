@@ -118,7 +118,7 @@ module.exports = {
                 }
 
                 console.log(playerquery)
-                contestquery = contestquery + " order by  app_priority,contest_priority";
+                //contestquery = contestquery + " order by  app_priority,contest_priority";
                 console.log(contestquery)
                 async.parallel({
                     contestquery: function (callback) {
