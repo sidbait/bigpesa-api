@@ -82,7 +82,7 @@ module.exports = {
                 }
 
                 let contestRankquery = " select * from vw_Upcoming_rankDetails where 1=1 ";
-                var contestquery = "select * from vw_apps_upcoming_contests_new where 1=1 ";
+                var contestquery = "select * from vw_apps_upcoming_contests_new where 1=1";
                 //  let playerquery = `select player_id, tbl_contest.contest_id ,case
                 //                 when ((now()::timestamptz + (330::int * '1m'::interval))::time between from_time and to_time) then 'PLAY'
                 //                 when from_time >= ((now()::timestamptz + (330::int * '1m'::interval))::time) then 'JOINED'
