@@ -353,7 +353,7 @@ module.exports = {
            // console.log(device_id)
             let checkproQuery = `select count(1) from tbl_player_device where 
             created_at::Date < (now()- (8::int * '1d'::interval)) 
-             and device_id = ${device_id}  `;                 
+             and device_id = '${device_id}'  `;                 
             let dbResult =await dbConnection.executeQueryAll(checkproQuery, 'rmg_db');
             //console.log(dbResult)
             if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
