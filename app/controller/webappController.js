@@ -199,8 +199,8 @@ module.exports = {
                                             let contest_channel = contests.channel;
 
                                             var currenttime = new Date(contest.currenttime);
-                                            var conteststarttime = new Date(contest.start_date);
-                                            var contestendtime = new Date(contest.end_date);
+                                            var conteststarttime = new Date(contest.start_date_actual);
+                                            var contestendtime = new Date(contest.end_date_actual);
 
                                             var remainingstartseconds = (conteststarttime.getTime() - currenttime.getTime()) / 1000;
                                             var remainingendseconds = (contestendtime.getTime() - currenttime.getTime()) / 1000;
