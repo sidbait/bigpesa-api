@@ -95,7 +95,7 @@ module.exports = {
                 //                 group by  player_id, tbl_contest.contest_id,  tbl_contest.status,
                 //                 from_time,to_time,max_players;`
                 let playerquery = ` select * from vw_playerjoined where player_id = ${playerId} `
-               
+
                 if (process.env.NODE_ENV == "preprod") {
                     contestquery = "select * from  vw_apps_upcoming_contests_preprod where 1=1";
                 }
@@ -304,7 +304,7 @@ module.exports = {
             contestRankquery = contestRankquery + " and contest_id = " + contestid;
         }
 
-   
+
         async.parallel({
             contestquery: function (callback) {
                 dbConnection.executeQuery(contestquery, "rmg_db", function (err, dbResult) {
@@ -441,7 +441,7 @@ module.exports = {
                         if (playerId == "") {
                             sendResp.sendCustomJSON(null, req, res, false, [], "Token Is Invalid", false, false);
                         } else {
-                            let applistquery ="select * from vw_live_app_list where 1=1  ";
+                            let applistquery = "select * from vw_live_app_list where 1=1  ";
                             if (process.env.NODE_ENV == "preprod") {
                                 applistquery = "select * from vw_live_app_list where 1=1  ";
                             }
@@ -452,7 +452,7 @@ module.exports = {
                                 " OVER (partition by contest_id  ORDER BY total_score desc ,created_at asc)  " +
                                 " as player_rank from  tbl_contest_leader_board " +
                                 " where total_score > 0 and created_at::date = now()::date )t" +
-                                " where  player_id = " + playerId + "  "; 
+                                " where  player_id = " + playerId + "  ";
                             if (appId != '') {
                                 contestquery = contestquery + " and tbl_contest_winner.app_id = " + appId;
                                 applistquery = applistquery + " and tbl_app.app_id = " + appId;
@@ -474,7 +474,7 @@ module.exports = {
                                 applistquery: function (callback) {
                                     dbConnection.executeQuery(applistquery, "rmg_db", function (err, dbResult) {
                                         callback(err, dbResult);
-                                    },true,100);
+                                    }, true, 100);
                                 },
                                 liveContestRankQuery: function (callback) {
                                     dbConnection.executeQuery(liveContestRankQuery, "rmg_db", function (err, dbResult) {
@@ -585,8 +585,20 @@ module.exports = {
                                                                     }
                                                                 })
                                                             }
-                                                            if (isPlaystoreApp) {
-                                                                if (contest.debit_type.toUpperCase() != "CASH") {
+
+                                                            // if (isPlaystoreApp) {
+                                                            //     if (contest.debit_type.toUpperCase() != "CASH") {
+                                                            //         app.contests.LIVE.push(livecontest);
+                                                            //     }
+                                                            // } else {
+                                                            //     app.contests.LIVE.push(livecontest);
+                                                            // }
+
+                                                            if (contest_channel != "" && contest_channel != null) {
+                                                                if (channel.toUpperCase() == "PLAYSTORE" && contest_channel.toUpperCase() == "PLAYSTORE") {
+                                                                    app.contests.LIVE.push(livecontest);
+                                                                }
+                                                                else if (channel.toUpperCase() == "NON-PLAYSTORE" && contest_channel.toUpperCase() == "NON-PLAYSTORE") {
                                                                     app.contests.LIVE.push(livecontest);
                                                                 }
                                                             } else {
@@ -594,14 +606,23 @@ module.exports = {
                                                             }
 
                                                         } else if (contest.contest_status == "UPCOMING") {
-                                                            if (isPlaystoreApp) {
-                                                                if (contest.debit_type.toUpperCase() != "CASH") {
+                                                            // if (isPlaystoreApp) {
+                                                            //     if (contest.debit_type.toUpperCase() != "CASH") {
+                                                            //         app.contests.UPCOMING.push(contest);
+                                                            //     }
+                                                            // } else {
+                                                            //     app.contests.UPCOMING.push(contest);
+                                                            // }
+                                                            if (contest_channel != "" && contest_channel != null) {
+                                                                if (channel.toUpperCase() == "PLAYSTORE" && contest_channel.toUpperCase() == "PLAYSTORE") {
+                                                                    app.contests.UPCOMING.push(contest);
+                                                                }
+                                                                else if (channel.toUpperCase() == "NON-PLAYSTORE" && contest_channel.toUpperCase() == "NON-PLAYSTORE") {
                                                                     app.contests.UPCOMING.push(contest);
                                                                 }
                                                             } else {
                                                                 app.contests.UPCOMING.push(contest);
                                                             }
-
                                                         } else if (contest.contest_status == "COMPLETED") {
                                                             let completedcontest = contest;
 
@@ -1067,7 +1088,7 @@ module.exports = {
                                         //     "and contest_date = now()::date limit 1) +  " +
                                         //     "excluded.total_score returning tbl_contest_leader_board.*";
 
-                                        var query_leader_board = " update tbl_contest_leader_board set total_score = " + score 
+                                        var query_leader_board = " update tbl_contest_leader_board set total_score = " + score
                                             + ", created_at=now()   " +
                                             " where contest_id = " + contestId + " and player_id = " + playerId + " " +
                                             "  and app_id = " + appId + " and total_score <  " + score + "  ";
@@ -2273,8 +2294,8 @@ module.exports = {
                      token + "' and session_token_isvalid =true "; */
 
                 let query = "select randnumber,game_conf from tbl_app_score inner join " +
-                " tbl_contest on tbl_contest.contest_id = tbl_app_score.contest_id " +
-                " and session_token = '" + token + "' and session_token_isvalid = true limit 1"
+                    " tbl_contest on tbl_contest.contest_id = tbl_app_score.contest_id " +
+                    " and session_token = '" + token + "' and session_token_isvalid = true limit 1"
 
                 let result = await dbConnection.executeQueryAll(query, 'rmg_db');
                 console.log(result)
@@ -2446,7 +2467,7 @@ module.exports = {
                 let contestDetails = "select * from vw_apps_contests where contest_id = " + contestId;
                 let winnerDetails = ` select * from vw_last7days_winner  where  contest_id = ${contestId} ; `;
                 let contestRankquery = ` select * from tbl_contest_rank  where contest_id = ${contestId} order by upper_rank asc; `;
-               
+
                 async.parallel({
                     contestDetails: function (callback) {
                         dbConnection.executeQuery(contestDetails, "rmg_db", function (err, dbResult) {
@@ -2836,6 +2857,22 @@ module.exports = {
         } else {
             sendResp.sendCustomJSON(null, req, res, true, [], "No Data Found");
         }
+    },
+    getEvents: (req, res) => {
+        let event_detail = {};
+        if (gEventMaster != undefined && gEventMaster != null) {
+            gEventMaster.forEach(event => {
+                if (event.event_type == 'register_new') {
+                    event_detail = event;
+                }
+            });
+            sendResp.sendCustomJSON(null, req, res, true, event_detail, "Event Details!");
+        } else {
+            sendResp.sendCustomJSON(null, req, res, false, [], "Event Not Found!");
+        }
+    },
+    getAllEvents: (req, res) => {         
+            sendResp.sendCustomJSON(null, req, res, true, gEventMaster, "Event Details!");         
     }
 }
 

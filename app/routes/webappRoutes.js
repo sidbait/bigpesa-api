@@ -96,7 +96,12 @@ webAppRoutes.get('/checkVersion', webappController.checkVersion);
 webAppRoutes.get('/redumptionMaster', function (req, res) {
     webappController.redumptionMaster(req, res);
 });
-
+webAppRoutes.get('/getEvents', function (req, res) {
+    webappController.getEvents(req, res);
+});
+webAppRoutes.get('/getAllEvents', function (req, res) {
+    webappController.getAllEvents(req, res);
+});
 webAppRoutes.get('/topgamewinner',webappController.topGameWinnerList)
 webAppRoutes.get('/checkisprouser/:device_id', logController.checkisProUser)
 module.exports = webAppRoutes;
