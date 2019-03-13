@@ -454,7 +454,7 @@ module.exports = {
                                 " where total_score > 0 and created_at::date = now()::date )t" +
                                 " where  player_id = " + playerId + "  ";
                             if (appId != '') {
-                                contestquery = contestquery + " and tbl_contest_winner.app_id = " + appId;
+                                contestquery = contestquery + " and app_id = " + appId;
                                 applistquery = applistquery + " and tbl_app.app_id = " + appId;
                             }
                             contestquery = contestquery + " order by contest_date desc, from_time desc";
