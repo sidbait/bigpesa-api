@@ -154,7 +154,12 @@ module.exports = {
                                     app.app_name = element.app_name;
                                     app.app_type = element.app_type;
                                     app.app_code = element.app_code;
-                                    app.app_icon = element.app_icon
+                                    app.app_icon = element.app_icon;
+                                    if (element.app_icon_url != undefined && element.app_icon_url != null) {
+                                        app.app_icon_url = element.app_icon_url;
+                                    } else {
+                                        app.app_icon_url = "";
+                                    }                                   
                                     app.app_secret = element.app_secret;
                                     app.app_status = element.app_status;
                                     app.package_name = element.package_name;
