@@ -3009,7 +3009,7 @@ async function scoreUpdown(contest_id, winnerList) {
                                 }
 
                                 if (winnerNew.player_id == old_player.player_id &&
-                                    parseInt(winnerNew.player_rank) != parseInt(old_player.player_rank)) {
+                                    parseInt(winnerNew.player_rank) > parseInt(old_player.player_rank)) {
                                     let oldWinPrize = 0;
                                     let newwinPrize = 0;
                                     let oldCreditType = ''
