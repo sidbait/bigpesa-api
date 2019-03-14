@@ -2595,9 +2595,9 @@ module.exports = {
                                         });
                                     }
                                 }
-                            });
-                            scoreUpdown(contestId, winnerDetails)
-                            sendResp.sendCustomJSON(null, req, res, true, outJson, "Contest Details")
+                            });                            
+                            sendResp.sendCustomJSON(null, req, res, true, outJson, "Contest Details");
+                            scoreUpdown(contestId, winnerDetails);
                         }
 
                     });
