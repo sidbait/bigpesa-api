@@ -2597,7 +2597,7 @@ module.exports = {
                                 }
                             });
                             sendResp.sendCustomJSON(null, req, res, true, outJson, "Contest Details");
-                            scoreUpdown(contestId, winnerDetails,function(){});
+                            scoreUpdown(contestId, winnerDetails, function () { });
                         }
 
                     });
@@ -2956,10 +2956,10 @@ async function validateToken(token, app_max_game_minute) {
     }
 }
 
-function scoreUpdown(contest_id, winnerList,callback) {
+function scoreUpdown(contest_id, winnerList, callback) {
     // let contest_id =contest_id;
     // let winnerList = winnerList;
-   
+
     async function a(contest_id, winnerList) {
         let datetime = new Date();
         var date1 = moment(datetime);
@@ -2981,7 +2981,7 @@ function scoreUpdown(contest_id, winnerList,callback) {
                         });
                         console.log('INSERTING OLD')
                         let isset = await redisConnection.setRedisPromise(key, JSON.stringify(winners), 7200);
-                    } else {                      
+                    } else {
                         old_winner_list = JSON.parse(old_winner_list);
                         let winners = []
                         winnerList.forEach(async newWinner => {
@@ -2996,9 +2996,9 @@ function scoreUpdown(contest_id, winnerList,callback) {
                                 let winner = { date: date1, player: newWinner }
                                 old_winner_list.push(winner);
                             }
-                        });                       
+                        });
                         let isset = await redisConnection.setRedisPromise(key, JSON.stringify(old_winner_list), 7200);
-                        let newList = [];                      
+                        let newList = [];
                         old_winner_list.forEach(async element => {
                             let olddt = moment(element.date);
                             let old_player = element.player;
@@ -3033,7 +3033,7 @@ function scoreUpdown(contest_id, winnerList,callback) {
                                             }
                                         });
 
-                                        let checkIsAlreadySent = await redisConnection.getRedisPromise('scoreupdown' + winnerNew.player_id);
+                                        let checkIsAlreadySent = await redisConnection.getRedisPromise('scoreupdown'+contest_id+"|" + winnerNew.player_id);
                                         if (checkIsAlreadySent != null && checkIsAlreadySent != undefined) {
                                         } else {
                                             if (newwinPrize + "-" + newCreditType != oldWinPrize + "-" + oldCreditType) {
@@ -3041,13 +3041,13 @@ function scoreUpdown(contest_id, winnerList,callback) {
                                                     + ' to ' + winnerNew.player_rank
                                                     + ' and your winning prize would be ' + newwinPrize + " " + newCreditType + "."
                                                 console.log(msg)
-                                                if (winnerNew.player_id == 404373224658698241 || winnerNew.player_id == 404373834730733569 ||
-                                                    winnerNew.player_id == 412566148535386114 || winnerNew.player_id == 404727633506664449) {
-                                                    let checkIsAlreadySent = await redisConnection.setRedisPromise('scoreupdown' + winnerNew.player_id, true, 1200);
-                                                    push.sendPushPlayerId(winnerNew.player_id, 'You are losing', msg);
-                                                } else {
-                                                    console.log('NOT WHITELIST')
-                                                }
+                                                // if (winnerNew.player_id == 404373224658698241 || winnerNew.player_id == 404373834730733569 ||
+                                                //     winnerNew.player_id == 412566148535386114 || winnerNew.player_id == 404727633506664449) {
+                                                let checkIsAlreadySent = await redisConnection.setRedisPromise('scoreupdown'+contest_id+"|" + winnerNew.player_id, true, 1200);
+                                                push.sendPushPlayerId(winnerNew.player_id, 'You are losing', msg);
+                                                // } else {
+                                                //     console.log('NOT WHITELIST')
+                                                // }
                                             }
                                         }
                                     }
@@ -3056,13 +3056,13 @@ function scoreUpdown(contest_id, winnerList,callback) {
                             else {
                                 let winner = { date: date1, player: element }
                                 newList.push(winner)
-                            }  
-                        });                        
+                            }
+                        });
                         isset = await redisConnection.setRedisPromise(key, JSON.stringify(newList), 7200);
                     }
                 }
             })
         }
-    }a(contest_id, winnerList);
+    } a(contest_id, winnerList);
     callback('ok')
 }
