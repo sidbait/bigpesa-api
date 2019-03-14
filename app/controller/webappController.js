@@ -3000,7 +3000,7 @@ async function scoreUpdown(contest_id, winnerList) {
                         let olddt = moment(element.date);
                         let old_player = element.player;
                         var diffInMinutes = date1.diff(olddt, 'minutes');
-                        console.log(element.player.player_id+ "|"+ diffInMinutes)
+                        
                         if (parseInt(diffInMinutes) > 10) {
                             winnerList.forEach(async winnerNew => {
                                 if (winnerNew.player_id == old_player.player_id) {
