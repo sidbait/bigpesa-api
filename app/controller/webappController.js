@@ -16,6 +16,7 @@ const tokgen2 = new TokenGenerator(256, TokenGenerator.BASE62);
 var config = require('config');
 var uniqid = require('uniqid');
 var redisConnection = require('../model/redisConnection');
+var push = require('../model/push');
 module.exports = {
 
     appListing: function (req, res) {
@@ -1951,7 +1952,7 @@ module.exports = {
                         });
 
                     } else if (depositeCount > 1 && Math.round(amount) >= 50) {
-                        amount = Math.round(Math.round(amount) * (0.2));
+                        amount = Math.round(Math.round(amount) * (0.1));
                         console.log('INSERT GIVING MONEY')
                         debitcredit.insertIntoWalletQue(traxid, 'DepositBonus', 'DepositBonus', Math.round(amount), 'Deposit Bonus', playerId, true, function (isSuccess, data) {
                             if (isSuccess) {
@@ -2339,10 +2340,10 @@ module.exports = {
         var sessionToken = req.params.token;
         let app_idHeader = req.headers.app;
         let app_max_game_minute = req.headers.max_game_minute;
-        console.log('app_max_game_minute '+ app_max_game_minute)
+        console.log('app_max_game_minute ' + app_max_game_minute)
         if (appSecretKey != null && appSecretKey != undefined && appSecretKey != "" &&
             sessionToken != null && sessionToken != undefined && sessionToken != "") {
-            validateToken(sessionToken,app_max_game_minute).then(isSessionTokenDetails => {
+            validateToken(sessionToken, app_max_game_minute).then(isSessionTokenDetails => {
                 if (isSessionTokenDetails != null && isSessionTokenDetails != undefined && isSessionTokenDetails.length > 0) {
                     console.log(isSessionTokenDetails)
                     var contestId = isSessionTokenDetails[0].contest_id;
@@ -2595,7 +2596,7 @@ module.exports = {
                                     }
                                 }
                             });
-                            //scoreUpdown(contestId, winnerDetails)
+                            scoreUpdown(contestId, winnerDetails)
                             sendResp.sendCustomJSON(null, req, res, true, outJson, "Contest Details")
                         }
 
@@ -2926,21 +2927,21 @@ async function validateSessionToken(token, contestId, appId, playerId) {
     }
 }
 
-async function validateToken(token,app_max_game_minute) {
-    let query ="";
+async function validateToken(token, app_max_game_minute) {
+    let query = "";
     try {
-        if(app_max_game_minute != undefined && app_max_game_minute !=null && app_max_game_minute !=""){
-            query= " update tbl_app_score set session_token_isvalid = false " +
-            " where session_token = '" + token + "' " +
-            " and session_token_isvalid = true  " +
-            " and (created_at + (" + app_max_game_minute + " * interval '1 minute')) > now() " +
-            " RETURNING session_token, contest_id,app_id ,player_id ;";
-        }else{
-            query= " update tbl_app_score set session_token_isvalid = false " +
-            " where session_token = '" + token + "' " +
-            " and session_token_isvalid = true " +
-            " RETURNING session_token, contest_id,app_id ,player_id ;";
-        }     
+        if (app_max_game_minute != undefined && app_max_game_minute != null && app_max_game_minute != "" && app_max_game_minute!=0) {
+            query = " update tbl_app_score set session_token_isvalid = false " +
+                " where session_token = '" + token + "' " +
+                " and session_token_isvalid = true  " +
+                " and (created_at + (" + app_max_game_minute + " * interval '1 minute')) > now() " +
+                " RETURNING session_token, contest_id,app_id ,player_id ;";
+        } else {
+            query = " update tbl_app_score set session_token_isvalid = false " +
+                " where session_token = '" + token + "' " +
+                " and session_token_isvalid = true " +
+                " RETURNING session_token, contest_id,app_id ,player_id ;";
+        }
 
         console.log('validateToken QUERY - ', query);
 
@@ -2959,76 +2960,102 @@ async function scoreUpdown(contest_id, winnerList) {
     let datetime = new Date();
     var date1 = moment(datetime);
     let key = 'leaderboard|' + contest_id;
-    var leaderboardDetails = { dt: date1, winners: winnerList }
+    console.log(key)
     let contestquery = "select * from vw_apps_upcoming_contests_new where 1=1";
     let result = await dbConnection.executeQueryAll(contestquery, 'rmg_db', true, 40);
-    // if (result != undefined && result != null && result.length > 0) {
-    // result.forEach(async contest => {
-    // if (contest.contest_id == contest_id && contest.live_status == true) {
+    if (result != undefined && result != null && result.length > 0) {
+        result.forEach(async contest => {
+            if (contest.contest_id == contest_id && contest.live_status == true) {
 
-    let old_winner_list = await redisConnection.getRedisPromise(key);
-    if (old_winner_list == null || old_winner_list == undefined || old_winner_list == "undefined") {
-        leaderboardDetails.forEach(playerList => {
-            
-        });
+                let old_winner_list = await redisConnection.getRedisPromise(key);
+                if (old_winner_list == null || old_winner_list == undefined || old_winner_list == "undefined") {
+                    let winners = []
+                    winnerList.forEach(playerList => {
+                        let winner = { date: date1, player: playerList }
+                        winners.push(winner);
+                    });
+                    console.log('INSERTING OLD')
+                    let isset = await redisConnection.setRedisPromise(key, JSON.stringify(winners),7200);
+                } else {
+                    console.log('------------------------------------')
+                    old_winner_list = JSON.parse(old_winner_list);
+                    let winners = []
+                    winnerList.forEach(async newWinner => {
+                        let isNewUser = false;
+                        let newWinnerPlayerId = newWinner.player_id;
+                        old_winner_list.forEach(async oldWinner => {
+                            if (newWinnerPlayerId == oldWinner.player.player_id) {
+                                isNewUser = true;
+                            }
+                        });
+                        if (!isNewUser) {
+                            let winner = { date: date1, player: newWinner }
+                            old_winner_list.push(winner);
+                        }
+                    });
+                    let isset = await redisConnection.setRedisPromise(key, JSON.stringify(old_winner_list),7200);
+                    let newList = []
+                    old_winner_list.forEach(async element => {
+                        let olddt = moment(element.date);
+                        let old_player = element.player;
+                        var diffInMinutes = date1.diff(olddt, 'minutes');
+                        console.log(element.player.player_id+ "|"+ diffInMinutes)
+                        if (parseInt(diffInMinutes) > 10) {
+                            winnerList.forEach(async winnerNew => {
+                                // if (winnerNew.player_id == old_player.player_id) {
+                                //     let winner = { date: date1, player: winnerNew }
+                                //     newList.push(winner)
+                                // }
 
+                                if (winnerNew.player_id == old_player.player_id &&
+                                    parseInt(winnerNew.player_rank) != parseInt(old_player.player_rank)) {
+                                    let oldWinPrize = 0;
+                                    let newwinPrize = 0;
+                                    let oldCreditType = ''
+                                    let newCreditType = ''
 
-        let isset = await redisConnection.setRedisPromise(key, JSON.stringify(leaderboardDetails));
-    } else {
-        // old_winner_list = JSON.parse(old_winner_list);
-        // olddt = moment(old_winner_list.dt);
-        // old_winner_list = old_winner_list.winners;
-        // var diffInMinutes = date1.diff(olddt, 'minutes');
-        // var diff = date1.diff(olddt);
+                                    g15daysRankDetails.forEach(rank => {
+                                        if (rank.contest_id == contest_id) {
+                                            if (parseInt(rank.lower_rank) <= parseInt(winnerNew.player_rank) &&
+                                                parseInt(rank.upper_rank) >= parseInt(winnerNew.player_rank)) {
+                                                newwinPrize = rank.prize_amount;
+                                                newCreditType = rank.credit_type;
+                                            }
+                                            if (parseInt(rank.lower_rank) <= parseInt(old_player.player_rank) &&
+                                                parseInt(rank.upper_rank) >= parseInt(old_player.player_rank)) {
+                                                oldWinPrize = rank.prize_amount;
+                                                oldCreditType = rank.credit_type;
+                                            }
+                                        }
+                                    });
 
-        // if (parseInt(diffInMinutes) > 10) {
-        //     old_winner_list.forEach(async oldwinner => {
-        //         winnerList.forEach(async newWinner => {
-        //             if (oldwinner.player_id == newWinner.player_id &&
-        //                 oldwinner.player_rank != newWinner.player_rank
-        //             ) {
-        //                 let oldWinPrize = 0;
-        //                 let newwinPrize = 0;
-        //                 let oldCreditType = ''
-        //                 let newCreditType = ''
-
-        //                 g15daysRankDetails.forEach(rank => {
-        //                     if (rank.contest_id == contest_id) {
-        //                         if (parseInt(rank.lower_rank) <= parseInt(newWinner.player_rank) &&
-        //                             parseInt(rank.upper_rank) >= parseInt(newWinner.player_rank)) {
-        //                             newwinPrize = rank.prize_amount;
-        //                             newCreditType = rank.credit_type;
-        //                         }
-        //                         if (parseInt(rank.lower_rank) <= parseInt(oldwinner.player_rank) &&
-        //                             parseInt(rank.upper_rank) >= parseInt(oldwinner.player_rank)) {
-        //                             oldWinPrize = rank.prize_amount;
-        //                             oldCreditType = rank.credit_type;
-        //                         }
-        //                     }
-        //                 });
-
-        //                 let checkIsAlreadySent = await redisConnection.getRedisPromise('scoreupdown' + oldwinner.player_id);
-        //                 if (checkIsAlreadySent != null && checkIsAlreadySent != undefined) {
-        //                 } else {
-        //                     if (newwinPrize + "-" + newCreditType != oldWinPrize + "-" + oldCreditType) {
-
-        //                         let msg = 'HURRY UP!! You are losing your rank from ' + oldwinner.player_rank + ' to ' + newWinner.player_rank
-        //                             + ' and your winning prize would be ' + newwinPrize + " " + newCreditType + "."
-        //                         console.log(msg)
-        //                         if (oldwinner.player_id == 404373224658698241 || oldwinner.player_id == 404373834730733569) {
-        //                             push.sendPushPlayerId(oldwinner.player_id, 'You are losing', msg)
-        //                             let checkIsAlreadySent = await redisConnection.setRedisPromise('scoreupdown' + oldwinner.player_id, true, 20);
-        //                         } else {
-        //                             console.log('NOT WHITELIST')
-        //                         }
-        //                     }
-        //                 }
-        //             }
-        //         });
-        //     });
-        // }
+                                    let checkIsAlreadySent = await redisConnection.getRedisPromise('scoreupdown' + winnerNew.player_id);
+                                    if (checkIsAlreadySent != null && checkIsAlreadySent != undefined) {
+                                    } else {
+                                        if (newwinPrize + "-" + newCreditType != oldWinPrize + "-" + oldCreditType) {
+                                            let msg = 'HURRY UP!! You are losing your rank from ' + old_player.player_rank 
+                                                + ' to ' + winnerNew.player_rank
+                                                + ' and your winning prize would be ' + newwinPrize + " " + newCreditType + "."
+                                            console.log(msg)
+                                            if (winnerNew.player_id == 404373224658698241 || winnerNew.player_id == 404373834730733569 || 
+                                                winnerNew.player_id ==412566148535386114 || winnerNew.player_id ==404727633506664449) {
+                                                let checkIsAlreadySent = await redisConnection.setRedisPromise('scoreupdown' + winnerNew.player_id, true, 1200);
+                                                push.sendPushPlayerId(winnerNew.player_id, 'You are losing', msg);                                               
+                                            } else {
+                                                console.log('NOT WHITELIST')
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                        else {
+                            let winner = { date: date1, player: element }
+                            newList.push(winner)
+                        }
+                    });
+                }
+            }
+        })
     }
-    // }
-    // });
-    //}
 }
