@@ -3034,7 +3034,7 @@ async function scoreUpdown(contest_id, winnerList) {
                                     if (checkIsAlreadySent != null && checkIsAlreadySent != undefined) {
                                     } else {
                                         if (newwinPrize + "-" + newCreditType != oldWinPrize + "-" + oldCreditType) {
-                                            let msg = 'HURRY UP!! You are losing ' +app_name + '(' + contest_name + ') your rank from ' + old_player.player_rank 
+                                            let msg = 'HURRY UP!! You are loosing ' +app_name + '(' + contest_name + ') your rank from ' + old_player.player_rank 
                                                 + ' to ' + winnerNew.player_rank
                                                 + ' and your winning prize would be ' + newwinPrize + " " + newCreditType + "."
                                             console.log(msg)
