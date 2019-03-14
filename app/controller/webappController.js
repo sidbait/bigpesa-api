@@ -159,7 +159,7 @@ module.exports = {
                                         app.app_icon_url = element.app_icon_url;
                                     } else {
                                         app.app_icon_url = "";
-                                    }                                   
+                                    }
                                     app.app_secret = element.app_secret;
                                     app.app_status = element.app_status;
                                     app.package_name = element.package_name;
@@ -2336,12 +2336,11 @@ module.exports = {
         var appSecretKey = req.headers["x-nazara-app-secret-key"];
         var sessionToken = req.params.token;
         let app_idHeader = req.headers.app;
-        console.log('postScoreNew params - ', req.params);
-        console.log('postScoreNew headers - ', req.headers);
-
+        let app_max_game_minute = req.headers.max_game_minute;
+        console.log('app_max_game_minute '+ app_max_game_minute)
         if (appSecretKey != null && appSecretKey != undefined && appSecretKey != "" &&
             sessionToken != null && sessionToken != undefined && sessionToken != "") {
-            validateToken(sessionToken).then(isSessionTokenDetails => {
+            validateToken(sessionToken,app_max_game_minute).then(isSessionTokenDetails => {
                 if (isSessionTokenDetails != null && isSessionTokenDetails != undefined && isSessionTokenDetails.length > 0) {
                     console.log(isSessionTokenDetails)
                     var contestId = isSessionTokenDetails[0].contest_id;
@@ -2876,8 +2875,8 @@ module.exports = {
             sendResp.sendCustomJSON(null, req, res, false, [], "Event Not Found!");
         }
     },
-    getAllEvents: (req, res) => {         
-            sendResp.sendCustomJSON(null, req, res, true, gEventMaster, "Event Details!");         
+    getAllEvents: (req, res) => {
+        sendResp.sendCustomJSON(null, req, res, true, gEventMaster, "Event Details!");
     }
 }
 
@@ -2925,13 +2924,21 @@ async function validateSessionToken(token, contestId, appId, playerId) {
     }
 }
 
-async function validateToken(token) {
-
+async function validateToken(token,app_max_game_minute) {
+    let query ="";
     try {
-        let query = " update tbl_app_score set session_token_isvalid = false " +
+        if(app_max_game_minute != undefined && app_max_game_minute !=null && app_max_game_minute !=""){
+            query= " update tbl_app_score set session_token_isvalid = false " +
+            " where session_token = '" + token + "' " +
+            " and session_token_isvalid = true  " +
+            " and (created_at + (" + app_max_game_minute + " * interval '1 minute')) > now() " +
+            " RETURNING session_token, contest_id,app_id ,player_id ;";
+        }else{
+            query= " update tbl_app_score set session_token_isvalid = false " +
             " where session_token = '" + token + "' " +
             " and session_token_isvalid = true " +
             " RETURNING session_token, contest_id,app_id ,player_id ;";
+        }     
 
         console.log('validateToken QUERY - ', query);
 
@@ -2950,25 +2957,76 @@ async function scoreUpdown(contest_id, winnerList) {
     let datetime = new Date();
     var date1 = moment(datetime);
     let key = 'leaderboard|' + contest_id;
+    var leaderboardDetails = { dt: date1, winners: winnerList }
+    let contestquery = "select * from vw_apps_upcoming_contests_new where 1=1";
+    let result = await dbConnection.executeQueryAll(contestquery, 'rmg_db', true, 40);
+    // if (result != undefined && result != null && result.length > 0) {
+    // result.forEach(async contest => {
+    // if (contest.contest_id == contest_id && contest.live_status == true) {
 
-    let contestquery = "select * from vw_apps_upcoming_contests_new where 1=1  order by  app_priority,contest_priority";
-    let result = await dbConnection.executeQueryAll(contestquery);
-    if (result != undefined && result != null && result.length > 0) {
-        array.forEach(contest => {
-            if (contest.contest_id == contest_id && contest.live_status == true) {
-                // let old_winner_list = await redisConnection.getRedisPromise(key);
-                // if (old_winner_list == null) {
-                //     let isset = await redisConnection.setRedisPromise(key, JSON.stringify(leaderboardDetails));
-                // } else {
-                //     old_winner_list = JSON.parse(old_winner_list);
-                //     olddt = moment(old_winner_list.dt);
-                //     var diffInMinutes = date1.diff(olddt, 'minutes');
-                //     var diff = date1.diff(olddt);
-                //     var leaderboardDetails = { dt: date1, winners: winnerList }
-                //     console.log(date1 + "|" + olddt + "|" + diff + "|" + diffInMinutes)
-                //     console.log('----------------------------------------------------')
-                // }
-            }
+    let old_winner_list = await redisConnection.getRedisPromise(key);
+    if (old_winner_list == null || old_winner_list == undefined || old_winner_list == "undefined") {
+        leaderboardDetails.forEach(playerList => {
+            
         });
+
+
+        let isset = await redisConnection.setRedisPromise(key, JSON.stringify(leaderboardDetails));
+    } else {
+        // old_winner_list = JSON.parse(old_winner_list);
+        // olddt = moment(old_winner_list.dt);
+        // old_winner_list = old_winner_list.winners;
+        // var diffInMinutes = date1.diff(olddt, 'minutes');
+        // var diff = date1.diff(olddt);
+
+        // if (parseInt(diffInMinutes) > 10) {
+        //     old_winner_list.forEach(async oldwinner => {
+        //         winnerList.forEach(async newWinner => {
+        //             if (oldwinner.player_id == newWinner.player_id &&
+        //                 oldwinner.player_rank != newWinner.player_rank
+        //             ) {
+        //                 let oldWinPrize = 0;
+        //                 let newwinPrize = 0;
+        //                 let oldCreditType = ''
+        //                 let newCreditType = ''
+
+        //                 g15daysRankDetails.forEach(rank => {
+        //                     if (rank.contest_id == contest_id) {
+        //                         if (parseInt(rank.lower_rank) <= parseInt(newWinner.player_rank) &&
+        //                             parseInt(rank.upper_rank) >= parseInt(newWinner.player_rank)) {
+        //                             newwinPrize = rank.prize_amount;
+        //                             newCreditType = rank.credit_type;
+        //                         }
+        //                         if (parseInt(rank.lower_rank) <= parseInt(oldwinner.player_rank) &&
+        //                             parseInt(rank.upper_rank) >= parseInt(oldwinner.player_rank)) {
+        //                             oldWinPrize = rank.prize_amount;
+        //                             oldCreditType = rank.credit_type;
+        //                         }
+        //                     }
+        //                 });
+
+        //                 let checkIsAlreadySent = await redisConnection.getRedisPromise('scoreupdown' + oldwinner.player_id);
+        //                 if (checkIsAlreadySent != null && checkIsAlreadySent != undefined) {
+        //                 } else {
+        //                     if (newwinPrize + "-" + newCreditType != oldWinPrize + "-" + oldCreditType) {
+
+        //                         let msg = 'HURRY UP!! You are losing your rank from ' + oldwinner.player_rank + ' to ' + newWinner.player_rank
+        //                             + ' and your winning prize would be ' + newwinPrize + " " + newCreditType + "."
+        //                         console.log(msg)
+        //                         if (oldwinner.player_id == 404373224658698241 || oldwinner.player_id == 404373834730733569) {
+        //                             push.sendPushPlayerId(oldwinner.player_id, 'You are losing', msg)
+        //                             let checkIsAlreadySent = await redisConnection.setRedisPromise('scoreupdown' + oldwinner.player_id, true, 20);
+        //                         } else {
+        //                             console.log('NOT WHITELIST')
+        //                         }
+        //                     }
+        //                 }
+        //             }
+        //         });
+        //     });
+        // }
     }
+    // }
+    // });
+    //}
 }

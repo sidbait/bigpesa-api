@@ -44,6 +44,7 @@ module.exports = {
                 if(app.app_secret == appSecretKey){
                     isAppValid =true;
                     req.headers.app = app.app_id;
+                    req.headers.max_game_minute = app.max_game_minute;
                 }
             });
             if(isAppValid){
