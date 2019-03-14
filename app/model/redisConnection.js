@@ -1,8 +1,8 @@
 var redis = require("redis");
-  client = redis.createClient(6379, "172.31.23.190", { no_ready_check: true });//
+client = redis.createClient(6379, "172.31.23.190", { no_ready_check: true });//
 var isRedis = false;
 client.on("error", function (err) {
-    // console.log("Error COming in redits " + err);
+    console.log("Error COming in redits " + err);
     isRedis = false;
 });
 client.on("connect", function (err) {
@@ -31,6 +31,7 @@ module.exports = {
     },
     setRedisPromise: function (key, val, expiretime) {
         return new Promise(function (resolve, reject) {
+
             setRedis(key, val, expiretime, function (err, out) {
                 if (err) {
                     reject(err);
@@ -38,6 +39,7 @@ module.exports = {
                     resolve(out);
                 }
             })
+
         })
     },
     getRedisPromise: function (key) {
@@ -55,7 +57,9 @@ module.exports = {
 function setRedis(key, val, expiretime, callback) {
     if (isRedis) {
         client.set(key, val, redis.print);
-        client.expire(key, expiretime);
+        if (expiretime != null && expiretime != undefined) {
+            client.expire(key, expiretime);
+        }
         callback(null, 'done')
     } else {
         callback(true, 'error')
