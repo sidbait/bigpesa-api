@@ -3040,11 +3040,11 @@ function scoreUpdown(contest_id, winnerList, callback) {
                                                 let msg = 'HURRY UP!! You are loosing your rank in ' + app_name + ' (' + contest_name + ') from ' + old_player.player_rank
                                                     + ' to ' + winnerNew.player_rank
                                                     + ' and your winning prize would be ' + newwinPrize + " " + newCreditType + "."
-                                                console.log(msg)
+                                                //console.log(msg)
                                                 // if (winnerNew.player_id == 404373224658698241 || winnerNew.player_id == 404373834730733569 ||
                                                 //     winnerNew.player_id == 412566148535386114 || winnerNew.player_id == 404727633506664449) {
                                                 let checkIsAlreadySent = await redisConnection.setRedisPromise('scoreupdown'+contest_id+"|" + winnerNew.player_id, true, 1200);
-                                                push.sendPushPlayerId(winnerNew.player_id, 'You are losing', msg);
+                                                push.sendPushPlayerId(winnerNew.player_id, 'You are loosing', msg);
                                                 // } else {
                                                 //     console.log('NOT WHITELIST')
                                                 // }
