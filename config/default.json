@@ -21,8 +21,8 @@
       "cockroach": {
         "user": "bigpesa",
         "password":"YP8mhNqxaZBbDtjQrS6m",
-        "host": "13.126.241.0",
-        "database": "rmg_db_test",
+        "host": "localhost",
+        "database": "rmg_db",
         "port": 5432
       }
     },
