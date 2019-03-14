@@ -2966,7 +2966,8 @@ async function scoreUpdown(contest_id, winnerList) {
     if (result != undefined && result != null && result.length > 0) {
         result.forEach(async contest => {
             if (contest.contest_id == contest_id && contest.live_status == true) {
-
+                let app_name = contest.app_name;
+                let contest_name =  contest.contest_name;
                 let old_winner_list = await redisConnection.getRedisPromise(key);
                 if (old_winner_list == null || old_winner_list == undefined || old_winner_list == "undefined") {
                     let winners = []
@@ -3002,10 +3003,10 @@ async function scoreUpdown(contest_id, winnerList) {
                         console.log(element.player.player_id+ "|"+ diffInMinutes)
                         if (parseInt(diffInMinutes) > 10) {
                             winnerList.forEach(async winnerNew => {
-                                // if (winnerNew.player_id == old_player.player_id) {
-                                //     let winner = { date: date1, player: winnerNew }
-                                //     newList.push(winner)
-                                // }
+                                if (winnerNew.player_id == old_player.player_id) {
+                                    let winner = { date: date1, player: winnerNew }
+                                    newList.push(winner)
+                                }
 
                                 if (winnerNew.player_id == old_player.player_id &&
                                     parseInt(winnerNew.player_rank) != parseInt(old_player.player_rank)) {
@@ -3014,7 +3015,7 @@ async function scoreUpdown(contest_id, winnerList) {
                                     let oldCreditType = ''
                                     let newCreditType = ''
 
-                                    g15daysRankDetails.forEach(rank => {
+                                    g15daysRankDetails.forEach(async rank => {
                                         if (rank.contest_id == contest_id) {
                                             if (parseInt(rank.lower_rank) <= parseInt(winnerNew.player_rank) &&
                                                 parseInt(rank.upper_rank) >= parseInt(winnerNew.player_rank)) {
@@ -3033,7 +3034,7 @@ async function scoreUpdown(contest_id, winnerList) {
                                     if (checkIsAlreadySent != null && checkIsAlreadySent != undefined) {
                                     } else {
                                         if (newwinPrize + "-" + newCreditType != oldWinPrize + "-" + oldCreditType) {
-                                            let msg = 'HURRY UP!! You are losing your rank from ' + old_player.player_rank 
+                                            let msg = 'HURRY UP!! You are losing ' +app_name + '(' + contest_name + ') your rank from ' + old_player.player_rank 
                                                 + ' to ' + winnerNew.player_rank
                                                 + ' and your winning prize would be ' + newwinPrize + " " + newCreditType + "."
                                             console.log(msg)
@@ -3053,6 +3054,7 @@ async function scoreUpdown(contest_id, winnerList) {
                             let winner = { date: date1, player: element }
                             newList.push(winner)
                         }
+                        let isset = await redisConnection.setRedisPromise(key, JSON.stringify(newList),7200);
                     });
                 }
             }
