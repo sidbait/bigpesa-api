@@ -1457,7 +1457,7 @@ module.exports = {
                                                                                                                         " (30 * interval '1 minute'))::TIME between from_time and to_time and contest_id = " + contestId + " "
 
                                                                                                                     dbConnection.executeQuery(checkContestIslive, "rmg_db", function (err, dbResult) {
-                                                                                                                        request('http://localhost:3001/amounts?playerid=' + playerId);
+                                                                                                                        //request('http://localhost:3001/amounts?playerid=' + playerId);
                                                                                                                         if (dbResult[0].count > 0) {
                                                                                                                             var isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
                                                                                                                             if (isTokenSave) {
@@ -1560,7 +1560,7 @@ module.exports = {
                                                                                                                     " (30 * interval '1 minute'))::TIME between from_time and to_time and contest_id = " + contestId + " "
 
                                                                                                                 dbConnection.executeQuery(checkContestIslive, "rmg_db", function (err, dbResult) {
-                                                                                                                    request('http://localhost:3001/amounts?playerid=' + playerId);
+                                                                                                                   // request('http://localhost:3001/amounts?playerid=' + playerId);
                                                                                                                     var isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
                                                                                                                     if (isTokenSave) {
                                                                                                                         sendResp.sendCustomJSON(null, req, res, true, {
@@ -2023,7 +2023,7 @@ module.exports = {
                     let walletPromise = dbConnection.executeQueryAll(updateAllWallet, 'rmg_db');
 
                     Promise.all([bonusPromise, walletPromise]).then(function (values) {
-                        request('http://localhost:3001/notification?playerid=' + playerId);
+                       // request('http://localhost:3001/notification?playerid=' + playerId);
                         sendResp.sendCustomJSON(null, req, res, true, values, "Update Successfull");
                     }).catch(function (err) {
                         sendResp.sendCustomJSON(null, req, res, false, transDetails, err);
@@ -2042,7 +2042,7 @@ module.exports = {
                     var transDetails = await dbConnection.executeQueryAll(queryUpdateToClaim, 'rmg_db');
                     console.log(transDetails)
                     if (transDetails != null && transDetails.length > 0) {
-                        request('http://localhost:3001/notification?playerid=' + playerId);
+                        //request('http://localhost:3001/notification?playerid=' + playerId);
                         sendResp.sendCustomJSON(null, req, res, true, transDetails, "Update Successfull");
                     } else {
                         sendResp.sendCustomJSON(null, req, res, false, transDetails, "Invalid Que ID");
