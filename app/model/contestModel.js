@@ -154,8 +154,8 @@ module.exports = {
         'FULL')
         and tbl_app.app_id = ${appId}
         and tbl_contest.contest_id = ${contestId})
-        and (from_time >= (now() + (5 * interval '1 hour') + (30 * interval '1 minute'))::time
-        or (now() + (5 * interval '1 hour') + (30 * interval '1 minute'))::time between from_time and to_time)
+        and (start_date >= (now() + (5 * interval '1 hour') + (30 * interval '1 minute')) 
+        or (now() + (5 * interval '1 hour') + (30 * interval '1 minute'))  between start_date and end_date)
     group by
         tbl_app.app_id, app_name,  tbl_app.package_name, tbl_app.app_type, app_code, app_icon,
         app_secret, tbl_app.status, tbl_app.deep_link, tbl_contest_players.player_id,
@@ -172,6 +172,8 @@ module.exports = {
         from_time,
         to_time
     `
+    //and (from_time >= (now() + (5 * interval '1 hour') + (30 * interval '1 minute'))::time
+        //or (now() + (5 * interval '1 hour') + (30 * interval '1 minute'))::time between from_time and to_time)
         console.log(query)
         dbConnection.executeQuery(query, "rmg_db", function (err, dbResult) {
             //logger.info("app contest details - ", JSON.stringify(dbResult));
