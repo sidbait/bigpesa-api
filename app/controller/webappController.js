@@ -3054,9 +3054,8 @@ function scoreUpdown(contest_id, winnerList, callback) {
                                     }
                                 });
                             }
-                            else {
-                                let winner = { date: date1, player: element }
-                                newList.push(winner)
+                            else {                                
+                                newList.push(element)
                             }
                         });
                         isset = await redisConnection.setRedisPromise(key, JSON.stringify(newList), 7200);
