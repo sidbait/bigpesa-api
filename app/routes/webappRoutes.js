@@ -83,7 +83,7 @@ webAppRoutes.post('/game/token/:contestid', webappController.getSessionToken);
 
 webAppRoutes.post('/user/token/:token', webappController.getUserDetailsSessionToken);
 
-webAppRoutes.post('/user/user/:token', webappController.getPlayerInfoFromToken);
+webAppRoutes.get('/user/user/:token', webappController.getPlayerInfoFromToken);
 
 webAppRoutes.post('/downloadlog', logController.downloadLog); 
 

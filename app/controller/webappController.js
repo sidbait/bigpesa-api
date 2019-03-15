@@ -2711,21 +2711,23 @@ module.exports = {
             if (token != "") {
                 /*  let query = " select randnumber from tbl_app_score where session_token = '" +
                      token + "' and session_token_isvalid =true "; */
-                let query = "select  case when (tbl_player.full_name is null) " +
-                    " or (tbl_player.full_name = '') then replace(tbl_player.phone_number, " +
-                    " substring(tbl_player.phone_number, 5, 6), 'XXXXXX') " +
-                    " else tbl_player.full_name  end as username, " +
-                    " photo as imageUrl, tbl_player.google_id, tbl_player.facebook_id " +
-                    " from tbl_app_score inner join tbl_player " +
-                    " on tbl_player.player_id = tbl_app_score.player_id  " +
-                    " and tbl_app_score.session_token = '" + token + "'";
+                let query = `select  case when (tbl_player.full_name is null) 
+                     or (tbl_player.full_name = '') then replace(tbl_player.phone_number, 
+                     substring(tbl_player.phone_number, 5, 6), 'XXXXXX') 
+                     else tbl_player.full_name  end as username, 
+                     photo as imageUrl, tbl_player.google_id, tbl_player.player_id ,
+                     tbl_player.facebook_id ,tbl_app_score.randnumber 
+                     from tbl_app_score inner join tbl_player 
+                     on tbl_player.player_id = tbl_app_score.player_id 
+                     and tbl_app_score.session_token = '${token}' `;
 
                 let result = await dbConnection.executeQueryAll(query, 'rmg_db');
                 console.log(result)
                 if (result != undefined && result != null && result.length > 0) {
                     output = {
                         gc: result[0].game_conf ? result[0].game_conf : '',
-                        rn: result[0].randnumber ? result[0].randnumber : ''
+                        rn: result[0].randnumber ? result[0].randnumber : '',
+                        player_id : result[0].player_id ? result[0].player_id  : 0
                     }
                     res.send(200, output);
                 } else {
