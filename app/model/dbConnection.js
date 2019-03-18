@@ -4,7 +4,7 @@ var config = require('config');
 var redisConnection = require('./redisConnection');
 var pool_rmg_db = null;
 pool_rmg_db = new pg.Pool(config.db_connectionString.cockroach);
-
+console.log(config.db_connectionString.cockroach)
 module.exports = {
 
     executeQuery: function (query, database, callback, cache, cahetime) {
