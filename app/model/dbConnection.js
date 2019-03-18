@@ -36,6 +36,7 @@ function executeQuery(query, database, callback, cache, cahetime) {
     if (database.toLowerCase() == "rmg_db") {
         pool = pool_rmg_db;
     }
+    console.log(pool)
     let key = query;
     if (query.indexOf('tbl_token.player_id = tbl_player.player_id where token =') > 0) {
         key = 'Auth:' + query.substring(query.indexOf('TOKEN'), query.length);
