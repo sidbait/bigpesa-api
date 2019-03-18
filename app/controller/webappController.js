@@ -461,7 +461,13 @@ module.exports = {
                             //     " as player_rank from  tbl_contest_leader_board " +
                             //     " where total_score > 0 and created_at::date = now()::date )t" +
                             //     " where  player_id = " + playerId + "  ";
-                            let liveContestRankQuery = ` select * from vw_live_contest_ranking  where player_id = ${playerId} `;
+
+                             let liveContestRankQuery = ` select contest_id ,player_id,player_rank from (  select  contest_id,player_id,  
+                                app_id,total_score,'ACTIVE',contest_date, RANK()  
+                                 OVER (partition by contest_id  ORDER BY total_score desc ,created_at asc)  
+                                 as player_rank from  tbl_contest_leader_board  
+                                 where total_score > 0 and contest_date >=  (now() +  330 * '1 minute'::interval)::date)t 
+                                 where  player_id = ${playerId} `
                             if (appId != '') {
                                 contestquery = contestquery + " and app_id = " + appId;
                                 applistquery = applistquery + " and tbl_app.app_id = " + appId;
