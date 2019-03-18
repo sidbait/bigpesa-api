@@ -1,5 +1,5 @@
 var redis = require("redis");
-client = redis.createClient();//6379, "172.31.23.190", { no_ready_check: true }
+client = redis.createClient(6379, "172.31.23.190", { no_ready_check: true });//6379, "172.31.23.190", { no_ready_check: true }
 var isRedis = false;
 client.on("error", function (err) {
     console.log("Error COming in redits " + err);
