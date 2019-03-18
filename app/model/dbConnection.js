@@ -3,8 +3,7 @@ var logger = require('tracer').colorConsole();
 var config = require('config');
 var redisConnection = require('./redisConnection');
 var pool_rmg_db = null;
-pool_rmg_db = new pg.Pool(config.db_connectionString.cockroach);
-console.log(config.db_connectionString.cockroach)
+pool_rmg_db = new pg.Pool(config.db_connectionString.cockroach); 
 module.exports = {
 
     executeQuery: function (query, database, callback, cache, cahetime) {
@@ -36,8 +35,6 @@ function executeQuery(query, database, callback, cache, cahetime) {
     if (database.toLowerCase() == "rmg_db") {
         pool = pool_rmg_db;
     }
-    console.log(query)
-    console.log(pool)
     let key = query;
     if (query.indexOf('tbl_token.player_id = tbl_player.player_id where token =') > 0) {
         key = 'Auth:' + query.substring(query.indexOf('TOKEN'), query.length);
