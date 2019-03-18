@@ -21,7 +21,7 @@
       "cockroach": {
         "user": "bigpesa",
         "password":"YP8mhNqxaZBbDtjQrS6m",
-        "host": "localhost",
+        "host": "13.126.241.0",
         "database": "rmg_db",
         "port": 5432
       }
@@ -29,9 +29,9 @@
     "db_connectionString_production": {
       "cockroach": {
         "user": "root",
-        "host": "13.232.101.230",
+        "host": "13.126.241.0",
         "database": "rmg_db",
-        "port": 26257
+        "port": 5432
       }
     },
     "airpay": {
