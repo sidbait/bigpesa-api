@@ -131,22 +131,39 @@ module.exports = {
         if (contestList != undefined && contestList != null && contestList.length > 0) {
             contestList.forEach(contest => {
 
+               
                 var currenttime = new Date(contest.currenttime);
                 var conteststarttime = new Date(contest.start_date_actual);
-                var remainingstartseconds = (conteststarttime.getTime() - currenttime.getTime()) / 1000;
+                var contestendtime = new Date(contest.end_date_actual);
 
-                console.log(remainingstartseconds)
-                if (remainingstartseconds > 600 &&
-                    contest.max_players < (contest.player_joined + 5) &&
-                    contest.live_status == true) {
-                    if (contest.debit_type = 'FREE') {
-                        if(outContest_Free.length > 0){
-                        outContest_Free.push(contest)
-                        }
-                    }
+                var remainingstartseconds = (conteststarttime.getTime() - currenttime.getTime()) / 1000;
+                var remainingendseconds = (contestendtime.getTime() - currenttime.getTime()) / 1000;
+
+                contest.remainingstartseconds = remainingstartseconds;
+                contest.remainingendseconds = remainingendseconds;
+                
+              
+                if (remainingendseconds > 600 
+                     && contest.max_players >(contest.player_joined + 3)
+                    && contest.live_status == true) { 
+                     if (contest.debit_type = 'FREE') {
+                         if (outContest_Free.length != 1) {
+                             contest.ranks = [];
+                             g15daysRankDetails.forEach(rank => {                                
+                                if(rank.contest_id == contest.contest_id){
+                                    contest.ranks.push(rank)
+                                }
+                             });
+                             outContest_Free.push(contest);
+                         }
+                     }
                 }
             });
-            sendResp.sendCustomJSON(null, req, res, true, outContest_Free, "App List")
+            if (outContest_Free.length > 0) {
+                sendResp.sendCustomJSON(null, req, res, true, outContest_Free, "Contest")
+            } else {
+                sendResp.sendCustomJSON(null, req, res, false, [], "No Contest Found")
+            }
         }
        
     }
