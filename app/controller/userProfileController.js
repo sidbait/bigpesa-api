@@ -29,7 +29,10 @@ module.exports = {
                     " tbl_follow where player_id = " + playerIdProfile + " and status ='ACTIVE' ";
                 let profileViews = "select count(1) as profileViewCount " +
                     " from tbl_profile_visits where player_id = " + playerIdProfile + "  "; 
-                let player_details = ` select full_name,first_name,last_name,photo from tbl_player where player_id =  ${playerIdProfile} `
+                let player_details = ` select  CASE
+                WHEN tbl_player.full_name IS NULL OR tbl_player.full_name = ''::text THEN replace(tbl_player.phone_number, "substring"(tbl_player.phone_number, 5, 6), 'XXXXXX'::text)
+                ELSE tbl_player.full_name
+            END AS player_name,first_name,last_name,photo from tbl_player where player_id =  ${playerIdProfile} `
                 let isFollowquery =` select count(1) from tbl_follow where from_player_id = ${playerId}  and player_id = ${playerIdProfile}  limit 10 `
                 let output = {};
                 Promise.all([dbConnection.executeQueryAll(winCoin, 'rmg_db'),
