@@ -13,9 +13,9 @@ module.exports = {
             console.log(playerId)
             if (playerId == "" || playerIdProfile == "") {
                 sendResp.sendCustomJSON(null, req, res, false, [], "Invalid Token/Player");
-            } else {               
+            } else {
                 let queryFavGames = " select distinct app.app_id,app.app_name , " +
-                    " '"+ config.icon_url +"' || app_icon as app_icon , " +
+                    " '" + config.icon_url + "' || app_icon as app_icon , " +
                     " count(1) from tbl_contest_leader_board as contest " +
                     " inner join tbl_app as app on app.app_id = contest.app_id " +
                     " where contest.player_id = " + playerIdProfile + " and app.status = 'ACTIVE' " +
@@ -30,7 +30,7 @@ module.exports = {
                     " tbl_follow where player_id = " + playerIdProfile + " and status ='ACTIVE' ";
                 let profileViews = "select count(1) as profileViewCount " +
                     " from tbl_profile_visits where player_id = " + playerIdProfile + "  ";
-                    console.log(queryFavGames)
+                console.log(queryFavGames)
                 let output = {};
                 Promise.all([dbConnection.executeQueryAll(winCoin, 'rmg_db'),
                 dbConnection.executeQueryAll(winCash, 'rmg_db'),
@@ -74,12 +74,12 @@ module.exports = {
                 " player_id = " + playerIdToFollow + " and " +
                 " status='ACTIVE' and from_player_id = " + playerId + " ";
             insertFollow = " insert into tbl_follow (player_id,from_player_id,created_at,status) " +
-            " values( " + playerIdToFollow + "," + playerId + ",now(),'ACTIVE' )  " +
-            " ON conflict (player_id,from_player_id) " +
-            " do update set status = 'ACTIVE' " +
-            " where  tbl_follow.player_id = " + playerIdToFollow + " and " +
-            " tbl_follow.from_player_id = " + playerId + " " +  
-            " returning follow_id ";
+                " values( " + playerIdToFollow + "," + playerId + ",now(),'ACTIVE' )  " +
+                " ON conflict (player_id,from_player_id) " +
+                " do update set status = 'ACTIVE' " +
+                " where  tbl_follow.player_id = " + playerIdToFollow + " and " +
+                " tbl_follow.from_player_id = " + playerId + " " +
+                " returning follow_id ";
             console.log(insertFollow)
             let checkIfAlreadyFollow = await dbConnection.executeQueryAll(chkIsAlreadyFollow, 'rmg_db');
             console.log(checkIfAlreadyFollow[0].count)
@@ -106,7 +106,7 @@ module.exports = {
             chkIsAlreadyFollow = "select count(1) from tbl_follow where " +
                 " player_id = " + playerIdToFollow + " and status='ACTIVE' and  from_player_id = " + playerId + " ";
             updateFollow = " update tbl_follow set status = 'DEACTIVE' where  " +
-                " player_id = " + playerIdToFollow + " and  " + 
+                " player_id = " + playerIdToFollow + " and  " +
                 " from_player_id = " + playerId + " returning follow_id ";
             let checkIfAlreadyFollow = await dbConnection.executeQueryAll(chkIsAlreadyFollow, 'rmg_db');
             console.log(checkIfAlreadyFollow[0].count)
@@ -121,5 +121,33 @@ module.exports = {
                 }
             }
         }
+    },
+    newPlayerOnboard: async function (req, res) {
+        var contestquery = "select * from vw_apps_upcoming_contests_new";
+        let contestList = await dbConnection.executeQueryAll(contestquery, "rmg_db");
+        let outContest_Free = [];
+        let outContest_lessCoin = [];
+        let outContest_lessCash = [];
+        if (contestList != undefined && contestList != null && contestList.length > 0) {
+            contestList.forEach(contest => {
+
+                var currenttime = new Date(contest.currenttime);
+                var conteststarttime = new Date(contest.start_date_actual);
+                var remainingstartseconds = (conteststarttime.getTime() - currenttime.getTime()) / 1000;
+
+                console.log(remainingstartseconds)
+                if (remainingstartseconds > 600 &&
+                    contest.max_players < (contest.player_joined + 5) &&
+                    contest.live_status == true) {
+                    if (contest.debit_type = 'FREE') {
+                        if(outContest_Free.length > 0){
+                        outContest_Free.push(contest)
+                        }
+                    }
+                }
+            });
+            sendResp.sendCustomJSON(null, req, res, true, outContest_Free, "App List")
+        }
+       
     }
 }

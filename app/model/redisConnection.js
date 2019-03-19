@@ -1,6 +1,12 @@
 var redis = require("redis");
-client = redis.createClient(6379, "172.31.23.190", { no_ready_check: true });//6379, "172.31.23.190", { no_ready_check: true }
+
+if (process.env.NODE_ENV == "production" || process.env.NODE_ENV == "preprod") {
+    client = redis.createClient(6379, "172.31.23.190", { no_ready_check: true });//6379, "172.31.23.190", { no_ready_check: true }
+}else{
+    client = redis.createClient(); 
+}
 var isRedis = false;
+
 client.on("error", function (err) {
     console.log("Error COming in redits " + err);
     isRedis = false;
