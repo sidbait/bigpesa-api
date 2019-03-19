@@ -15,7 +15,7 @@ module.exports = {
                 sendResp.sendCustomJSON(null, req, res, false, [], "Invalid Token/Player");
             } else {
                 let queryFavGames =` select distinct app.app_id,app.app_name ,  
-                     '${config.icon_url}' || app_icon as app_icon ,  
+                     '${config.icon_url}' || app_icon as app_icon,app_icon_url ,  
                      count(1) from tbl_contest_leader_board as contest  
                      inner join tbl_app as app on app.app_id = contest.app_id 
                      where contest.player_id = ${playerIdProfile} and app.status = 'ACTIVE'  
