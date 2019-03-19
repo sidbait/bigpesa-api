@@ -10,18 +10,17 @@ module.exports = {
             var userDetails = await userModel.getUserDetailPromise(userToken);
             var playerIdProfile = req.body.playerIdProfile ? req.body.playerIdProfile : '';
             let playerId = userDetails.playerId;
-            console.log(playerId)
+            console.log(playerId);
             if (playerId == "" || playerIdProfile == "") {
                 sendResp.sendCustomJSON(null, req, res, false, [], "Invalid Token/Player");
             } else {
-                let queryFavGames = " select distinct app.app_id,app.app_name , " +
-                    " '" + config.icon_url + "' || app_icon as app_icon , " +
-                    " count(1) from tbl_contest_leader_board as contest " +
-                    " inner join tbl_app as app on app.app_id = contest.app_id " +
-                    " where contest.player_id = " + playerIdProfile + " and app.status = 'ACTIVE' " +
-                    " and app.islive = true  " +
-                    " group by app.app_id,app_icon ,app.app_name " +
-                    " order by count(1) desc ";
+                let queryFavGames =` select distinct app.app_id,app.app_name ,  
+                     '${config.icon_url}' || app_icon as app_icon ,  
+                     count(1) from tbl_contest_leader_board as contest  
+                     inner join tbl_app as app on app.app_id = contest.app_id 
+                     where contest.player_id = ${playerIdProfile} and app.status = 'ACTIVE'  
+                     and app.islive = true group by app.app_id,app_icon ,app.app_name  
+                     order by count(1) desc `;
                 let winCoin = "select sum(amount) as totalCoinWin from tbl_bonus_credit_que " +
                     " where player_id = " + playerIdProfile + " and event_type ='CONTEST-WIN' ";
                 let winCash = "select sum(amount) as totalCashWin " +
@@ -29,28 +28,37 @@ module.exports = {
                 let followCount = "select count(1) as followCount from " +
                     " tbl_follow where player_id = " + playerIdProfile + " and status ='ACTIVE' ";
                 let profileViews = "select count(1) as profileViewCount " +
-                    " from tbl_profile_visits where player_id = " + playerIdProfile + "  ";
-                console.log(queryFavGames)
+                    " from tbl_profile_visits where player_id = " + playerIdProfile + "  "; 
+                let player_details = ` select full_name,first_name,last_name,photo from tbl_player where player_id =  ${playerIdProfile} `
+                let isFollowquery =` select count(1) from tbl_follow where from_player_id = ${playerId}  and player_id = ${playerIdProfile}  limit 10 `
                 let output = {};
                 Promise.all([dbConnection.executeQueryAll(winCoin, 'rmg_db'),
                 dbConnection.executeQueryAll(winCash, 'rmg_db'),
                 dbConnection.executeQueryAll(queryFavGames, 'rmg_db'),
                 dbConnection.executeQueryAll(followCount, 'rmg_db'),
-                dbConnection.executeQueryAll(profileViews, 'rmg_db')
-                ]).then(function (values) {
-                    console.log(values)
+                dbConnection.executeQueryAll(profileViews, 'rmg_db'),
+                dbConnection.executeQueryAll(player_details,'rmg_db'),
+                dbConnection.executeQueryAll(isFollowquery,'rmg_db'),
+                ]).then(function (values) {                   
                     output.totalCoinWin = values[0][0].totalcoinwin;
                     output.totalCashWin = values[1][0].totalcashwin;
                     output.favGames = values[2];
                     output.followersCount = values[3][0].followcount;
-                    output.profileViewCount = values[4][0].profileviewcount;
-                    output.crown = { name: 'Alexander', icon: "" }
-                    console.log(playerId)
+                    output.profileViewCount = values[4][0].profileviewcount;                   
+                    output.player_details = values[5][0];
+                    output.crown = { name: 'Alexander', icon: "" }                     
+                    output.isFollow = 'N';
+                    if(parseInt(values[6][0].count)){
+                        output.isFollow = 'Y';
+                    }
+                   
                     if (playerId != playerIdProfile) {
                         let insertProfileVisit = "insert into tbl_profile_visits (player_id,from_player_id,created_at) " +
                             " values (" + playerIdProfile + "," + playerId + ",now() ) ";
                         console.log(insertProfileVisit)
                         dbConnection.executeQuery(insertProfileVisit, 'rmg_db', function () { });
+                    }else{
+                        output.isFollow ='Self'
                     }
                     sendResp.sendCustomJSON(null, req, res, true, output, "Profile Info Found");
                 }).catch(function (err) {
