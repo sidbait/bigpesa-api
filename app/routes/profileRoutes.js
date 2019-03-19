@@ -3,8 +3,9 @@ var authToken = require('../auth/auth');
 var userProfileController = require('../controller/userProfileController');
   
 
-webAppRoutes.post('/userProfile', userProfileController.playerProfile)
-webAppRoutes.post('/followPlayer',userProfileController.followPlayer);
-webAppRoutes.post('/unfollowPlayer',userProfileController.unfollowPlayer);
-webAppRoutes.get('/newPlayerOnboard', userProfileController.newPlayerOnboard)
+webAppRoutes.post('/userProfile',authToken.validateAppReq, userProfileController.playerProfile)
+webAppRoutes.post('/followPlayer',authToken.validateAppReq,userProfileController.followPlayer);
+webAppRoutes.post('/unfollowPlayer',authToken.validateAppReq,userProfileController.unfollowPlayer);
+webAppRoutes.get('/newPlayerOnboard',authToken.validateAppReq, userProfileController.newPlayerOnboard);
+
 module.exports = webAppRoutes;
