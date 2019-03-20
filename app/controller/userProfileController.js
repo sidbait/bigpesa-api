@@ -139,10 +139,8 @@ module.exports = {
     },
     followerList: async function (req, res) {
         try {
-            var userToken = req.headers["authorization"];
-            //var userDetails = await userModel.getUserDetailPromise(userToken);
-            var playerIdProfile = req.body.playerIdProfile ? req.body.playerIdProfile : '';
-            //let playerId = userDetails.playerId;
+            var userToken = req.headers["authorization"]; 
+            var playerIdProfile = req.body.playerIdProfile ? req.body.playerIdProfile : ''; 
             let followerlist = ` select  player.player_id,
                           CASE  WHEN player.full_name IS NULL OR player.full_name = ''::text THEN replace(player.phone_number, 
                           "substring"(player.phone_number, 5, 6), 'XXXXXX'::text) ELSE player.full_name
@@ -150,11 +148,13 @@ module.exports = {
                           from tbl_follow follow
                           inner join tbl_player player on player.player_id = follow.from_player_id
                           where follow.player_id = ${playerIdProfile}  and follow.status = 'ACTIVE' `;
-            let followerList = await dbConnection.executeQueryAll(followerlist, 'rmg_db');
-            if (insertResult[0].follow_id > 0) {
-                sendResp.sendCustomJSON(null, req, res, true, followerList, "Followed List");   
+                          console.log(followerlist)
+            let dbRes_followerList = await dbConnection.executeQueryAll(followerlist, 'rmg_db');
+            console.log(dbRes_followerList)
+            if (dbRes_followerList !=undefined && dbRes_followerList != null && dbRes_followerList.length > 0) {
+                sendResp.sendCustomJSON(null, req, res, true, dbRes_followerList, "Followed List");   
             }else{
-                sendResp.sendCustomJSON(null, req, res, false, [], "Please Try again after some time");;
+                sendResp.sendCustomJSON(null, req, res, false, [], "No data Found");;
             }
         }
         catch (error) {
@@ -175,11 +175,12 @@ module.exports = {
             from tbl_follow follow
             inner join tbl_player player on player.player_id = follow.player_id
             where follow.from_player_id = ${playerIdProfile}  and follow.status = 'ACTIVE'`;
-            let followerList = await dbConnection.executeQueryAll(followerlist, 'rmg_db');
-            if (insertResult[0].follow_id > 0) {
-                sendResp.sendCustomJSON(null, req, res, true, followerList, "Following List");   
+             
+            let dbRes_followeingList = await dbConnection.executeQueryAll(followerlist, 'rmg_db');
+            if (dbRes_followeingList !=undefined && dbRes_followeingList != null && dbRes_followeingList.length > 0) {
+                sendResp.sendCustomJSON(null, req, res, true, dbRes_followeingList, "Following List");   
             }else{
-                sendResp.sendCustomJSON(null, req, res, false, [], "Please Try again after some time");;
+                sendResp.sendCustomJSON(null, req, res, false, [], "No data Found");;
             } 
         }
         catch (error) {
