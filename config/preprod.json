@@ -21,13 +21,14 @@
     "cockroach": {
       "user": "bigpesa",
       "password": "YP8mhNqxaZBbDtjQrS6m",
-      "host": "CDB-Internal-2fd7a8cb3bbe9654.elb.ap-south-1.amazonaws.com",
+      "host": "172.31.25.27",
       "database": "rmg_db",
-      "port": 26257,
+      "port": 5432,
       "ssl": true,
       "max": 20,
       "connectionTimeoutMillis": 10000,
-      "idleTimeoutMillis": 8000     
+      "idleTimeoutMillis": 8000   ,
+      "application_name" : "bigpesa-api"
     }
   },
   "db_connectionString_production": {
