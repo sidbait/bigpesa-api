@@ -82,6 +82,7 @@ module.exports = {
         let userDetails = await userModel.getUserDetailPromise(userToken);
         let playerIdToFollow = req.body.playerIdToFollow ? req.body.playerIdToFollow : '';
         let playerId = userDetails.playerId;
+        console.log(playerIdToFollow)
         if (playerId == "" || playerIdToFollow == "") {
             sendResp.sendCustomJSON(null, req, res, false, [], "Invalid Token/Player");
         } else {
@@ -99,9 +100,12 @@ module.exports = {
             let checkIfAlreadyFollow = await dbConnection.executeQueryAll(chkIsAlreadyFollow, 'rmg_db');
             console.log(checkIfAlreadyFollow[0].count)
             if (checkIfAlreadyFollow[0].count > 0) {
-                sendResp.sendCustomJSON(null, req, res, true, [], "Already Followed");
+                console.log('---------------------------------')
+                sendResp.sendCustomJSON(null, req, res, true, [], "Already Followed",true);
             } else {
+                console.log('-----XXXX----------------------------')
                 let insertResult = await dbConnection.executeQueryAll(insertFollow, 'rmg_db');
+                console.log(insertResult)
                 if (insertResult[0].follow_id > 0) {
                     sendResp.sendCustomJSON(null, req, res, true, [], "Followed Successfully");
                 } else {
@@ -126,11 +130,11 @@ module.exports = {
             let checkIfAlreadyFollow = await dbConnection.executeQueryAll(chkIsAlreadyFollow, 'rmg_db');
             console.log(checkIfAlreadyFollow[0].count)
             if (checkIfAlreadyFollow[0].count == 0) {
-                sendResp.sendCustomJSON(null, req, res, true, [], "Already Unfollowed");
+                sendResp.sendCustomJSON(null, req, res, true, [], "Already Unfollowed",true);
             } else {
                 let updateFollowResult = await dbConnection.executeQueryAll(updateFollow, 'rmg_db');
                 if (updateFollowResult[0].follow_id > 0) {
-                    sendResp.sendCustomJSON(null, req, res, true, [], "Unfollowed Successfully");
+                    sendResp.sendCustomJSON(null, req, res, true, [], "Unfollowed Successfully",true);
                 } else {
                     sendResp.sendCustomJSON(null, req, res, false, [], "Please Try again after some time");;
                 }
