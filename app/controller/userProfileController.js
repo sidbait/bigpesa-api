@@ -30,9 +30,9 @@ module.exports = {
                 let profileViews = "select count(1) as profileViewCount " +
                     " from tbl_profile_visits where player_id = " + playerIdProfile + "  "; 
                 let player_details = ` select  CASE
-                WHEN tbl_player.full_name IS NULL OR tbl_player.full_name = ''::text THEN replace(tbl_player.phone_number, "substring"(tbl_player.phone_number, 5, 6), 'XXXXXX'::text)
-                ELSE tbl_player.full_name
-            END AS player_name,first_name,last_name,photo from tbl_player where player_id =  ${playerIdProfile} `
+                WHEN tbl_player.full_name IS NULL OR tbl_player.full_name = ''::text THEN replace(tbl_player.phone_number, 
+                "substring"(tbl_player.phone_number, 5, 6), 'XXXXXX'::text) ELSE tbl_player.full_name
+                END AS player_name,first_name,last_name,photo from tbl_player where player_id =  ${playerIdProfile} `
                 let isFollowquery =` select count(1) from tbl_follow where from_player_id = ${playerId}  and player_id = ${playerIdProfile}  limit 10 `
                 let output = {};
                 Promise.all([dbConnection.executeQueryAll(winCoin, 'rmg_db'),
@@ -95,11 +95,11 @@ module.exports = {
             let checkIfAlreadyFollow = await dbConnection.executeQueryAll(chkIsAlreadyFollow, 'rmg_db');
             console.log(checkIfAlreadyFollow[0].count)
             if (checkIfAlreadyFollow[0].count > 0) {
-                sendResp.sendCustomJSON(null, req, res, false, [], "Already Followed");
+                sendResp.sendCustomJSON(null, req, res, true, [], "Already Followed");
             } else {
                 let insertResult = await dbConnection.executeQueryAll(insertFollow, 'rmg_db');
                 if (insertResult[0].follow_id > 0) {
-                    sendResp.sendCustomJSON(null, req, res, false, [], "Followed Successfully");
+                    sendResp.sendCustomJSON(null, req, res, true, [], "Followed Successfully");
                 } else {
                     sendResp.sendCustomJSON(null, req, res, false, [], "Please Try again after some time");;
                 }
@@ -122,15 +122,64 @@ module.exports = {
             let checkIfAlreadyFollow = await dbConnection.executeQueryAll(chkIsAlreadyFollow, 'rmg_db');
             console.log(checkIfAlreadyFollow[0].count)
             if (checkIfAlreadyFollow[0].count == 0) {
-                sendResp.sendCustomJSON(null, req, res, false, [], "Already Unfollowed");
+                sendResp.sendCustomJSON(null, req, res, true, [], "Already Unfollowed");
             } else {
                 let updateFollowResult = await dbConnection.executeQueryAll(updateFollow, 'rmg_db');
                 if (updateFollowResult[0].follow_id > 0) {
-                    sendResp.sendCustomJSON(null, req, res, false, [], "Unfollowed Successfully");
+                    sendResp.sendCustomJSON(null, req, res, true, [], "Unfollowed Successfully");
                 } else {
                     sendResp.sendCustomJSON(null, req, res, false, [], "Please Try again after some time");;
                 }
             }
+        }
+    },
+    followerList: async function (req, res) {
+        try {
+            var userToken = req.headers["authorization"];
+            //var userDetails = await userModel.getUserDetailPromise(userToken);
+            var playerIdProfile = req.body.playerIdProfile ? req.body.playerIdProfile : '';
+            //let playerId = userDetails.playerId;
+            let followerlist = ` select  player.player_id,
+                          CASE  WHEN player.full_name IS NULL OR player.full_name = ''::text THEN replace(player.phone_number, 
+                          "substring"(player.phone_number, 5, 6), 'XXXXXX'::text) ELSE player.full_name
+                          END AS player_name,first_name,photo
+                          from tbl_follow follow
+                          inner join tbl_player player on player.player_id = follow.from_player_id
+                          where follow.player_id = ${playerIdProfile}  and follow.status = 'ACTIVE' `;
+            let followerList = await dbConnection.executeQueryAll(followerlist, 'rmg_db');
+            if (insertResult[0].follow_id > 0) {
+                sendResp.sendCustomJSON(null, req, res, true, followerList, "Followed List");   
+            }else{
+                sendResp.sendCustomJSON(null, req, res, false, [], "Please Try again after some time");;
+            }
+        }
+        catch (error) {
+            sendResp.sendCustomJSON(null, req, res, false, [], "Something got wrong");
+        }
+
+    },
+    followingList: async function (req, res) {
+        try {
+            var userToken = req.headers["authorization"];
+            //var userDetails = await userModel.getUserDetailPromise(userToken);
+            var playerIdProfile = req.body.playerIdProfile ? req.body.playerIdProfile : '';
+            //let playerId = userDetails.playerId;
+            let followerlist = `  select  player.player_id,
+            CASE  WHEN player.full_name IS NULL OR player.full_name = ''::text THEN replace(player.phone_number, 
+            "substring"(player.phone_number, 5, 6), 'XXXXXX'::text) ELSE player.full_name
+            END AS player_name,first_name,photo
+            from tbl_follow follow
+            inner join tbl_player player on player.player_id = follow.player_id
+            where follow.from_player_id = ${playerIdProfile}  and follow.status = 'ACTIVE'`;
+            let followerList = await dbConnection.executeQueryAll(followerlist, 'rmg_db');
+            if (insertResult[0].follow_id > 0) {
+                sendResp.sendCustomJSON(null, req, res, true, followerList, "Following List");   
+            }else{
+                sendResp.sendCustomJSON(null, req, res, false, [], "Please Try again after some time");;
+            } 
+        }
+        catch (error) {
+            sendResp.sendCustomJSON(null, req, res, false, [], "Something got wrong");
         }
     },
     newPlayerOnboard: async function (req, res) {
