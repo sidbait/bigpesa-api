@@ -446,7 +446,7 @@ module.exports = {
                    // }
                // }
                walletTransId = debitResponse.TRANSACTION.TRANSACTIONID;
-                insertContestPlayer(contestId, appId, playerId, amount, debitResponse, walletTransId, status,channel,
+                insertContestPlayer(contestId, appId, playerId, amount, debitResponse, walletTransId, status,channel,debit_type,
                     function (isSuccess) {
                         callback(isSuccess)
                     });
