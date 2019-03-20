@@ -388,7 +388,7 @@ module.exports = {
         })
     },
 
-    joinContest: function (contestId, appId, playerId, amount, debitResponse, userInfo,contestInfo,channel, callback) {
+    joinContest: function (contestId, appId, playerId, amount, debitResponse, userInfo,contestInfo,channel,debit_type, callback) {
         console.log('----------------------------')
         console.log(contestInfo)
         console.log('----------------------------')

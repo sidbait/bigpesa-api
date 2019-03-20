@@ -1447,7 +1447,7 @@ module.exports = {
                                                                                                 } else {
                                                                                                     debitResponse = debitResponse.data;
                                                                                                     contestModel.joinContest(contestId, appId, playerId, amount,
-                                                                                                        debitResponse, deails, contestInfo, channel,
+                                                                                                        debitResponse, deails, contestInfo, channel,debit_type,
                                                                                                         function (isJoined) {
 
                                                                                                             //Success
