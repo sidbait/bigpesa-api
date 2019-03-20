@@ -548,10 +548,10 @@ function insertContestPlayer(contestId, appId, playerId, amount, debitResponse, 
     console.log('CHANNEL functionjoinContestPlayer ----' + channel)
     var query = "INSERT INTO public.tbl_contest_players " +
         "(contest_id, player_id, transaction_amount, transaction_id, " +
-        " transaction_date, status, debit_response,channel) " +
+        " transaction_date, status, debit_response,channel,contest_app_id) " +
         "VALUES(" + contestId + ", " + playerId + ", " + amount + "," +
         " '" + walletTransId + "', " +
-        "now(), '" + status + "', '" + JSON.stringify(debitResponse) + "','"+ channel +"') " +
+        "now(), '" + status + "', '" + JSON.stringify(debitResponse) + "','"+ channel +"',"+ appId +") " +
         "RETURNING contest_player_id";
 
     logger.info('tbl_contest_players insert - ', query);
