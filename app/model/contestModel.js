@@ -536,22 +536,23 @@ module.exports = {
  
     },
 
-    joinContestPlayer(contestId, appId, playerId, amount, debitResponse, walletTransId, status,channel, callback) {
+    joinContestPlayer(contestId, appId, playerId, amount, debitResponse, walletTransId, status,channel,debit_type, callback) {
         console.log('CHANNEL joinContestPlayer ----' + channel)
-        insertContestPlayer(contestId, appId, playerId, amount, debitResponse, walletTransId, status, channel , function (isSuccess) {
+        insertContestPlayer(contestId, appId, playerId, amount, debitResponse, walletTransId, status, channel,debit_type , function (isSuccess) {
                 callback(isSuccess)
         });
     }
 }
 
-function insertContestPlayer(contestId, appId, playerId, amount, debitResponse, walletTransId, status, channel, callback) {
+function insertContestPlayer(contestId, appId, playerId, amount, debitResponse, walletTransId, status, channel,debit_type, callback) {
     console.log('CHANNEL functionjoinContestPlayer ----' + channel)
     var query = "INSERT INTO public.tbl_contest_players " +
         "(contest_id, player_id, transaction_amount, transaction_id, " +
-        " transaction_date, status, debit_response,channel,contest_app_id) " +
+        " transaction_date, status, debit_response,channel,contest_app_id,contest_debit_type) " +
         "VALUES(" + contestId + ", " + playerId + ", " + amount + "," +
         " '" + walletTransId + "', " +
-        "now(), '" + status + "', '" + JSON.stringify(debitResponse) + "','"+ channel +"',"+ appId +") " +
+        "now(), '" + status + "', '" + JSON.stringify(debitResponse) 
+        + "','"+ channel +"',"+ appId +",'"+ debit_type +"') " +
         "RETURNING contest_player_id";
 
     logger.info('tbl_contest_players insert - ', query);

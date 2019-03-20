@@ -1203,7 +1203,7 @@ module.exports = {
                                     if (contestInfo.app_type == null || contestInfo.app_type == undefined)
                                         contestInfo.app_type = "";
                                     let isLive = contestInfo.live_status;
-
+                                    let debit_type =contestInfo.debit_type;
                                     let passData = "contestId=" + contestId.toString();
                                     let isSendParams = contestInfo.send_params;
                                     let package_name = contestInfo.package_name;
@@ -1356,7 +1356,7 @@ module.exports = {
                                                                         if (contestInfo.debit_type == "FREE") {
 
                                                                             contestModel.joinContestPlayer(contestId, appId, playerId, 0,
-                                                                                "FREE-CONTEST", "FRC-" + Date.now().toString(), "ACTIVE", channel, function (isJoined) {
+                                                                                "FREE-CONTEST", "FRC-" + Date.now().toString(), "ACTIVE", channel,debit_type, function (isJoined) {
 
                                                                                     var score = 0;//Initial score set to 0
                                                                                     contestModel.insertContestScore(contestId, appId, playerId, score, function (response) {
@@ -1557,7 +1557,7 @@ module.exports = {
                                                                                                     sendResp.sendCustomJSON(null, req, res, false, [], debitResponse);
                                                                                                 } else {
                                                                                                     contestModel.joinContestPlayer(contestId, appId, playerId, amount,
-                                                                                                        "COIN-CONTEST", "COIN-" + Date.now().toString(), "ACTIVE", channel, function (isJoined) {
+                                                                                                        "COIN-CONTEST", "COIN-" + Date.now().toString(), "ACTIVE", channel,debit_type, function (isJoined) {
                                                                                                             if (isJoined) {
                                                                                                                 var score = 0;//Initial score set to 0
                                                                                                                 contestModel.insertContestScore(contestId, appId, playerId, score, function (response) {
