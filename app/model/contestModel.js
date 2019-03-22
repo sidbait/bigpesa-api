@@ -75,44 +75,7 @@ module.exports = {
     },
 
     getLiveContestDetails: function (contestId, appId, playerId, callback) {
-        //  let query = " select distinct tbl_app.app_id,tbl_app.package_name,tbl_app.app_type, " +
-        //     " app_name, app_code, app_icon,   app_secret,  tbl_app.status as app_status, " +
-        //     " tbl_app.deep_link, tbl_contest_players.player_id, " +
-        //     " tbl_contest.contest_id, contest_name, contest_desc, start_date, end_date, from_time, to_time, " +
-        //     " max_players, winners, currency, entry_fee, profit_margin, " +
-        //     " (100 - profit_margin) as cash_margin, (max_players * entry_fee) as total_amount, " +
-        //     " tbl_contest.win_amount, " +
-        //     " tbl_contest.status as contest_status, " +
-        //     " count(distinct tbl_contest_players.player_id) as player_joined, " +
-        //     " case when (now() + (5 * interval '1 hour') + (30 * interval '1 minute'))::TIME " +
-        //     " between from_time and to_time " +
-        //     " then true " +
-        //     " else false end as live_status, " +
-        //     " transaction_date, case when (now() + (5 * interval '1 hour') + (30 * interval '1 minute'))::DATE = " +
-        //     " (transaction_date + (5 * interval '1 hour') + (30 * interval '1 minute'))::DATE and  " +
-        //     " (now() + (5 * interval '1 hour') + (30 * interval '1 minute'))::TIME between from_time and to_time and tbl_contest_players.player_id in (" + playerId + ")  " +
-        //     " then 'PLAY' " +
-        //     " when 	count(distinct player_id) >= max_players then 'FULL' " +                
-        //     " else 	'PAY' " +
-        //     " end as play_status, debit_type, credit_type , tbl_app.send_params, tbl_contest.game_conf " +
-        //     " from tbl_app  " +
-        //     " inner join tbl_contest on tbl_app.app_id = tbl_contest.app_id " +
-        //     " left join tbl_contest_players on tbl_contest.contest_id = tbl_contest_players.contest_id and  " +
-        //     " (now() + (5 * interval '1 hour') + (30 * interval '1 minute'))::DATE =  " +
-        //     " (transaction_date + (5 * interval '1 hour') + (30 * interval '1 minute'))::DATE " +             
-        //     " where (tbl_app.status = 'ACTIVE' and tbl_contest.status in ('ACTIVE', 'FULL')   " +
-        //     " and tbl_app.app_id = " + appId + "  " +
-        //     " and tbl_contest.contest_id = " + contestId + ") and " +
-        //     " (from_time >= (now() + (5 * interval '1 hour') + (30 * interval '1 minute'))::TIME or  " +
-        //     " (now() + (5 * interval '1 hour') + (30 * interval '1 minute'))::TIME between from_time and to_time) " +
-        //     " group by tbl_app.app_id, app_name,tbl_app.package_name,tbl_app.app_type, app_code, app_icon, app_secret, tbl_app.status, tbl_app.deep_link, " +
-        //     " tbl_contest_players.player_id, " +
-        //     " tbl_contest.contest_id, contest_name, contest_desc, start_date, end_date, from_time, to_time, " +
-        //     " max_players, winners, currency, entry_fee, profit_margin,  " +
-        //     " (100 - profit_margin), (max_players * entry_fee),  " +
-        //     " tbl_contest.win_amount, tbl_contest.status, transaction_date, debit_type, credit_type,    tbl_app.send_params, tbl_contest.game_conf " +
-        //     " order by app_name, from_time, to_time ";
-
+      
         let query = `select distinct tbl_app.app_id, tbl_app.package_name,
         tbl_app.app_type,app_name,app_code, app_icon,app_secret,tbl_app.status as app_status,
         tbl_app.deep_link,  tbl_contest_players.player_id, tbl_contest.contest_id,
@@ -126,12 +89,14 @@ module.exports = {
         tbl_contest.status as contest_status,
         count(distinct tbl_contest_players.player_id) as player_joined,
         case
-            when (now() + (5 * interval '1 hour') + (30 * interval '1 minute'))::time between from_time and to_time then true
+            when (now()  + (330 * interval '1 minute')) 
+            between start_date and end_date then true
             else false
         end as live_status,
         transaction_date,
         case
-            when  (now() + (5 * interval '1 hour') + (30 * interval '1 minute'))::time between from_time and to_time
+            when  (now()  + (330 * interval '1 minute')) between start_date
+             and end_date
             and tbl_contest_players.player_id in (${playerId}) then 'PLAY'
             when count(distinct player_id) >= max_players then 'FULL'
             when (now() + (330 * interval '1 minute')) < start_date
@@ -154,8 +119,8 @@ module.exports = {
         'FULL')
         and tbl_app.app_id = ${appId}
         and tbl_contest.contest_id = ${contestId})
-        and (start_date >= (now() + (5 * interval '1 hour') + (30 * interval '1 minute')) 
-        or (now() + (5 * interval '1 hour') + (30 * interval '1 minute'))  between start_date and end_date)
+        and (start_date >= (now() + (330 * interval '1 minute')) 
+        or (now() + (330 * interval '1 minute'))  between start_date and end_date)
     group by
         tbl_app.app_id, app_name,  tbl_app.package_name, tbl_app.app_type, app_code, app_icon,
         app_secret, tbl_app.status, tbl_app.deep_link, tbl_contest_players.player_id,
