@@ -198,6 +198,8 @@ module.exports = {
                                             contest.win_amount = contests.win_amount;
                                             contest.contest_status = contests.contest_status;
                                             contest.currenttime = contests.currenttime;
+                                            contest.min_player = contests.min_player;
+                                            contest.rank_desc = contests.rank_desc;
                                             if (contests.contest_icon != undefined && contests.contest_icon != null) {
                                                 contest.contest_icon = contests.contest_icon;
                                             } else {
