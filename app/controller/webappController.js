@@ -686,6 +686,7 @@ module.exports = {
                                                             // } else {
                                                             //     app.contests.COMPLETED.push(completedcontest);
                                                             // }
+                                                            console.log(completedcontest)
                                                             if (contest_channel != "" && contest_channel != null) {
                                                                 if (channel.toUpperCase() == "PLAYSTORE" && contest_channel.toUpperCase() == "PLAYSTORE") {
                                                                     app.contests.COMPLETED.push(completedcontest);
