@@ -106,7 +106,8 @@ module.exports = {
         debit_type,
         credit_type ,
         tbl_app.send_params,
-        tbl_contest.game_conf
+        tbl_contest.game_conf,
+        tbl_contest.max_lives
     from
         tbl_app
     inner join tbl_contest on
@@ -131,7 +132,8 @@ module.exports = {
         debit_type,
         credit_type,
         tbl_app.send_params,
-        tbl_contest.game_conf
+        tbl_contest.game_conf,
+        tbl_contest.max_lives
     order by
         app_name,
         from_time,
@@ -353,7 +355,7 @@ module.exports = {
         })
     },
 
-    joinContest: function (contestId, appId, playerId, amount, debitResponse, userInfo,contestInfo,channel,debit_type, callback) {
+    joinContest: function (contestId, appId, playerId, amount, debitResponse, userInfo,contestInfo,channel,debit_type,max_lives, callback) {
         console.log('----------------------------')
         console.log(contestInfo)
         console.log('----------------------------')
@@ -411,7 +413,7 @@ module.exports = {
                    // }
                // }
                walletTransId = debitResponse.TRANSACTION.TRANSACTIONID;
-                insertContestPlayer(contestId, appId, playerId, amount, debitResponse, walletTransId, status,channel,debit_type,
+                insertContestPlayer(contestId, appId, playerId, amount, debitResponse, walletTransId, status,channel,debit_type,max_lives,
                     function (isSuccess) {
                         callback(isSuccess)
                     });
@@ -501,23 +503,24 @@ module.exports = {
  
     },
 
-    joinContestPlayer(contestId, appId, playerId, amount, debitResponse, walletTransId, status,channel,debit_type, callback) {
+    joinContestPlayer(contestId, appId, playerId, amount, debitResponse, walletTransId, status,channel,debit_type,max_lives, callback) {
         console.log('CHANNEL joinContestPlayer ----' + channel)
-        insertContestPlayer(contestId, appId, playerId, amount, debitResponse, walletTransId, status, channel,debit_type , function (isSuccess) {
+        insertContestPlayer(contestId, appId, playerId, amount, debitResponse, walletTransId, status, channel,debit_type ,max_lives, function (isSuccess) {
                 callback(isSuccess)
         });
     }
 }
 
-function insertContestPlayer(contestId, appId, playerId, amount, debitResponse, walletTransId, status, channel,debit_type, callback) {
+function insertContestPlayer(contestId, appId, playerId, amount, debitResponse, walletTransId, status, channel,debit_type,max_lives, callback) {
     console.log('CHANNEL functionjoinContestPlayer ----' + channel)
     var query = "INSERT INTO public.tbl_contest_players " +
         "(contest_id, player_id, transaction_amount, transaction_id, " +
-        " transaction_date, status, debit_response,channel,contest_app_id,contest_debit_type) " +
+        " transaction_date, status, debit_response,channel,contest_app_id, " +
+        " contest_debit_type,max_lives,used_lives) " +
         "VALUES(" + contestId + ", " + playerId + ", " + amount + "," +
         " '" + walletTransId + "', " +
         "now(), '" + status + "', '" + JSON.stringify(debitResponse) 
-        + "','"+ channel +"',"+ appId +",'"+ debit_type +"') " +
+        + "','"+ channel +"',"+ appId +",'"+ debit_type +"',"+ max_lives +", 0 ) " +
         "RETURNING contest_player_id";
 
     logger.info('tbl_contest_players insert - ', query);

@@ -199,6 +199,7 @@ module.exports = {
                                             contest.contest_status = contests.contest_status;
                                             contest.currenttime = contests.currenttime;
                                             contest.min_players = contests.min_player;
+                                            contest.max_lives = contests.max_lives;
                                             contest.rank_desc = contests.rank_desc;
                                             if (contests.contest_icon != undefined && contests.contest_icon != null) {
                                                 contest.contest_icon = contests.contest_icon;
@@ -464,7 +465,7 @@ module.exports = {
                             //     " where total_score > 0 and created_at::date = now()::date )t" +
                             //     " where  player_id = " + playerId + "  ";
 
-                             let liveContestRankQuery = ` select contest_id ,player_id,player_rank from (  select  contest_id,player_id,  
+                            let liveContestRankQuery = ` select contest_id ,player_id,player_rank from (  select  contest_id,player_id,  
                                 app_id,total_score,'ACTIVE',contest_date, RANK()  
                                  OVER (partition by contest_id  ORDER BY total_score desc ,created_at asc)  
                                  as player_rank from  tbl_contest_leader_board  
@@ -551,6 +552,8 @@ module.exports = {
                                                         contest.player_win_amount = contests.player_win_amount;
                                                         contest.player_rank = contests.player_rank;
                                                         contest.winning_credit_type = contests.winning_credit_type;
+                                                        contest.min_players = contests.min_player;
+
                                                         //contest.transaction_date = contests.transaction_date;
                                                         let contest_channel = contests.channel;
                                                         contest.contest_date = contests.contest_date;
@@ -642,31 +645,32 @@ module.exports = {
                                                             }
                                                         } else if (contest.contest_status == "COMPLETED") {
                                                             let completedcontest = contest;
-
-                                                            // completedcontest.player_win_amount = 0;
-                                                            // completedcontest.rank = 0;
                                                             completedcontest.player_win_amount = contest.player_win_amount;// 0;
                                                             completedcontest.rank = contest.player_rank;// 0;
                                                             completedcontest.credit_type = contest.winning_credit_type;
-                                                            //console.log(liveContestRank)
-                                                            if (g15daysRankDetails != null && g15daysRankDetails != undefined &&
-                                                                liveContestRank != null && liveContestRank != undefined) {
-                                                                liveContestRank.forEach(liveContestRankId => {
-                                                                    if (liveContestRankId.contest_id == completedcontest.contest_id) {
-                                                                        //completedcontest.rank = liveContestRankId.player_rank;
-                                                                        g15daysRankDetails.forEach(ranks => {
-                                                                            if (completedcontest.contest_id == ranks.contest_id &&
-                                                                                parseInt(liveContestRankId.player_rank) >= parseInt(ranks.lower_rank) &&
-                                                                                parseInt(liveContestRankId.player_rank) <= parseInt(ranks.upper_rank)
-                                                                            ) {
-                                                                                // completedcontest.player_win_amount = ranks.prize_amount;
-                                                                                // completedcontest.credit_type = ranks.credit_type;
-                                                                                //completedcontest.rank = ranks.lower_rank;
-                                                                            }
-                                                                        });
-                                                                    }
-                                                                })
+                                                            if (contest.min_players != 0 && parseInt(contest.min_players) >  parseInt(contest.player_joined)) {
+
                                                             }
+
+                                                            //console.log(liveContestRank)
+                                                            // if (g15daysRankDetails != null && g15daysRankDetails != undefined &&
+                                                            //     liveContestRank != null && liveContestRank != undefined) {
+                                                            //     liveContestRank.forEach(liveContestRankId => {
+                                                            //         if (liveContestRankId.contest_id == completedcontest.contest_id) {
+                                                            //             //completedcontest.rank = liveContestRankId.player_rank;
+                                                            //             g15daysRankDetails.forEach(ranks => {
+                                                            //                 if (completedcontest.contest_id == ranks.contest_id &&
+                                                            //                     parseInt(liveContestRankId.player_rank) >= parseInt(ranks.lower_rank) &&
+                                                            //                     parseInt(liveContestRankId.player_rank) <= parseInt(ranks.upper_rank)
+                                                            //                 ) {
+                                                            //                     // completedcontest.player_win_amount = ranks.prize_amount;
+                                                            //                     // completedcontest.credit_type = ranks.credit_type;
+                                                            //                     //completedcontest.rank = ranks.lower_rank;
+                                                            //                 }
+                                                            //             });
+                                                            //         }
+                                                            //     })
+                                                            // }
 
                                                             // if (contestRanks != null && contestRanks != undefined) {
                                                             //     contestRanks.forEach(ranks => {
@@ -1205,7 +1209,8 @@ module.exports = {
                                     if (contestInfo.app_type == null || contestInfo.app_type == undefined)
                                         contestInfo.app_type = "";
                                     let isLive = contestInfo.live_status;
-                                    let debit_type =contestInfo.debit_type;
+                                    let debit_type = contestInfo.debit_type;
+                                    let max_lives = contestInfo.max_lives;
                                     let passData = "contestId=" + contestId.toString();
                                     let isSendParams = contestInfo.send_params;
                                     let package_name = contestInfo.package_name;
@@ -1358,7 +1363,7 @@ module.exports = {
                                                                         if (contestInfo.debit_type == "FREE") {
 
                                                                             contestModel.joinContestPlayer(contestId, appId, playerId, 0,
-                                                                                "FREE-CONTEST", "FRC-" + Date.now().toString(), "ACTIVE", channel,debit_type, function (isJoined) {
+                                                                                "FREE-CONTEST", "FRC-" + Date.now().toString(), "ACTIVE", channel, debit_type, max_lives, function (isJoined) {
 
                                                                                     var score = 0;//Initial score set to 0
                                                                                     contestModel.insertContestScore(contestId, appId, playerId, score, function (response) {
@@ -1437,7 +1442,8 @@ module.exports = {
                                                                                         var event = 'JOIN CONTEST';
                                                                                         var event_id = contestInfo.contest_id;
                                                                                         var event_name = contestInfo.app_name + "(" + contestInfo.contest_name + ")";
-                                                                                        debitcredit.debitCreditAmountAirpay(userToken, airpayToken, orderId, 'DEBIT', amount, event, event_id, event_name, function (err, debitResponse) {
+                                                                                        debitcredit.debitCreditAmountAirpay(userToken, airpayToken, orderId, 'DEBIT', amount, 
+                                                                                                                        event, event_id, event_name, function (err, debitResponse) {
 
                                                                                             if (err) {
                                                                                                 sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
@@ -1449,7 +1455,7 @@ module.exports = {
                                                                                                 } else {
                                                                                                     debitResponse = debitResponse.data;
                                                                                                     contestModel.joinContest(contestId, appId, playerId, amount,
-                                                                                                        debitResponse, deails, contestInfo, channel,debit_type,
+                                                                                                        debitResponse, deails, contestInfo, channel, debit_type, max_lives,
                                                                                                         function (isJoined) {
 
                                                                                                             //Success
@@ -1559,7 +1565,7 @@ module.exports = {
                                                                                                     sendResp.sendCustomJSON(null, req, res, false, [], debitResponse);
                                                                                                 } else {
                                                                                                     contestModel.joinContestPlayer(contestId, appId, playerId, amount,
-                                                                                                        "COIN-CONTEST", "COIN-" + Date.now().toString(), "ACTIVE", channel,debit_type, function (isJoined) {
+                                                                                                        "COIN-CONTEST", "COIN-" + Date.now().toString(), "ACTIVE", channel, debit_type, max_lives, function (isJoined) {
                                                                                                             if (isJoined) {
                                                                                                                 var score = 0;//Initial score set to 0
                                                                                                                 contestModel.insertContestScore(contestId, appId, playerId, score, function (response) {
@@ -2388,7 +2394,8 @@ module.exports = {
                                 let queryBlockUser = " update tbl_player set status = 'BLOCK' where player_id = " + playerId + "  ";
                                 //dbConnection.executeQuery(queryBlockUser, "rmg_db", function (err, dbResultblock) { });
                             }
-                            var checkStatus = " select count(1) from vw_player_contest where contest_id = " + contestId + " and player_id = " + playerId + " and player_status = 'PLAY' "
+                            var checkStatus = " select count(1) from vw_player_contest where contest_id = " + contestId 
+                                                + " and player_id = " + playerId + " and player_status = 'PLAY' "
                             var query = " update tbl_app_score set  score =  " + score + " where session_token = '" + sessionToken + "' " +
                                 "RETURNING app_score_id ";
                             console.log(query);
@@ -2406,7 +2413,11 @@ module.exports = {
                                                 var query_leader_board = " update tbl_contest_leader_board set total_score = " + score + ",created_at=now()   " +
                                                     " where contest_id = " + contestId + " and player_id = " + playerId + " " +
                                                     "  and app_id = " + appId + " and total_score <  " + score + "  ";
-                                                console.log(query_leader_board)
+                                                let updateUsedLives = `update tbl_contest_players set used_lives = 
+                                                            COALESCE( used_lives ,0) + 1  where contest_id = ${contestId} and 
+                                                            player_id = ${playerId} `;
+                                                console.log(query_leader_board);
+                                                dbConnection.executeQuery(updateUsedLives, "rmg_db", function (err, dbResult) {});
                                                 dbConnection.executeQuery(query_leader_board, "rmg_db", function (err, dbResult) {
                                                     if (dbResult == null || dbResult == undefined) {
                                                         sendResp.sendResultShort(400, 1000, res);
@@ -2736,7 +2747,7 @@ module.exports = {
                     output = {
                         gc: result[0].game_conf ? result[0].game_conf : '',
                         rn: result[0].randnumber ? result[0].randnumber : '',
-                        player_id : result[0].player_id ? result[0].player_id  : 0
+                        player_id: result[0].player_id ? result[0].player_id : 0
                     }
                     res.send(200, output);
                 } else {
@@ -3044,7 +3055,7 @@ function scoreUpdown(contest_id, winnerList, callback) {
                                             }
                                         });
 
-                                        let checkIsAlreadySent = await redisConnection.getRedisPromise('scoreupdown'+contest_id+"|" + winnerNew.player_id);
+                                        let checkIsAlreadySent = await redisConnection.getRedisPromise('scoreupdown' + contest_id + "|" + winnerNew.player_id);
                                         if (checkIsAlreadySent != null && checkIsAlreadySent != undefined) {
                                         } else {
                                             if (newwinPrize + "-" + newCreditType != oldWinPrize + "-" + oldCreditType) {
@@ -3065,7 +3076,7 @@ function scoreUpdown(contest_id, winnerList, callback) {
                                     }
                                 });
                             }
-                            else {                                
+                            else {
                                 newList.push(element)
                             }
                         });
