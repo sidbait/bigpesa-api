@@ -575,7 +575,7 @@ module.exports = {
                                                         contest.remainingendseconds = remainingendseconds;
                                                         contest.start_date = (contest.start_date).toString().substring(0, 16).replace('T', ' ');
                                                         contest.end_date = (contest.end_date).toString().substring(0, 16).replace('T', ' ');
-                                                        contest.cancel =false;
+                                                       
                                                         if (contest.contest_status == "LIVE") {
 
                                                             let livecontest = contest;
@@ -640,13 +640,14 @@ module.exports = {
                                                             }
                                                         } else if (contest.contest_status == "COMPLETED") {
                                                             let completedcontest = contest;
+                                                            completedcontest.cancel =false;
                                                             completedcontest.player_win_amount = contest.player_win_amount;// 0;
                                                             completedcontest.rank = contest.player_rank;// 0;
                                                             completedcontest.credit_type = contest.winning_credit_type;
                                                             if (contest.min_players != 0 && parseInt(contest.min_players) >  parseInt(contest.player_joined)) {
-                                                                contest.cancel =true;
+                                                                completedcontest.cancel =true;
                                                             }else{
-                                                                contest.cancel =false;
+                                                                completedcontest.cancel =false;
                                                             }
 
                                                             //console.log(liveContestRank)
