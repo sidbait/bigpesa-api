@@ -237,6 +237,7 @@ module.exports = {
                                             contest.player_joined = contests.player_joined;
                                             contest.live_status = contests.live_status;
                                             contest.play_status = 'JOIN';
+                                            contest.used_lives =0;
                                             //console.log(contest.player_joined +"|"+ contest.max_players)
                                             if (parseInt(contest.player_joined) >= parseInt(contest.max_players)) {
                                                 contest.play_status = 'FULL';
@@ -248,6 +249,7 @@ module.exports = {
                                                 PlayerContests.forEach(contestplayer => {
                                                     if (contestplayer.contest_id == contest.contest_id) {
                                                         contest.play_status = contestplayer.player_status;
+                                                        contest.used_lives = contestplayer.used_lives;
                                                     }
                                                 });
                                             }
@@ -456,15 +458,7 @@ module.exports = {
                             if (process.env.NODE_ENV == "preprod") {
                                 applistquery = "select * from vw_live_app_list where 1=1  ";
                             }
-
                             let contestquery = "select * from vw_player_contest_withrank where player_id = " + playerId;
-                            // let liveContestRankQuery = "select contest_id ,player_id,player_rank from (  select  contest_id,player_id,  " +
-                            //     " app_id,total_score,'ACTIVE',contest_date, RANK() " +
-                            //     " OVER (partition by contest_id  ORDER BY total_score desc ,created_at asc)  " +
-                            //     " as player_rank from  tbl_contest_leader_board " +
-                            //     " where total_score > 0 and created_at::date = now()::date )t" +
-                            //     " where  player_id = " + playerId + "  ";
-
                             let liveContestRankQuery = ` select contest_id ,player_id,player_rank from (  select  contest_id,player_id,  
                                 app_id,total_score,'ACTIVE',contest_date, RANK()  
                                  OVER (partition by contest_id  ORDER BY total_score desc ,created_at asc)  
@@ -540,7 +534,7 @@ module.exports = {
                                                         contest.currency = contests.currency;
                                                         contest.entry_fee = contests.entry_fee;
                                                         contest.profit_margin = contests.profit_margin;
-                                                        contest.cash_margin = 0;//contests.cash_margin;
+                                                        contest.cash_margin = 0; 
                                                         contest.total_amount = contests.total_amount;
                                                         contest.win_amount = contests.win_amount;
                                                         contest.debit_type = contests.debit_type;
@@ -553,7 +547,8 @@ module.exports = {
                                                         contest.player_rank = contests.player_rank;
                                                         contest.winning_credit_type = contests.winning_credit_type;
                                                         contest.min_players = contests.min_player;
-
+                                                        contest.max_lives = contests.max_lives;
+                                                        contest.used_lives = contests.used_lives;
                                                         //contest.transaction_date = contests.transaction_date;
                                                         let contest_channel = contests.channel;
                                                         contest.contest_date = contests.contest_date;
@@ -580,7 +575,7 @@ module.exports = {
                                                         contest.remainingendseconds = remainingendseconds;
                                                         contest.start_date = (contest.start_date).toString().substring(0, 16).replace('T', ' ');
                                                         contest.end_date = (contest.end_date).toString().substring(0, 16).replace('T', ' ');
-
+                                                        contest.cancel =false;
                                                         if (contest.contest_status == "LIVE") {
 
                                                             let livecontest = contest;
@@ -2889,6 +2884,7 @@ module.exports = {
             sendResp.sendCustomJSON(null, req, res, true, [], "No Data Found");
         }
     },
+
     getEvents: (req, res) => {
         let event_detail = {};
         if (gEventMaster != undefined && gEventMaster != null) {
@@ -2902,6 +2898,7 @@ module.exports = {
             sendResp.sendCustomJSON(null, req, res, false, [], "Event Not Found!");
         }
     },
+
     getAllEvents: (req, res) => {
         sendResp.sendCustomJSON(null, req, res, true, gEventMaster, "Event Details!");
     }
