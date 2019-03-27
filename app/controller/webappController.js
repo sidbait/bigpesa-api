@@ -847,10 +847,16 @@ module.exports = {
                                             contestdetails[0].contest_rank.push(rank);
                                         }
                                     });
-                                    if( contestdetails[0].live_status == true){
-                                        if(max_lives !=0 && livesCheck[0].used_lives  >= max_lives){
-                                            contestdetails[0].live_status ==false;
-                                       }                                        
+                                    
+                                    if (contestdetails[0].live_status == true) {
+                                        if (max_lives != 0 && livesCheck[0].used_lives >= max_lives) {
+                                            contestdetails[0].live_status == false;
+                                            contestdetails[0].play_status = "GAMEOVER";
+                                        } else {
+                                            contestdetails[0].play_status = "PLAY";
+                                        }
+                                    } else {
+                                        contestdetails[0].play_status = "CONTESTEND";
                                     }
 
                                     outJson.ContestDetails = contestdetails[0];
