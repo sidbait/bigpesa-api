@@ -581,6 +581,12 @@ module.exports = {
                                                             let livecontest = contest;
                                                             livecontest.player_win_amount = 0;
                                                             livecontest.rank = 0;
+                                                            livecontest.play_status ='PLAY';
+
+                                                            if( contest.max_lives != 0 &&  contest.max_lives  >=contest.used_lives  ){
+                                                                contest.play_status = 'GAMEOVER';
+                                                            }
+
                                                             // livecontest.player_win_amount =contest.player_win_amount;// 0;
                                                             // livecontest.rank =contest.player_win_amount;// 0;
                                                             if (g15daysRankDetails != null && g15daysRankDetails != undefined && liveContestRank != null && liveContestRank != undefined) {
