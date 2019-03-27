@@ -583,7 +583,7 @@ module.exports = {
                                                             livecontest.rank = 0;
                                                             livecontest.play_status ='PLAY';
                                                             console.log('contest.max_lives' + contest.max_lives)
-                                                            console.log('contest.max_lives' + contest.max_lives)
+                                                            console.log('contest.max_lives' + contest.used_lives)
                                                             if( contest.max_lives != 0 &&  contest.max_lives  >=contest.used_lives  ){
                                                                 contest.play_status = 'GAMEOVER';
                                                             }
