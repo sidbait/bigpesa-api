@@ -779,9 +779,10 @@ module.exports = {
                         console.log(deails)
                         mobileNumber = deails.phone_number;
                         airpayToken = deails.airpay_token;
+                        let livesCheckQuery = `select COALESCE( used_lives ,0) as  used_lives from 
+                                        tbl_contest_players where contest_id =  ${contestId} and player_id = ${playerId}  `;
                         let contestDetails = "select * from vw_apps_contests where contest_id = " + contestId;
-                        //let winnerDetails = "select * from vw_contest_rank_details where contest_id = " + contestId + " order by player_rank ";
-                        let winnerDetails = ` select * from vw_last7days_winner  where  contest_id = ${contestId} ; `;
+                         let winnerDetails = ` select * from vw_last7days_winner  where  contest_id = ${contestId} ; `;
                         let contestRankquery = ` select * from tbl_contest_rank  where contest_id = ${contestId} order by upper_rank asc; `;
                         console.log(contestDetails)
                         async.parallel({
@@ -799,6 +800,11 @@ module.exports = {
                                 dbConnection.executeQuery(contestRankquery, "rmg_db", function (err, dbResult) {
                                     callback(err, dbResult);
                                 });
+                            },
+                            livesCheck :function(callback){
+                                dbConnection.executeQuery(livesCheckQuery, "rmg_db", function (err, dbResult) {
+                                    callback(err, dbResult);
+                                });
                             }
                         },
                             function (err_async, result_async) {
@@ -809,6 +815,7 @@ module.exports = {
                                     var contestdetails = result_async.contestDetails;
                                     var winnerDetails = result_async.winnerDetails;
                                     var rankDetails = result_async.contestRankquery;
+                                    let livesCheck =result_async.livesCheck;
                                     var outJson = {};
 
 
@@ -818,6 +825,10 @@ module.exports = {
 
                                     var remainingstartseconds = (conteststarttime.getTime() - currenttime.getTime()) / 1000;
                                     var remainingendseconds = (contestendtime.getTime() - currenttime.getTime()) / 1000;
+
+                                    let max_lives = contestdetails[0].max_lives;
+
+                                   
 
                                     contestdetails[0].remainingstartseconds = remainingstartseconds;
                                     contestdetails[0].remainingendseconds = remainingendseconds;
@@ -836,6 +847,10 @@ module.exports = {
                                             contestdetails[0].contest_rank.push(rank);
                                         }
                                     });
+                                    if( contestdetails[0].live_status == true){
+                                       // if(max_lives !=0 &&max_lives )
+                                       console.log(livesCheck)
+                                    }
 
                                     outJson.ContestDetails = contestdetails[0];
                                     outJson.PlayerRank = {};
