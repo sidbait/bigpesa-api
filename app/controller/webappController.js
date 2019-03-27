@@ -847,7 +847,7 @@ module.exports = {
                                             contestdetails[0].contest_rank.push(rank);
                                         }
                                     });
-                                    
+                                    contestdetails[0].used_lives = livesCheck[0].used_lives;
                                     if (contestdetails[0].live_status == true) {
                                         if (max_lives != 0 && livesCheck[0].used_lives >= max_lives) {
                                             contestdetails[0].live_status == false;
