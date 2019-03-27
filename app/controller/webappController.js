@@ -587,14 +587,14 @@ module.exports = {
                                                             if( contest.max_lives != 0 &&  contest.max_lives  >= contest.used_lives  ){
                                                                 livecontest.play_status = 'GAMEOVER';
                                                             }
+                                                          
 
                                                             // livecontest.player_win_amount =contest.player_win_amount;// 0;
                                                             // livecontest.rank =contest.player_win_amount;// 0;
                                                             if (g15daysRankDetails != null && g15daysRankDetails != undefined && liveContestRank != null && liveContestRank != undefined) {
                                                                 liveContestRank.forEach(liveContestRankId => {
                                                                     if (liveContestRankId.contest_id == livecontest.contest_id) {
-                                                                        livecontest.rank = liveContestRankId.player_rank;
-                                                                        console.log('CONTEST FOUND ' + livecontest.contest_id)
+                                                                        livecontest.rank = liveContestRankId.player_rank;                                                                        
                                                                         g15daysRankDetails.forEach(ranks => {
                                                                             if (livecontest.contest_id == ranks.contest_id &&
                                                                                 parseInt(liveContestRankId.player_rank) >= parseInt(ranks.lower_rank) &&
@@ -615,7 +615,7 @@ module.exports = {
                                                             // } else {
                                                             //     app.contests.LIVE.push(livecontest);
                                                             // }
-
+                                                            console.log(livecontest)
                                                             if (contest_channel != "" && contest_channel != null) {
                                                                 if (channel.toUpperCase() == "PLAYSTORE" && contest_channel.toUpperCase() == "PLAYSTORE") {
                                                                     app.contests.LIVE.push(livecontest);
