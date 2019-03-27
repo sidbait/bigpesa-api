@@ -2592,6 +2592,7 @@ module.exports = {
                             var contestdetails = result_async.contestDetails;
                             var winnerDetails = result_async.winnerDetails;
                             var rankDetails = result_async.contestRankquery;
+                            let livesCheck = result_async.livesCheck;
                             var outJson = {};
 
 
