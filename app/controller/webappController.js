@@ -244,6 +244,10 @@ module.exports = {
                                                 contest.player_joined = contest.max_players;
                                                 //console.log('ISFULL')
                                             }
+                                            
+                                            if(remainingendseconds < 300){
+                                                contest.play_status = 'ENTRY-CLOSED';
+                                            }
 
                                             if (playerId != undefined && playerId != null && playerId != '') {
                                                 PlayerContests.forEach(contestplayer => {
