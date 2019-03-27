@@ -244,7 +244,7 @@ module.exports = {
                                                 contest.player_joined = contest.max_players;
                                                 //console.log('ISFULL')
                                             }
-                                            
+
                                             if(remainingendseconds < 300){
                                                 contest.play_status = 'ENTRY-CLOSED';
                                             }
@@ -273,7 +273,7 @@ module.exports = {
                                             //         app.contests.push(contest);
                                             //     }
                                             // }
-                                            if (contest_channel != "" && contest_channel != null) {
+                                            if (contest_channel != "" && contest_channel != null && contest_channel!=undefined) {
                                                 if (channel.toUpperCase() == "PLAYSTORE" && contest_channel.toUpperCase() == "PLAYSTORE") {
                                                     app.contests.push(contest);
                                                 }
@@ -1703,6 +1703,9 @@ module.exports = {
                                     }
                                     else if (contestInfo.play_status == "FULL") {
                                         sendResp.sendCustomJSON(null, req, res, false, [], "Contest Is Full!");
+                                    }
+                                    else if (contestInfo.play_status == "ENTRY-CLOSED") {
+                                        sendResp.sendCustomJSON(null, req, res, false, [], "Entry Closed!");
                                     }
                                     else {
                                         sendResp.sendCustomJSON(null, req, res, false, [], "Contest not started yet to play!");

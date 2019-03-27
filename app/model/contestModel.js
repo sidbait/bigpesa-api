@@ -101,6 +101,8 @@ module.exports = {
             when count(distinct player_id) >= max_players then 'FULL'
             when (now() + (330 * interval '1 minute')) < start_date
             and tbl_contest_players.player_id in (${playerId}) then 'JOINED'
+            when 
+            ((now() + (330 * interval '1 minute')) > (end_date  - (5 * interval '1 minute'))) then 'ENTRY-CLOSED'
             else 'PAY'
         end as play_status,
         debit_type,
