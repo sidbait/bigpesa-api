@@ -14,7 +14,8 @@ module.exports = {
             if (playerId == "" || playerIdProfile == "") {
                 sendResp.sendCustomJSON(null, req, res, false, [], "Invalid Token/Player");
             } else {
-                let queryFavGames =` select app.app_id,app.app_name,app.app_icon_url,total_contest_played,cash_contest_played,
+                let queryFavGames =` select app.app_id,app.app_name,app.app_icon_url,
+                total_contest_played,cash_contest_played,
                 coin_contest_played,free_contest_played,win_cash_count,win_cash_amount,
                 win_coin_count,win_coin_amount,coin_used,cash_used
                  from tbl_player_contest_summary summary 
@@ -22,8 +23,8 @@ module.exports = {
                 where app.status = 'ACTIVE' and player_id = ${playerIdProfile}
                 order by total_contest_played desc `;
 
-                let winCoinCash = `select sum(win_cash_count) as totalCashWin , 
-                    sum(win_cash_amount) as totalCoinWin 
+                let winCoinCash = `select sum(win_cash_amount) as totalCashWin , 
+                    sum(win_coin_amount) as totalCoinWin 
                     from tbl_player_contest_summary   where player_id = ${playerIdProfile} `;
                 
                 let followCount = "select count(1) as followCount from " +

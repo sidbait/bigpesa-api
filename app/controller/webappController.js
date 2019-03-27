@@ -1260,31 +1260,69 @@ module.exports = {
                                     console.log('redirect_link - ', redirect_link);
 
                                     //console.log('contestInfo.play_status - ' + contestInfo.play_status);
-                                    if (contestInfo.play_status == "PLAY") {
-                                        var isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
-                                        if (isTokenSave) {
-                                            if (isLive) {
-                                                sendResp.sendCustomJSON(null, req, res, true,
-                                                    {
-                                                        play_status: "PLAY",
-                                                        deep_link: redirect_link,
-                                                        session_token: sessionToken,
-                                                        package_name: package_name,
-                                                        app_type: app_type
-                                                    }, "Succesfully Joined", true);
+                                    if (contestInfo.play_status == "PLAY") { 
+                                        if(max_lives != 0){
+                                            let validateLives =  ` select * from vw_playerjoined where player_id =${playerId} and contest_id = ${contestId} `;
+                                            dbConnection.executeQuery(validateLives, "rmg_db", function (err, checkLives) {
+                                               if(checkLives[0].player_status == "PLAY"){
+                                                let isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
+                                                if (isTokenSave) {
+                                                    if (isLive) {
+                                                        sendResp.sendCustomJSON(null, req, res, true,
+                                                            {
+                                                                play_status: "PLAY",
+                                                                deep_link: redirect_link,
+                                                                session_token: sessionToken,
+                                                                package_name: package_name,
+                                                                app_type: app_type
+                                                            }, "Succesfully Joined", true);
+                                                    } else {
+                                                        sendResp.sendCustomJSON(null, req, res, true,
+                                                            {
+                                                                play_status: "JOINED",
+                                                                deep_link: redirect_link,
+                                                                session_token: sessionToken,
+                                                                package_name: package_name,
+                                                                app_type: app_type
+                                                            }, "Succesfully Joined", true);
+                                                    }
+                                                } else {
+                                                    sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
+                                                }
+                                               }
+                                               else if(checkLives[0].player_status == "GAMEOVER"){
+                                                sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, You have used all your lives! Try to play other contest.");
+                                               }
+                                               else{
+                                                sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
+                                               }
+                                            });
+                                        }else{
+                                            let isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
+                                            if (isTokenSave) {
+                                                if (isLive) {
+                                                    sendResp.sendCustomJSON(null, req, res, true,
+                                                        {
+                                                            play_status: "PLAY",
+                                                            deep_link: redirect_link,
+                                                            session_token: sessionToken,
+                                                            package_name: package_name,
+                                                            app_type: app_type
+                                                        }, "Succesfully Joined", true);
+                                                } else {
+                                                    sendResp.sendCustomJSON(null, req, res, true,
+                                                        {
+                                                            play_status: "JOINED",
+                                                            deep_link: redirect_link,
+                                                            session_token: sessionToken,
+                                                            package_name: package_name,
+                                                            app_type: app_type
+                                                        }, "Succesfully Joined", true);
+                                                }
                                             } else {
-                                                sendResp.sendCustomJSON(null, req, res, true,
-                                                    {
-                                                        play_status: "JOINED",
-                                                        deep_link: redirect_link,
-                                                        session_token: sessionToken,
-                                                        package_name: package_name,
-                                                        app_type: app_type
-                                                    }, "Succesfully Joined", true);
+                                                sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
                                             }
-                                        } else {
-                                            sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
-                                        }
+                                        }  
                                     } else if (contestInfo.play_status == "JOINED") {
                                         var isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
                                         if (isTokenSave) {
