@@ -282,7 +282,7 @@ module.exports = {
                                                    }  
                                                 }
                                                 else if (channel.toUpperCase() == "NON-PLAYSTORE" && contest_channel.toUpperCase() == "NON-PLAYSTORE") {
-                                                    if(contest.contest_minutes >0 && contest.play_status == 'FULL'){
+                                                    if(contest.contest_minutes > 0 && contest.play_status == 'FULL'){
                                                     }else{
                                                      app.contests.push(contest);
                                                     }  
