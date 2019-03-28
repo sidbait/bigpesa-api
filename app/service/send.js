@@ -20,7 +20,7 @@ module.exports = {
                 response.IsValidToken = true;
                 response.Success = true;
                 response.Message = message;
-                console.log(result);
+                //console.log(result);
                 if (all) {
                     response.Data = result;
                 } else {
