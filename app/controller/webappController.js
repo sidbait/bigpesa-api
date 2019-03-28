@@ -201,6 +201,7 @@ module.exports = {
                                             contest.min_players = contests.min_player;
                                             contest.max_lives = contests.max_lives;
                                             contest.rank_desc = contests.rank_desc;
+                                            contest.contest_minutes = contests.contest_minutes;
                                             if (contests.contest_icon != undefined && contests.contest_icon != null) {
                                                 contest.contest_icon = contests.contest_icon;
                                             } else {
@@ -275,13 +276,22 @@ module.exports = {
                                             // }
                                             if (contest_channel != "" && contest_channel != null && contest_channel!=undefined) {
                                                 if (channel.toUpperCase() == "PLAYSTORE" && contest_channel.toUpperCase() == "PLAYSTORE") {
+                                                   if(contest.contest_minutes >0 && contest.play_status == 'FULL'){
+                                                   }else{
                                                     app.contests.push(contest);
+                                                   }  
                                                 }
                                                 else if (channel.toUpperCase() == "NON-PLAYSTORE" && contest_channel.toUpperCase() == "NON-PLAYSTORE") {
-                                                    app.contests.push(contest);
+                                                    if(contest.contest_minutes >0 && contest.play_status == 'FULL'){
+                                                    }else{
+                                                     app.contests.push(contest);
+                                                    }  
                                                 }
                                             } else {
-                                                app.contests.push(contest);
+                                                if(contest.contest_minutes >0 && contest.play_status == 'FULL'){
+                                                }else{
+                                                 app.contests.push(contest);
+                                                }  
                                             }
                                         }
                                     });
