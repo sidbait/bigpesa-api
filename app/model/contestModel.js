@@ -143,7 +143,7 @@ module.exports = {
     `
     //and (from_time >= (now() + (5 * interval '1 hour') + (30 * interval '1 minute'))::time
         //or (now() + (5 * interval '1 hour') + (30 * interval '1 minute'))::time between from_time and to_time)
-        console.log(query)
+       // console.log(query)
         dbConnection.executeQuery(query, "rmg_db", function (err, dbResult) {
             //logger.info("app contest details - ", JSON.stringify(dbResult));
 

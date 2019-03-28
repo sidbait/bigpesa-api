@@ -118,9 +118,9 @@ module.exports = {
                     playerquery = "select now()";
                 }
 
-                console.log(playerquery)
+                //console.log(playerquery)
                 //contestquery = contestquery + " order by  app_priority,contest_priority";
-                console.log(contestquery)
+                //console.log(contestquery)
                 async.parallel({
                     contestquery: function (callback) {
                         dbConnection.executeQuery(contestquery, "rmg_db", function (err, dbResult) {
@@ -1659,13 +1659,24 @@ module.exports = {
                                                                                                                     // request('http://localhost:3001/amounts?playerid=' + playerId);
                                                                                                                     var isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
                                                                                                                     if (isTokenSave) {
-                                                                                                                        sendResp.sendCustomJSON(null, req, res, true, {
-                                                                                                                            play_status: "DEBITED",
-                                                                                                                            deep_link: redirect_link,
-                                                                                                                            session_token: sessionToken,
-                                                                                                                            package_name: package_name,
-                                                                                                                            app_type: app_type
-                                                                                                                        }, "Bonus Debited Successfully", true);
+                                                                                                                        if(isLive){
+                                                                                                                            sendResp.sendCustomJSON(null, req, res, true, {
+                                                                                                                                play_status: "DEBITED",
+                                                                                                                                deep_link: redirect_link,
+                                                                                                                                session_token: sessionToken,
+                                                                                                                                package_name: package_name,
+                                                                                                                                app_type: app_type
+                                                                                                                            }, "Bonus Debited Successfully", true);
+                                                                                                                        }else{
+                                                                                                                            sendResp.sendCustomJSON(null, req, res, true, {
+                                                                                                                                play_status: "JOINED",
+                                                                                                                                deep_link: redirect_link,
+                                                                                                                                session_token: sessionToken,
+                                                                                                                                package_name: package_name,
+                                                                                                                                app_type: app_type
+                                                                                                                            }, "Bonus Debited Successfully", true);
+                                                                                                                        }
+                                                                                                                        
                                                                                                                     } else {
                                                                                                                         sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
                                                                                                                     }
