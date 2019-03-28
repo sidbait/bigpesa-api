@@ -246,7 +246,7 @@ module.exports = {
                                                 //console.log('ISFULL')
                                             }
 
-                                            if(remainingendseconds < 300){
+                                            if(remainingendseconds < 300 &&  contest.play_status != 'FULL'  &&  contest.play_status != 'JOINED'){
                                                 contest.play_status = 'ENTRY-CLOSED';
                                             }
 
