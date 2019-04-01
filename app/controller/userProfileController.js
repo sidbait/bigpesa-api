@@ -9,8 +9,7 @@ module.exports = {
             var userToken = req.headers["authorization"];
             var userDetails = await userModel.getUserDetailPromise(userToken);
             var playerIdProfile = req.body.playerIdProfile ? req.body.playerIdProfile : '';
-            let playerId = userDetails.playerId;
-            console.log(playerId);
+            let playerId = userDetails.playerId; 
             if (playerId == "" || playerIdProfile == "") {
                 sendResp.sendCustomJSON(null, req, res, false, [], "Invalid Token/Player");
             } else {
@@ -36,8 +35,7 @@ module.exports = {
                 "substring"(tbl_player.phone_number, 5, 6), 'XXXXXX'::text) ELSE tbl_player.full_name
                 END AS player_name,first_name,last_name,photo from tbl_player where player_id =  ${playerIdProfile} `
                 let isFollowquery =` select count(1) from tbl_follow where from_player_id = ${playerId}  and player_id = ${playerIdProfile}  limit 10 `
-                let output = {};
-                console.log(winCoinCash)
+                let output = {}; 
                 Promise.all([ 
                 dbConnection.executeQueryAll(winCoinCash, 'rmg_db'),
                 dbConnection.executeQueryAll(queryFavGames, 'rmg_db'),
@@ -45,8 +43,7 @@ module.exports = {
                 dbConnection.executeQueryAll(profileViews, 'rmg_db'),
                 dbConnection.executeQueryAll(player_details,'rmg_db'),
                 dbConnection.executeQueryAll(isFollowquery,'rmg_db'),
-                ]).then(function (values) {   
-                    console.log(values);
+                ]).then(function (values) {    
                     output.totalCoinWin = values[0][0].totalcoinwin;
                     output.totalCashWin = values[0][0].totalcashwin;
                     output.favGames = values[1];
@@ -61,8 +58,7 @@ module.exports = {
                    
                     if (playerId != playerIdProfile) {
                         let insertProfileVisit = "insert into tbl_profile_visits (player_id,from_player_id,created_at) " +
-                            " values (" + playerIdProfile + "," + playerId + ",now() ) ";
-                        console.log(insertProfileVisit)
+                            " values (" + playerIdProfile + "," + playerId + ",now() ) "; 
                         dbConnection.executeQuery(insertProfileVisit, 'rmg_db', function () { });
                     }else{
                         output.isFollow ='Self'
@@ -82,8 +78,7 @@ module.exports = {
         let userToken = req.headers["authorization"];
         let userDetails = await userModel.getUserDetailPromise(userToken);
         let playerIdToFollow = req.body.playerIdToFollow ? req.body.playerIdToFollow : '';
-        let playerId = userDetails.playerId;
-        console.log(playerIdToFollow)
+        let playerId = userDetails.playerId; 
         if (playerId == "" || playerIdToFollow == "") {
             sendResp.sendCustomJSON(null, req, res, false, [], "Invalid Token/Player");
         } else {
@@ -96,17 +91,12 @@ module.exports = {
                 " do update set status = 'ACTIVE' " +
                 " where  tbl_follow.player_id = " + playerIdToFollow + " and " +
                 " tbl_follow.from_player_id = " + playerId + " " +
-                " returning follow_id ";
-            console.log(insertFollow)
+                " returning follow_id "; 
             let checkIfAlreadyFollow = await dbConnection.executeQueryAll(chkIsAlreadyFollow, 'rmg_db');
-            console.log(checkIfAlreadyFollow[0].count)
-            if (checkIfAlreadyFollow[0].count > 0) {
-                console.log('---------------------------------')
+            if (checkIfAlreadyFollow[0].count > 0) {                
                 sendResp.sendCustomJSON(null, req, res, true, [], "Already Followed",true);
-            } else {
-                console.log('-----XXXX----------------------------')
-                let insertResult = await dbConnection.executeQueryAll(insertFollow, 'rmg_db');
-                console.log(insertResult)
+            } else {                
+                let insertResult = await dbConnection.executeQueryAll(insertFollow, 'rmg_db');               
                 if (insertResult[0].follow_id > 0) {
                     sendResp.sendCustomJSON(null, req, res, true, [], "Followed Successfully",true);
                 } else {
@@ -129,7 +119,6 @@ module.exports = {
                 " player_id = " + playerIdToFollow + " and  " +
                 " from_player_id = " + playerId + " returning follow_id ";
             let checkIfAlreadyFollow = await dbConnection.executeQueryAll(chkIsAlreadyFollow, 'rmg_db');
-            console.log(checkIfAlreadyFollow[0].count)
             if (checkIfAlreadyFollow[0].count == 0) {
                 sendResp.sendCustomJSON(null, req, res, true, [], "Already Unfollowed",true);
             } else {
@@ -153,9 +142,7 @@ module.exports = {
                           from tbl_follow follow
                           inner join tbl_player player on player.player_id = follow.from_player_id
                           where follow.player_id = ${playerIdProfile}  and follow.status = 'ACTIVE' `;
-                          console.log(followerlist)
             let dbRes_followerList = await dbConnection.executeQueryAll(followerlist, 'rmg_db');
-            console.log(dbRes_followerList)
             if (dbRes_followerList !=undefined && dbRes_followerList != null && dbRes_followerList.length > 0) {
                 sendResp.sendCustomJSON(null, req, res, true, dbRes_followerList, "Followed List");   
             }else{
