@@ -108,7 +108,7 @@ module.exports = {
                 let insertResult = await dbConnection.executeQueryAll(insertFollow, 'rmg_db');
                 console.log(insertResult)
                 if (insertResult[0].follow_id > 0) {
-                    sendResp.sendCustomJSON(null, req, res, true, [], "Followed Successfully");
+                    sendResp.sendCustomJSON(null, req, res, true, [], "Followed Successfully",true);
                 } else {
                     sendResp.sendCustomJSON(null, req, res, false, [], "Please Try again after some time");;
                 }
