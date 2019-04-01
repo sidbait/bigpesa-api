@@ -2491,7 +2491,7 @@ module.exports = {
                             }
                             var checkStatus = " select count(1) from vw_player_contest where contest_id = " + contestId
                                 + " and player_id = " + playerId + " and player_status = 'PLAY' "
-                            var query = " update tbl_app_score set  score =  " + score + " where session_token = '" + sessionToken + "' " +
+                            var query = " update tbl_app_score set  score =  " + score + " , score_submit_date = now() where session_token = '" + sessionToken + "' " +
                                 "RETURNING app_score_id ";
                             console.log(query);
                             dbConnection.executeQuery(checkStatus, "rmg_db", function (err, dbResult) {
