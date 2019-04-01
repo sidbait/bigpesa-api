@@ -312,7 +312,7 @@ module.exports = {
             let device_id = req.body.device_id ? req.body.device_id : '';
             let browser_version = req.body.browser_version ? req.body.browser_version : '';
             let channel = req.body.channel ? req.body.channel : '';
-
+            let version = req.body.version ? req.body.version : '';
             if (user_agent != null && user_agent != undefined && user_agent != '') {
                 var agent = useragent.parse(user_agent);
                 device_name = agent.device.toString();
@@ -333,13 +333,13 @@ module.exports = {
                 " ( app_id, player_id, phone_number, user_agent, " +
                 " device_name, agency_source, agency_name, agency_para, agency_pubid, " +
                 " referer, referer_id, referer_url, ip_address, os_name, os_version, " +
-                " browser, browser_version, download_date,device_id,channel) " +
+                " browser, browser_version, download_date,device_id,channel,app_version) " +
                 " VALUES( " + app_id + ", " + player_id + ", '" + phone_number
                 + "', '" + user_agent + "', '" + device_name + "','" + agency_source + "' ," +
                 " '" + agency_name + "','" + agency_para + "','" + agency_pubid + "','" + referer + "', " +
                 " '" + referer_id + "', '" + referer_url + "', '" + ip_address + "', '" + os_name
                 + "', '" + os_version + "', '" + browser + "', '" + browser_version
-                + "', now(),'" + device_id + "','" + channel + "');";
+                + "', now(),'" + device_id + "','" + channel + "','" + version + "');";
            // console.log(query)
             let result = await dbConnection.executeQueryAll(query, 'rmg_db')
 
