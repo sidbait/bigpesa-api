@@ -274,7 +274,7 @@ module.exports = {
                                             //         app.contests.push(contest);
                                             //     }
                                             // }
-                                            console.log('contest.contest_minutes' + contest.contest_minutes + "|" + contest.play_status)
+                                            //console.log('contest.contest_minutes' + contest.contest_minutes + "|" + contest.play_status)
                                             if (contest_channel != "" && contest_channel != null && contest_channel!=undefined) {
                                                 if (channel.toUpperCase() == "PLAYSTORE" && contest_channel.toUpperCase() == "PLAYSTORE") {
                                                    if(contest.contest_minutes >0 && contest.play_status == 'FULL'){
