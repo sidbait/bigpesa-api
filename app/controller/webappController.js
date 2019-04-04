@@ -489,9 +489,9 @@ module.exports = {
 
                             //console.log(contestquery);
 
-                            console.log(contestquery)
-                            console.log(applistquery)
-                            console.log(liveContestRankQuery)
+                            // console.log(contestquery)
+                            // console.log(applistquery)
+                            // console.log(liveContestRankQuery)
                             async.parallel({
                                 contestquery: function (callback) {
                                     dbConnection.executeQuery(contestquery, "rmg_db", function (err, dbResult) {
@@ -707,7 +707,7 @@ module.exports = {
                                                             // } else {
                                                             //     app.contests.COMPLETED.push(completedcontest);
                                                             // }
-                                                            console.log(completedcontest)
+                                                            //console.log(completedcontest)
                                                             if (contest_channel != "" && contest_channel != null) {
                                                                 if (channel.toUpperCase() == "PLAYSTORE" && contest_channel.toUpperCase() == "PLAYSTORE") {
                                                                     app.contests.COMPLETED.push(completedcontest);
