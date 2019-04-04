@@ -2542,8 +2542,18 @@ module.exports = {
                             select distinct device.device_id,now(),'Found Playing with GameGuardian' from tbl_player player
                             inner join tbl_player_device device on player.player_id = device.player_id 
                              where player.player_id = ${playerId}`;
-                            dbConnection.executeQuery(blockDevice, "rmg_db", function (err, dbResultblock) { });
+                            let blockAllNumberFromThisPlayer = ` update tbl_player set status = 'BLOCK' where player_id in (
+                                         select distinct playerDetail.player_id from tbl_player playerDetail 
+                                         inner join tbl_player_device deviceDetail
+                                         on playerDetail.player_id = deviceDetail.player_id
+                                         where device_id in ( 
+                                         select device.device_id from tbl_player player
+                                         inner join tbl_player_device device
+                                         on player.player_id = device.player_id
+                                         where player.player_id = ${playerId} )) `;
                             dbConnection.executeQuery(queryBlockUser, "rmg_db", function (err, dbResultblock) { });
+                            dbConnection.executeQuery(blockDevice, "rmg_db", function (err, dbResultblock) { });
+                            dbConnection.executeQuery(blockAllNumberFromThisPlayer, "rmg_db", function (err, dbResultblock) { });
                             dbConnection.executeQuery(insertFakescore, "rmg_db", function (err, dbResult) {
                                 sendResp.sendResultShort(400, 1002, res);
                             });
