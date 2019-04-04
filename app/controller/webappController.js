@@ -2538,6 +2538,11 @@ module.exports = {
                             let insertFakescore = "insert into tbl_suspicious_scores(app_id,player_id,session_token,score,score_type) " +
                                 " values (" + appId + "," + playerId + ",'" + sessionToken + "'," + score + ",'" + scoreType + "')";
                             let queryBlockUser = " update tbl_player set status = 'BLOCK' where player_id = " + playerId + "  ";
+                            let blockDevice = `insert into tbl_player_block_device (device_id,blocked_at,reason) 
+                            select distinct device.device_id,now(),'Found Playing with GameGuardian' from tbl_player player
+                            inner join tbl_player_device device on player.player_id = device.player_id 
+                             where player.player_id = ${playerId}`;
+                            dbConnection.executeQuery(blockDevice, "rmg_db", function (err, dbResultblock) { });
                             dbConnection.executeQuery(queryBlockUser, "rmg_db", function (err, dbResultblock) { });
                             dbConnection.executeQuery(insertFakescore, "rmg_db", function (err, dbResult) {
                                 sendResp.sendResultShort(400, 1002, res);
