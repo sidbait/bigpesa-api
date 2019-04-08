@@ -2903,7 +2903,7 @@ module.exports = {
                         rn: result[0].randnumber ? result[0].randnumber : '',
                         player_id: result[0].player_id ? result[0].player_id : 0,
                         max_lives: result[0].max_lives ? result[0].max_lives : 0,
-                        max_lives: result[0].used_lives ? result[0].used_lives : 0,
+                        used_lives: result[0].used_lives ? result[0].used_lives : 0,
                     }
                     res.send(200, output);
                 } else {
