@@ -2871,15 +2871,29 @@ module.exports = {
             if (token != "") {
                 /*  let query = " select randnumber from tbl_app_score where session_token = '" +
                      token + "' and session_token_isvalid =true "; */
-                let query = `select  case when (tbl_player.full_name is null) 
+                // let query = `select  case when (tbl_player.full_name is null) 
+                //      or (tbl_player.full_name = '') then replace(tbl_player.phone_number, 
+                //      substring(tbl_player.phone_number, 5, 6), 'XXXXXX') 
+                //      else tbl_player.full_name  end as username, 
+                //      photo as imageUrl, tbl_player.google_id, tbl_player.player_id ,
+                //      tbl_player.facebook_id ,tbl_app_score.randnumber 
+                //      from tbl_app_score inner join tbl_player 
+                //      on tbl_player.player_id = tbl_app_score.player_id 
+                //      and tbl_app_score.session_token = '${token}' `;
+
+                     let  query =`select  case when (tbl_player.full_name is null) 
                      or (tbl_player.full_name = '') then replace(tbl_player.phone_number, 
                      substring(tbl_player.phone_number, 5, 6), 'XXXXXX') 
                      else tbl_player.full_name  end as username, 
                      photo as imageUrl, tbl_player.google_id, tbl_player.player_id ,
-                     tbl_player.facebook_id ,tbl_app_score.randnumber 
-                     from tbl_app_score inner join tbl_player 
+                     tbl_player.facebook_id ,tbl_app_score.randnumber,tbl_app_score.contest_id ,
+                     coalesce(tbl_contest.max_lives,0) as max_lives,tbl_contest_players.used_lives
+                     from tbl_app_score inner join tbl_player 		    
                      on tbl_player.player_id = tbl_app_score.player_id 
-                     and tbl_app_score.session_token = '${token}' `;
+                     and tbl_app_score.session_token = '${token}'
+		            inner join tbl_contest on tbl_contest.contest_id = tbl_app_score.contest_id   	
+		            inner join tbl_contest_players on tbl_contest.contest_id = tbl_contest_players.contest_id and
+		            tbl_contest_players.player_id = tbl_player.player_id`
 
                 let result = await dbConnection.executeQueryAll(query, 'rmg_db');
                 console.log(result)
@@ -2887,7 +2901,9 @@ module.exports = {
                     output = {
                         gc: result[0].game_conf ? result[0].game_conf : '',
                         rn: result[0].randnumber ? result[0].randnumber : '',
-                        player_id: result[0].player_id ? result[0].player_id : 0
+                        player_id: result[0].player_id ? result[0].player_id : 0,
+                        max_lives: result[0].max_lives ? result[0].max_lives : 0,
+                        max_lives: result[0].used_lives ? result[0].used_lives : 0,
                     }
                     res.send(200, output);
                 } else {
