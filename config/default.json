@@ -21,7 +21,7 @@
       "cockroach": {
         "user": "bigpesa",
         "password":"YP8mhNqxaZBbDtjQrS6m",
-        "host": "13.126.241.0",
+        "host": "192.168.5.121",
         "database": "rmg_db",
         "port": 5432
       }
@@ -29,7 +29,7 @@
     "db_connectionString_production": {
       "cockroach": {
         "user": "root",
-        "host": "13.126.241.0",
+        "host": "192.168.5.121",
         "database": "rmg_db",
         "port": 5432
       }
