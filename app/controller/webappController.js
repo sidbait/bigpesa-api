@@ -1312,6 +1312,7 @@ module.exports = {
                                                     let isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
                                                     if (isTokenSave) {
                                                         if (isLive) {
+                                                            increaseLives(playerId,contestId);
                                                             sendResp.sendCustomJSON(null, req, res, true,
                                                                 {
                                                                     play_status: "PLAY",
@@ -1345,6 +1346,7 @@ module.exports = {
                                             let isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
                                             if (isTokenSave) {
                                                 if (isLive) {
+                                                    increaseLives(playerId,contestId);
                                                     sendResp.sendCustomJSON(null, req, res, true,
                                                         {
                                                             play_status: "PLAY",
@@ -1404,6 +1406,7 @@ module.exports = {
                                                         console.log(isAlreadyJoin);
                                                         if (isAlreadyJoin[0].ct > 0) {
                                                             if (isLive) {
+                                                                increaseLives(playerId,contestId);
                                                                 sendResp.sendCustomJSON(null, req, res, true, {
                                                                     play_status: "DEBITED",
                                                                     deep_link: redirect_link,
@@ -1458,6 +1461,7 @@ module.exports = {
                                                                                             var isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
                                                                                             if (isTokenSave) {
                                                                                                 if (isLive) {
+                                                                                                    increaseLives(playerId,contestId);
                                                                                                     sendResp.sendCustomJSON(null, req, res, true, {
                                                                                                         play_status: "DEBITED",
                                                                                                         deep_link: redirect_link,
@@ -1481,6 +1485,7 @@ module.exports = {
                                                                                             var isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
                                                                                             if (isTokenSave) {
                                                                                                 if (isLive) {
+                                                                                                    increaseLives(playerId,contestId);
                                                                                                     sendResp.sendCustomJSON(null, req, res, true, {
                                                                                                         play_status: "DEBITED",
                                                                                                         deep_link: redirect_link,
@@ -1559,6 +1564,7 @@ module.exports = {
                                                                                                                                 if (isTokenSave) {
                                                                                                                                     console.log('CHECKING IS LIVE 1' + isLive)
                                                                                                                                     if (isLive) {
+                                                                                                                                        increaseLives(playerId,contestId);
                                                                                                                                         sendResp.sendCustomJSON(null, req, res, true, {
                                                                                                                                             play_status: "DEBITED",
                                                                                                                                             deep_link: redirect_link,
@@ -1583,6 +1589,7 @@ module.exports = {
                                                                                                                                 var isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
                                                                                                                                 if (isTokenSave) {
                                                                                                                                     if (isLive) {
+                                                                                                                                        increaseLives(playerId,contestId);
                                                                                                                                         sendResp.sendCustomJSON(null, req, res, true, {
                                                                                                                                             play_status: "DEBITED",
                                                                                                                                             deep_link: redirect_link,
@@ -1660,6 +1667,7 @@ module.exports = {
                                                                                                                     var isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
                                                                                                                     if (isTokenSave) {
                                                                                                                         if(isLive){
+                                                                                                                            increaseLives(playerId,contestId);
                                                                                                                             sendResp.sendCustomJSON(null, req, res, true, {
                                                                                                                                 play_status: "DEBITED",
                                                                                                                                 deep_link: redirect_link,
@@ -2508,11 +2516,11 @@ module.exports = {
                                                 var query_leader_board = " update tbl_contest_leader_board set total_score = " + score + ",created_at=now()   " +
                                                     " where contest_id = " + contestId + " and player_id = " + playerId + " " +
                                                     "  and app_id = " + appId + " and total_score <  " + score + "  ";
-                                                let updateUsedLives = `update tbl_contest_players set used_lives = 
-                                                            COALESCE( used_lives ,0) + 1  where contest_id = ${contestId} and 
-                                                            player_id = ${playerId} `;
-                                                console.log('query_leader_board: ' + query_leader_board);
-                                                dbConnection.executeQuery(updateUsedLives, "rmg_db", function (err, dbResult) { });
+                                                // let updateUsedLives = `update tbl_contest_players set used_lives = 
+                                                //             COALESCE( used_lives ,0) + 1  where contest_id = ${contestId} and 
+                                                //             player_id = ${playerId} `;
+                                                // console.log('query_leader_board: ' + query_leader_board);
+                                                // dbConnection.executeQuery(updateUsedLives, "rmg_db", function (err, dbResult) { });
                                                 dbConnection.executeQuery(query_leader_board, "rmg_db", function (err, dbResult) {
                                                     if (dbResult == null || dbResult == undefined) {
                                                         sendResp.sendResultShort(400, 1000, res);
@@ -3221,4 +3229,11 @@ function scoreUpdown(contest_id, winnerList, callback) {
         }
     } a(contest_id, winnerList);
     callback('ok')
+}
+
+function increaseLives(playerId,contestId) {
+    let updateUsedLives = `update tbl_contest_players set used_lives = 
+                       COALESCE( used_lives ,0) + 1  where contest_id = ${contestId} and 
+                       player_id = ${playerId} `; 
+    dbConnection.executeQuery(updateUsedLives, "rmg_db", function (err, dbResult) { });
 }
