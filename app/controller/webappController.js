@@ -1886,12 +1886,12 @@ module.exports = {
                     }
                 });
                 if (element.days == 'Today') {
-                    if (outJson.Today.TopWinner.length <= 500) {
-                        outJson.Today.TopWinner.push(element);
+                    if (outJson.Today.TopPlayed.length <= 500) {
+                        outJson.Today.TopPlayed.push(element);
                     }
                 } else if (element.days == 'Yesterday') {
-                    if (outJson.Yesterday.TopPlayed.length <= 500) {
-                        outJson.Yesterday.TopPlayed.push(element);
+                    if (outJson.Today.TopPlayed.length <= 500) {
+                        outJson.Today.TopPlayed.push(element);
                     }
                 }
             });
