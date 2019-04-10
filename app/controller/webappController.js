@@ -1862,19 +1862,6 @@ module.exports = {
 
     leaderBoard: function (req, res) {
 
-        let getTopWinner = "select * from vw_top_prize_win order by winprize desc ";
-        let getTopPlayed = "select * from public.vw_topgameplays";
-        let topReferrer = "select * from vw_topReferrer";
-        let rankDetail = "select * from tbl_top_winner_event_master";
-        // async.parallel({
-        //     getTopReferrer: function (callback) {
-        //         dbConnection.executeQuery(topReferrer, "rmg_db", function (err, dbResult) {
-        //             callback(err, dbResult);
-        //         });
-        //     }
-        // },
-        //     function (err_async, result_async) {
-
         var TopPlayed = gTopGamePlays;//result_async.getTopPlayed;
         var TopWinner = gTopPrizeWin;
         var TopReferrer = gTopReferer;// result_async.getTopReferrer;
@@ -1899,9 +1886,13 @@ module.exports = {
                     }
                 });
                 if (element.days == 'Today') {
-                    outJson.Today.TopPlayed.push(element)
+                    if (outJson.Today.TopWinner.length <= 500) {
+                        outJson.Today.TopWinner.push(element);
+                    }
                 } else if (element.days == 'Yesterday') {
-                    outJson.Yesterday.TopPlayed.push(element)
+                    if (outJson.Yesterday.TopPlayed.length <= 500) {
+                        outJson.Yesterday.TopPlayed.push(element);
+                    }
                 }
             });
         }
@@ -1911,10 +1902,14 @@ module.exports = {
             TopWinner.forEach(element => {
                 if (element.days == 'Today') {
                     WinAmountSumToday = WinAmountSumToday + parseFloat(element.winprize);
-                    outJson.Today.TopWinner.push(element)
+                    if (outJson.Today.TopWinner.length <= 500) {
+                        outJson.Today.TopWinner.push(element);
+                    }
                 } else if (element.days == 'Yesterday') {
                     WinAmountSumYesterday = WinAmountSumYesterday + parseFloat(element.winprize);
-                    outJson.Yesterday.TopWinner.push(element)
+                    if (outJson.Yesterday.TopWinner.length <= 500) {
+                        outJson.Yesterday.TopWinner.push(element);
+                    }
                 }
             });
             outJson.Today.TopWinnerPrizeTotal = WinAmountSumToday;
@@ -1935,10 +1930,14 @@ module.exports = {
                 });
                 if (element.days == 'Today') {
                     TotalRefererCountToday = TotalRefererCountToday + parseFloat(element.topreferer)
-                    outJson.Today.TopReferer.push(element)
+                    if (outJson.Today.TopReferer.length <= 200) {
+                        outJson.Today.TopReferer.push(element)
+                    }
                 } else if (element.days == 'Yesterday') {
                     TotalRefererCountYesterday = TotalRefererCountYesterday + parseFloat(element.topreferer)
-                    outJson.Yesterday.TopReferer.push(element)
+                    if (outJson.Yesterday.TopReferer.length <= 200) {
+                        outJson.Yesterday.TopReferer.push(element)
+                    }
                 }
             });
             outJson.Today.TopRefererTotal = TotalRefererCountToday;
