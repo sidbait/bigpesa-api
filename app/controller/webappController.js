@@ -1902,14 +1902,14 @@ module.exports = {
             TopWinner.forEach(element => {
                 if (element.days == 'Today') {
                     WinAmountSumToday = WinAmountSumToday + parseFloat(element.winprize);
-                    if (outJson.Today.TopWinner.length <= 500) {
+                    //if (outJson.Today.TopWinner.length <= 500) {
                         outJson.Today.TopWinner.push(element);
-                    }
+                    //}
                 } else if (element.days == 'Yesterday') {
                     WinAmountSumYesterday = WinAmountSumYesterday + parseFloat(element.winprize);
-                    if (outJson.Yesterday.TopWinner.length <= 500) {
+                    //if (outJson.Yesterday.TopWinner.length <= 500) {
                         outJson.Yesterday.TopWinner.push(element);
-                    }
+                    //}
                 }
             });
             outJson.Today.TopWinnerPrizeTotal = WinAmountSumToday;
