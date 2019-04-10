@@ -1,7 +1,7 @@
 var redis = require("redis");
 
 if (process.env.NODE_ENV == "production" || process.env.NODE_ENV == "preprod") {
-    client = redis.createClient( 6379,"172.31.23.190",  { no_ready_check: true });//6379, "172.31.23.190", { no_ready_check: true }
+    client = redis.createClient( 6379,"192.168.5.128",  { no_ready_check: true });//6379, "172.31.23.190", { no_ready_check: true }
 }else{
     client = redis.createClient(6379,"192.168.5.128",  { no_ready_check: true }); 
 }
