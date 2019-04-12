@@ -1890,8 +1890,8 @@ module.exports = {
                         outJson.Today.TopPlayed.push(element);
                     }
                 } else if (element.days == 'Yesterday') {
-                    if (outJson.Today.TopPlayed.length <= 500) {
-                        outJson.Today.TopPlayed.push(element);
+                    if (outJson.Yesterday.TopPlayed.length <= 500) {
+                        outJson.Yesterday.TopPlayed.push(element);
                     }
                 }
             });
