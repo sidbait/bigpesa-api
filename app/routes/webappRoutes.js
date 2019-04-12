@@ -2,6 +2,7 @@ var webAppRoutes = express.Router();
 var authToken = require('../auth/auth');
 var webappController = require('../controller/webappController');
 var logController = require('../controller/logController');
+var fileuploadController = require('../controller/fileuploadController');
 
 var cors = require('cors');
 
@@ -104,4 +105,7 @@ webAppRoutes.get('/getAllEvents', function (req, res) {
 });
 webAppRoutes.get('/topgamewinner',webappController.topGameWinnerList)
 webAppRoutes.get('/checkisprouser/:device_id', logController.checkisProUser)
+webAppRoutes.post('/fileupload', fileuploadController.upload);
+
+
 module.exports = webAppRoutes;
