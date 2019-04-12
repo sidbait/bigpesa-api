@@ -35,7 +35,7 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 console.log(config.db_connectionString)
 console.log(process.env.NODE_ENV)
 //multer setup
-var storage = multer.diskStorage({
+/* var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, './public/uploads/');
     },
@@ -56,7 +56,7 @@ app.use(multer({
     fileFilter: function (req, file, cb) {
         cb(null, true);
     }
-}).any());
+}).any()); */
 
 app.use(function (req, res, next) {
     if (typeof req.files == "undefined") {
