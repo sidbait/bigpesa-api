@@ -3,7 +3,7 @@ var rp = require('request-promise');
 
 module.exports = {
     sendPushOneSignal: function (mobile, title, msg) {         
-        let url = "http://172.31.23.254:5010/api/notifications/sendNotification"
+        let url = "http://192.168.5.128:5010/api/notifications/sendNotification"
         var options = {
             method: 'POST',
             uri: url,
@@ -31,7 +31,7 @@ module.exports = {
             if (!err && dbresult != null && dbresult != undefined && dbresult.length > 0) {
                 let phone_number = dbresult[0].phone_number;
                 console.log('LooseMsg - '+phone_number + "|" + player_id + "|"+ title + "|"+ msg)
-                let url = "http://172.31.23.254:5010/api/notifications/sendNotification"
+                let url = "http://192.168.5.128:5010/api/notifications/sendNotification"
                 var options = {
                     method: 'POST',
                     uri: url,
