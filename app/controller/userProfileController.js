@@ -9,11 +9,11 @@ module.exports = {
             var userToken = req.headers["authorization"];
             var userDetails = await userModel.getUserDetailPromise(userToken);
             var playerIdProfile = req.body.playerIdProfile ? req.body.playerIdProfile : '';
-            let playerId = userDetails.playerId; 
+            let playerId = userDetails.playerId;
             if (playerId == "" || playerIdProfile == "") {
                 sendResp.sendCustomJSON(null, req, res, false, [], "Invalid Token/Player");
             } else {
-                let queryFavGames =` select app.app_id,app.app_name,app.app_icon_url,
+                let queryFavGames = ` select app.app_id,app.app_name,app.app_icon_url,
                 total_contest_played,cash_contest_played,
                 coin_contest_played,free_contest_played,win_cash_count,win_cash_amount,
                 win_coin_count,win_coin_amount,coin_used,cash_used
@@ -25,43 +25,43 @@ module.exports = {
                 let winCoinCash = `select sum(win_cash_amount) as totalCashWin , 
                     sum(win_coin_amount) as totalCoinWin 
                     from tbl_player_contest_summary   where player_id = ${playerIdProfile} `;
-                
+
                 let followCount = "select count(1) as followCount from " +
                     " tbl_follow where player_id = " + playerIdProfile + " and status ='ACTIVE' ";
                 let profileViews = "select count(1) as profileViewCount " +
-                    " from tbl_profile_visits where player_id = " + playerIdProfile + "  "; 
+                    " from tbl_profile_visits where player_id = " + playerIdProfile + "  ";
                 let player_details = ` select  CASE
                 WHEN tbl_player.full_name IS NULL OR tbl_player.full_name = ''::text THEN replace(tbl_player.phone_number, 
                 "substring"(tbl_player.phone_number, 5, 6), 'XXXXXX'::text) ELSE tbl_player.full_name
                 END AS player_name,first_name,last_name,photo from tbl_player where player_id =  ${playerIdProfile} `
-                let isFollowquery =` select count(1) from tbl_follow where from_player_id = ${playerId}  and player_id = ${playerIdProfile}  limit 10 `
-                let output = {}; 
-                Promise.all([ 
-                dbConnection.executeQueryAll(winCoinCash, 'rmg_db'),
-                dbConnection.executeQueryAll(queryFavGames, 'rmg_db'),
-                dbConnection.executeQueryAll(followCount, 'rmg_db'),
-                dbConnection.executeQueryAll(profileViews, 'rmg_db'),
-                dbConnection.executeQueryAll(player_details,'rmg_db'),
-                dbConnection.executeQueryAll(isFollowquery,'rmg_db'),
-                ]).then(function (values) {    
+                let isFollowquery = ` select count(1) from tbl_follow where from_player_id = ${playerId}  and player_id = ${playerIdProfile}  limit 10 `
+                let output = {};
+                Promise.all([
+                    dbConnection.executeQueryAll(winCoinCash, 'rmg_db'),
+                    dbConnection.executeQueryAll(queryFavGames, 'rmg_db'),
+                    dbConnection.executeQueryAll(followCount, 'rmg_db'),
+                    dbConnection.executeQueryAll(profileViews, 'rmg_db'),
+                    dbConnection.executeQueryAll(player_details, 'rmg_db'),
+                    dbConnection.executeQueryAll(isFollowquery, 'rmg_db'),
+                ]).then(function (values) {
                     output.totalCoinWin = values[0][0].totalcoinwin;
                     output.totalCashWin = values[0][0].totalcashwin;
                     output.favGames = values[1];
                     output.followersCount = values[2][0].followcount;
-                    output.profileViewCount = values[3][0].profileviewcount;                   
+                    output.profileViewCount = values[3][0].profileviewcount;
                     output.player_details = values[4][0];
-                    output.crown = { name: 'Alexander', icon: "" }                     
+                    output.crown = { name: 'Alexander', icon: "" }
                     output.isFollow = 'N';
-                    if(parseInt(values[5][0].count)>0){
+                    if (parseInt(values[5][0].count) > 0) {
                         output.isFollow = 'Y';
                     }
-                   
+
                     if (playerId != playerIdProfile) {
                         let insertProfileVisit = "insert into tbl_profile_visits (player_id,from_player_id,created_at) " +
-                            " values (" + playerIdProfile + "," + playerId + ",now() ) "; 
+                            " values (" + playerIdProfile + "," + playerId + ",now() ) ";
                         dbConnection.executeQuery(insertProfileVisit, 'rmg_db', function () { });
-                    }else{
-                        output.isFollow ='Self'
+                    } else {
+                        output.isFollow = 'Self'
                     }
                     sendResp.sendCustomJSON(null, req, res, true, output, "Profile Info Found");
                 }).catch(function (err) {
@@ -78,7 +78,7 @@ module.exports = {
         let userToken = req.headers["authorization"];
         let userDetails = await userModel.getUserDetailPromise(userToken);
         let playerIdToFollow = req.body.playerIdToFollow ? req.body.playerIdToFollow : '';
-        let playerId = userDetails.playerId; 
+        let playerId = userDetails.playerId;
         if (playerId == "" || playerIdToFollow == "") {
             sendResp.sendCustomJSON(null, req, res, false, [], "Invalid Token/Player");
         } else {
@@ -91,14 +91,14 @@ module.exports = {
                 " do update set status = 'ACTIVE' " +
                 " where  tbl_follow.player_id = " + playerIdToFollow + " and " +
                 " tbl_follow.from_player_id = " + playerId + " " +
-                " returning follow_id "; 
+                " returning follow_id ";
             let checkIfAlreadyFollow = await dbConnection.executeQueryAll(chkIsAlreadyFollow, 'rmg_db');
-            if (checkIfAlreadyFollow[0].count > 0) {                
-                sendResp.sendCustomJSON(null, req, res, true, [], "Already Followed",true);
-            } else {                
-                let insertResult = await dbConnection.executeQueryAll(insertFollow, 'rmg_db');               
+            if (checkIfAlreadyFollow[0].count > 0) {
+                sendResp.sendCustomJSON(null, req, res, true, [], "Already Followed", true);
+            } else {
+                let insertResult = await dbConnection.executeQueryAll(insertFollow, 'rmg_db');
                 if (insertResult[0].follow_id > 0) {
-                    sendResp.sendCustomJSON(null, req, res, true, [], "Followed Successfully",true);
+                    sendResp.sendCustomJSON(null, req, res, true, [], "Followed Successfully", true);
                 } else {
                     sendResp.sendCustomJSON(null, req, res, false, [], "Please Try again after some time");;
                 }
@@ -120,11 +120,11 @@ module.exports = {
                 " from_player_id = " + playerId + " returning follow_id ";
             let checkIfAlreadyFollow = await dbConnection.executeQueryAll(chkIsAlreadyFollow, 'rmg_db');
             if (checkIfAlreadyFollow[0].count == 0) {
-                sendResp.sendCustomJSON(null, req, res, true, [], "Already Unfollowed",true);
+                sendResp.sendCustomJSON(null, req, res, true, [], "Already Unfollowed", true);
             } else {
                 let updateFollowResult = await dbConnection.executeQueryAll(updateFollow, 'rmg_db');
                 if (updateFollowResult[0].follow_id > 0) {
-                    sendResp.sendCustomJSON(null, req, res, true, [], "Unfollowed Successfully",true);
+                    sendResp.sendCustomJSON(null, req, res, true, [], "Unfollowed Successfully", true);
                 } else {
                     sendResp.sendCustomJSON(null, req, res, false, [], "Please Try again after some time");;
                 }
@@ -133,8 +133,8 @@ module.exports = {
     },
     followerList: async function (req, res) {
         try {
-            var userToken = req.headers["authorization"]; 
-            var playerIdProfile = req.body.playerIdProfile ? req.body.playerIdProfile : ''; 
+            var userToken = req.headers["authorization"];
+            var playerIdProfile = req.body.playerIdProfile ? req.body.playerIdProfile : '';
             let followerlist = ` select  player.player_id,
                           CASE  WHEN player.full_name IS NULL OR player.full_name = ''::text THEN replace(player.phone_number, 
                           "substring"(player.phone_number, 5, 6), 'XXXXXX'::text) ELSE player.full_name
@@ -143,9 +143,9 @@ module.exports = {
                           inner join tbl_player player on player.player_id = follow.from_player_id
                           where follow.player_id = ${playerIdProfile}  and follow.status = 'ACTIVE' `;
             let dbRes_followerList = await dbConnection.executeQueryAll(followerlist, 'rmg_db');
-            if (dbRes_followerList !=undefined && dbRes_followerList != null && dbRes_followerList.length > 0) {
-                sendResp.sendCustomJSON(null, req, res, true, dbRes_followerList, "Followed List");   
-            }else{
+            if (dbRes_followerList != undefined && dbRes_followerList != null && dbRes_followerList.length > 0) {
+                sendResp.sendCustomJSON(null, req, res, true, dbRes_followerList, "Followed List");
+            } else {
                 sendResp.sendCustomJSON(null, req, res, false, [], "No data Found");;
             }
         }
@@ -167,13 +167,13 @@ module.exports = {
             from tbl_follow follow
             inner join tbl_player player on player.player_id = follow.player_id
             where follow.from_player_id = ${playerIdProfile}  and follow.status = 'ACTIVE'`;
-             
+
             let dbRes_followeingList = await dbConnection.executeQueryAll(followerlist, 'rmg_db');
-            if (dbRes_followeingList !=undefined && dbRes_followeingList != null && dbRes_followeingList.length > 0) {
-                sendResp.sendCustomJSON(null, req, res, true, dbRes_followeingList, "Following List");   
-            }else{
+            if (dbRes_followeingList != undefined && dbRes_followeingList != null && dbRes_followeingList.length > 0) {
+                sendResp.sendCustomJSON(null, req, res, true, dbRes_followeingList, "Following List");
+            } else {
                 sendResp.sendCustomJSON(null, req, res, false, [], "No data Found");;
-            } 
+            }
         }
         catch (error) {
             sendResp.sendCustomJSON(null, req, res, false, [], "Something got wrong");
@@ -188,7 +188,7 @@ module.exports = {
         if (contestList != undefined && contestList != null && contestList.length > 0) {
             contestList.forEach(contest => {
 
-               
+
                 var currenttime = new Date(contest.currenttime);
                 var conteststarttime = new Date(contest.start_date_actual);
                 var contestendtime = new Date(contest.end_date_actual);
@@ -198,22 +198,22 @@ module.exports = {
 
                 contest.remainingstartseconds = remainingstartseconds;
                 contest.remainingendseconds = remainingendseconds;
-                
-              
-                if (remainingendseconds > 600 
-                     && contest.max_players >(contest.player_joined + 3)
-                    && contest.live_status == true) { 
-                     if (contest.debit_type = 'FREE') {
-                         if (outContest_Free.length != 1) {
-                             contest.ranks = [];
-                             g15daysRankDetails.forEach(rank => {                                
-                                if(rank.contest_id == contest.contest_id){
+
+
+                if (remainingendseconds > 600
+                    && contest.max_players > (contest.player_joined + 3)
+                    && contest.live_status == true) {
+                    if (contest.debit_type = 'FREE') {
+                        if (outContest_Free.length != 1) {
+                            contest.ranks = [];
+                            g15daysRankDetails.forEach(rank => {
+                                if (rank.contest_id == contest.contest_id) {
                                     contest.ranks.push(rank)
                                 }
-                             });
-                             outContest_Free.push(contest);
-                         }
-                     }
+                            });
+                            outContest_Free.push(contest);
+                        }
+                    }
                 }
             });
             if (outContest_Free.length > 0) {
@@ -222,6 +222,33 @@ module.exports = {
                 sendResp.sendCustomJSON(null, req, res, false, [], "No Contest Found")
             }
         }
-       
-    }
+
+    },
+    
+    playerComplain: async function (req, res) {
+        try {
+
+            let _from_player_id = req.body.from_player_id ? req.body.from_player_id : '';
+            let _to_player_id = req.body.to_player_id ? req.body.to_player_id : '';
+            let _reason = req.body.reason ? req.body.reason : '';
+
+            _query = `INSERT INTO tbl_player_complain_reasons(from_player_id,to_player_id,reason,complain_date) VALUES (${_from_player_id}, ${_to_player_id}, '${_reason}',now()) RETURNING *`
+
+            console.log(_query);
+
+            let result = await dbConnection.executeQueryAll(_query, 'rmg_db');
+
+            console.log(result);
+
+            if (result != undefined && result != null && result.length > 0) {
+                sendResp.sendCustomJSON(null, req, res, true, result, "success");
+            } else {
+                sendResp.sendCustomJSON(null, req, res, false, [], "error");;
+            }
+        }
+        catch (error) {
+            console.log(error);
+            sendResp.sendCustomJSON(null, req, res, false, error, "Something got wrong");
+        }
+    },
 }
