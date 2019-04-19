@@ -2602,12 +2602,13 @@ module.exports = {
     getLeaderboard: async function (req, res) {
         sessionToken = req.params.token;
         try {
-            var checkQuery = "select * from tbl_app_score where session_token = '" + sessionToken + "' ";
+            var checkQuery = "select contest_id,player_id,score from tbl_app_score where session_token = '" + sessionToken + "' ";
             var response = await dbConnection.executeQueryAll(checkQuery, "rmg_db");
             console.log(response)
             if (response != undefined && response != null && response.length > 0) {
                 let contestId = response[0].contest_id;
                 let playerId = response[0].player_id;
+                let currentScore = response[0].score;
                 let contestDetails = "select * from vw_apps_contests where contest_id = " + contestId;
                 let winnerDetails = ` select * from vw_last7days_winner  where  contest_id = ${contestId} ; `;
                 let contestRankquery = ` select * from tbl_contest_rank  where contest_id = ${contestId} order by upper_rank asc; `;
@@ -2692,6 +2693,7 @@ module.exports = {
                             outJson.PreviousRank = {};
                             outJson.NextRank = {};
                             outJson.Winners = [];
+                            outJson.CurrentScore = currentScore;
                             var playerRankNo = 0;
 
                             winnerDetails.forEach(players => {
@@ -2880,7 +2882,7 @@ module.exports = {
                 //      on tbl_player.player_id = tbl_app_score.player_id 
                 //      and tbl_app_score.session_token = '${token}' `;
 
-                     let  query =`select  case when (tbl_player.full_name is null) 
+                let query = `select  case when (tbl_player.full_name is null) 
                      or (tbl_player.full_name = '') then replace(tbl_player.phone_number, 
                      substring(tbl_player.phone_number, 5, 6), 'XXXXXX') 
                      else tbl_player.full_name  end as username, 
