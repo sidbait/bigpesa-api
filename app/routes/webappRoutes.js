@@ -106,6 +106,7 @@ webAppRoutes.get('/getAllEvents', function (req, res) {
 webAppRoutes.get('/topgamewinner',webappController.topGameWinnerList)
 webAppRoutes.get('/checkisprouser/:device_id', logController.checkisProUser)
 webAppRoutes.post('/fileupload', fileuploadController.upload);
+webAppRoutes.get('/depositcount', webappController.getdepositeCount);
 
 
 module.exports = webAppRoutes;

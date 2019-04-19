@@ -2056,20 +2056,21 @@ module.exports = {
                 } else {
                     let depositeCount = totalDepositCount.result[0].count;
                     let traxid = uniqid();
-                    if (depositeCount == 1 && Math.round(amount) >= 50) {
-                        amount = Math.round(amount); //first deposite 100%
-                        console.log('INSERT GIVING MONEY')
-                        debitcredit.insertIntoWalletQue(traxid, 'DepositBonus', 'DepositBonus', Math.round(amount), 'Deposit Bonus', playerId, true, function (isSuccess, data) {
-                            if (isSuccess) {
-                                data.amout = Math.round(amount);
-                                sendResp.sendCustomJSON(null, req, res, true, data, "Updated Successfully", true);
-                            } else {
-                                sendResp.sendCustomJSON(null, req, res, false, [], "Transaction Failed");
-                            }
-                        });
+                    // if (depositeCount == 1 && Math.round(amount) >= 50) {
+                    //     amount = Math.round(amount); //first deposite 100%
+                    //     console.log('INSERT GIVING MONEY')
+                    //     debitcredit.insertIntoWalletQue(traxid, 'DepositBonus', 'DepositBonus', Math.round(amount), 'Deposit Bonus', playerId, true, function (isSuccess, data) {
+                    //         if (isSuccess) {
+                    //             data.amout = Math.round(amount);
+                    //             sendResp.sendCustomJSON(null, req, res, true, data, "Updated Successfully", true);
+                    //         } else {
+                    //             sendResp.sendCustomJSON(null, req, res, false, [], "Transaction Failed");
+                    //         }
+                    //     });
 
-                    } else if (depositeCount > 1 && Math.round(amount) >= 50) {
-                        amount = Math.round(Math.round(amount) * (0.1));
+                    // } else
+                     if (depositeCount > 1 && Math.round(amount) >= 100) {
+                        amount = Math.round(Math.round(amount) * (0.2));
                         console.log('INSERT GIVING MONEY')
                         debitcredit.insertIntoWalletQue(traxid, 'DepositBonus', 'DepositBonus', Math.round(amount), 'Deposit Bonus', playerId, true, function (isSuccess, data) {
                             if (isSuccess) {
@@ -2079,8 +2080,14 @@ module.exports = {
                                 sendResp.sendCustomJSON(null, req, res, false, [], "Transaction Failed");
                             }
                         });
-                    } else {
+                    } else if(Math.round(amount) >= 100 && depositeCount == 0) {
                         amount = Math.round(amount);
+                        if(amount >= 500){
+                            amount = 500;
+                        }
+                        if(amount < 500){
+                            amount = Math.round(Math.round(amount) * (0.7));
+                        }
                         debitcredit.insertIntoBonusQue(traxid, 'DepositBonus', 'DepositBonus', Math.round(amount), 'Deposit Bonus', playerId, true, function (isSuccess, data) {
                             if (isSuccess) {
                                 data.amout = Math.round(amount);
@@ -3061,6 +3068,27 @@ module.exports = {
 
     getAllEvents: (req, res) => {
         sendResp.sendCustomJSON(null, req, res, true, gEventMaster, "Event Details!");
+    },
+
+    getdepositeCount: (req, res) => {
+        var userToken = req.headers["authorization"];
+        userModel.getUserDetails(userToken,async function (err, userDetails) {
+            if (err ||  userDetails.playerId =='') {
+                sendResp.sendCustomJSON(null, req, res, false, [], "Token Is Invalid", false, false);
+            } else {
+                console.log(userDetails)
+                playerId = userDetails.playerId;
+
+                let depositeCount = " select count(1) from tbl_wallet_transaction " +
+                    " where player_id =  " + playerId + " and " +
+                    " nz_txn_status = 'SUCCESS' " +
+                    " and nz_txn_type = 'DEPOSIT'; ";
+                console.log(depositeCount)
+                var result = await dbConnection.executeQueryAll(depositeCount, "rmg_db");
+                sendResp.sendCustomJSON(null, req, res, true, result, "Deposite Counts!");
+            }
+        });
+
     }
 }
 
