@@ -20,7 +20,7 @@ var push = require('../model/push');
 module.exports = {
 
     appListing: function (req, res) {
-
+        console.log("appListing")
         let query = "select * from tbl_app where app_code != 'BP' and status = 'ACTIVE' order by app_priority";
         console.log(req.headers)
         dbConnection.executeQuery(query, "rmg_db", function (err, dbResult) {
