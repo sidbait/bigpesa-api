@@ -2069,7 +2069,7 @@ module.exports = {
                     //     });
 
                     // } else
-                     if (depositeCount < 1 && Math.round(amount) >= 100) {
+                     if (depositeCount > 1 && Math.round(amount) >= 100) {
                         amount = Math.round(Math.round(amount) * (0.2));
                         console.log('INSERT GIVING MONEY')
                         debitcredit.insertIntoWalletQue(traxid, 'DepositBonus', 'DepositBonus', Math.round(amount), 'Deposit Bonus', playerId, true, function (isSuccess, data) {
