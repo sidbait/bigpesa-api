@@ -2088,7 +2088,7 @@ module.exports = {
                         if(amount < 500){
                             amount = Math.round(Math.round(amount) * (0.7));
                         }
-                        debitcredit.insertIntoBonusQue(traxid, 'DepositBonus', 'DepositBonus', Math.round(amount), 'Deposit Bonus', playerId, true, function (isSuccess, data) {
+                        debitcredit.insertIntoWalletQue(traxid, 'DepositBonus', 'DepositBonus', Math.round(amount), 'Deposit Bonus', playerId, true, function (isSuccess, data) {
                             if (isSuccess) {
                                 data.amout = Math.round(amount);
                                 sendResp.sendCustomJSON(null, req, res, true, data, "Updated Successfully", true);
