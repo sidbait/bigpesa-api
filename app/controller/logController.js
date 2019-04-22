@@ -200,7 +200,7 @@ module.exports = {
                                                         data.isVisitBonus = true;
                                                         data.isDailyBonus = true;
 
-                                                        var getSpinWheelquery = " select * from tbl_dailybonus_spin_master where upper(channel) = '" + channel + "'";
+                                                        var getSpinWheelquery = " select * from tbl_dailybonus_spin_master where  status = 'ACTIVE' and upper(channel) = '" + channel + "'";
                                                         dbConnection.executeQuery(getSpinWheelquery, "rmg_db", function (err, spinwheelData) {
                                                             if (err || spinwheelData == undefined || spinwheelData.length == 0) {
                                                                 sendResp.sendCustomJSON(null, req, res, true, data, "Got Visit Bonus " + TimeSlotRow.credit_type + "(" + TimeSlotRow.credit_bonus + ")");
