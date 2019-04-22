@@ -121,7 +121,7 @@ module.exports = {
                             ' where  playerid = ' + playerId + '   ' +
                             ' and (now() + (330 * interval \'1 minute\') )::time between ' +
                             ' tbl_visitbonus_master.fromtime::time 	and tbl_visitbonus_master.totime::time ' +
-                            ' and (tbl_visitors.visit_date + (330 * interval \'1 minute\'))::date = ' +
+                            ' and tbl_visitbonus_master.status = \'ACTIVE\' and (tbl_visitors.visit_date + (330 * interval \'1 minute\'))::date = ' +
                             ' (now()+ (330 * interval \'1 minute\'))::date ' +
                             ' group by tbl_visitbonus_master.credit_type, ' +
                             ' tbl_visitbonus_master.credit_bonus, ' +
@@ -135,7 +135,7 @@ module.exports = {
                             ' inner join tbl_visitbonus_master  on  ' +
                             ' tbl_visitbonus_master.type = \'DAILY\' ' +
                             ' where  playerid = ' + playerId + ' ' +
-                            ' and (tbl_visitors.visit_date + (330 * interval \'1 minute\'))::date = ' +
+                            ' and  tbl_visitbonus_master.status = \'ACTIVE\' and (tbl_visitors.visit_date + (330 * interval \'1 minute\'))::date = ' +
                             ' (now()+ (330 * interval \'1 minute\'))::date ' +
                             ' group by tbl_visitbonus_master.credit_type, ' +
                             ' tbl_visitbonus_master.credit_bonus order by count asc';
@@ -185,7 +185,7 @@ module.exports = {
                                                 " and tbl_visit_bonus_log.totime = tbl_visitbonus_master.totime " +
                                                 " and tbl_visit_bonus_log.player_id = " + playerId + " " +
                                                 " and visit_datetime::date = now()::date " +
-                                                " where tbl_visitbonus_master.type = 'TIMESLOT' order by " +
+                                                " where tbl_visitbonus_master.type = 'TIMESLOT' and tbl_visitbonus_master.status = 'ACTIVE' order by " +
                                                 " tbl_visitbonus_master.fromtime asc ";
                                            // console.log(visitLogQuery)
                                             dbConnection.executeQuery(visitLogQuery, "rmg_db", function (err, visitLog) {
