@@ -367,12 +367,17 @@ module.exports = {
         var walletTransId = null;
         var RespStatus = "FAILED";
         
-        if (debitResponse.TRANSACTION) {
-            if (debitResponse.TRANSACTION.TRANSACTIONSTATUS &&
-                debitResponse.TRANSACTION.TRANSACTIONSTATUS == "200") {
-                status = "ACTIVE";
-                RespStatus = "SUCCESS";
-            }
+        // if (debitResponse.TRANSACTION) {
+        //     if (debitResponse.TRANSACTION.TRANSACTIONSTATUS &&
+        //         debitResponse.TRANSACTION.TRANSACTIONSTATUS == "200") {
+        //         status = "ACTIVE";
+        //         RespStatus = "SUCCESS";
+        //     }
+        // }
+         
+        if (debitResponse.statusCode == "200") {
+            status = "ACTIVE";
+            RespStatus = "SUCCESS";
         }
         
         if (status == "ACTIVE") {
@@ -416,7 +421,7 @@ module.exports = {
                    //     walletTransId = null;
                    // }
                // }
-               walletTransId = debitResponse.TRANSACTION.TRANSACTIONID;
+               walletTransId = debitResponse.data.walletTxnId;
                 insertContestPlayer(contestId, appId, playerId, amount, debitResponse, walletTransId, status,channel,debit_type,max_lives,
                     function (isSuccess) {
                         callback(isSuccess)
