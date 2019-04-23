@@ -3338,7 +3338,8 @@ function getNewLives(contestInfo,player_id,userToken,airpayToken,callback){
     debitcredit.debitAmountAirpayContestJoin(userToken, airpayToken, orderId, 'DEBIT', amount,
     event, event_id, event_name,matrix_code, function (err, debitResponse) {
         console.log('NEW RESPONSE ---------------------------');
-        console.log(debitResponse)
+        console.log(debitResponse);
+        console.log(debitResponse.statusCode)
         console.log('NEW RESPONSE ---------------------------')
         if(debitResponse.statusCode == "200"){
 
