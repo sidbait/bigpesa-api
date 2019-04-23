@@ -1551,7 +1551,7 @@ module.exports = {
                                                                                                         contestModel.joinContest(contestId, appId, playerId, amount,
                                                                                                             debitResponse, deails, contestInfo, channel, debit_type, max_lives,
                                                                                                             function (isJoined) {
-
+                                                                                                                console.log('isJoined' + isJoined)
                                                                                                                 //Success
                                                                                                                 if (isJoined == true ) {
                                                                                                                     console.log(debitResponse.statusCode +"|"+"200")
