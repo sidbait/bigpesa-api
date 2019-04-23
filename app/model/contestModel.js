@@ -76,7 +76,7 @@ module.exports = {
 
     getLiveContestDetails: function (contestId, appId, playerId, callback) {
       
-        let query = `select distinct tbl_app.app_id, tbl_app.package_name,
+        let query = ` select distinct tbl_app.app_id, tbl_app.package_name,
         tbl_app.app_type,app_name,app_code, app_icon,app_secret,tbl_app.status as app_status,
         tbl_app.deep_link,  tbl_contest_players.player_id, tbl_contest.contest_id,
         contest_name, contest_desc, start_date, end_date,from_time, to_time,
@@ -109,7 +109,8 @@ module.exports = {
         credit_type ,
         tbl_app.send_params,
         tbl_contest.game_conf,
-        COALESCE(tbl_contest.max_lives,0) as max_lives
+        COALESCE(tbl_contest.max_lives,0) as max_lives, 
+        COALESCE(tbl_contest.matrix_code, ''::text) AS matrix_code
     from
         tbl_app
     inner join tbl_contest on
@@ -135,7 +136,8 @@ module.exports = {
         credit_type,
         tbl_app.send_params,
         tbl_contest.game_conf,
-        COALESCE(tbl_contest.max_lives,0)
+        COALESCE(tbl_contest.max_lives,0),
+        COALESCE(tbl_contest.matrix_code, ''::text) 
     order by
         app_name,
         from_time,

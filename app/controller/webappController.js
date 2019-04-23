@@ -1256,6 +1256,7 @@ module.exports = {
                                     if (contestInfo.app_type == null || contestInfo.app_type == undefined)
                                         contestInfo.app_type = "";
                                     let isLive = contestInfo.live_status;
+                                    let matrix_code = contestInfo.matrix_code;
                                     let debit_type = contestInfo.debit_type;
                                     let max_lives = contestInfo.max_lives;
                                     let passData = "contestId=" + contestId.toString();
@@ -1533,8 +1534,8 @@ module.exports = {
                                                                                         var event = 'JOIN CONTEST';
                                                                                         var event_id = contestInfo.contest_id;
                                                                                         var event_name = contestInfo.app_name + "(" + contestInfo.contest_name + ")";
-                                                                                        debitcredit.debitCreditAmountAirpay(userToken, airpayToken, orderId, 'DEBIT', amount,
-                                                                                            event, event_id, event_name, function (err, debitResponse) {
+                                                                                        debitcredit.debitAmountAirpayContestJoin(userToken, airpayToken, orderId, 'DEBIT', amount,
+                                                                                            event, event_id, event_name,matrix_code, function (err, debitResponse) {
 
                                                                                                 if (err) {
                                                                                                     sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
@@ -1550,10 +1551,9 @@ module.exports = {
                                                                                                             function (isJoined) {
 
                                                                                                                 //Success
-                                                                                                                if (isJoined == true && debitResponse.TRANSACTION) {
+                                                                                                                if (isJoined == true ) {
 
-                                                                                                                    if (debitResponse.TRANSACTION.TRANSACTIONSTATUS &&
-                                                                                                                        debitResponse.TRANSACTION.TRANSACTIONSTATUS == "200") {
+                                                                                                                    if (debitResponse.statusCode == "200") {
 
                                                                                                                         var score = 0;//Initial score set to 0
                                                                                                                         contestModel.insertContestScore(contestId, appId, playerId, score, function (response) {
@@ -1618,8 +1618,7 @@ module.exports = {
                                                                                                                             }
                                                                                                                         });
                                                                                                                     }
-                                                                                                                    else if (debitResponse.TRANSACTION.TRANSACTIONSTATUS &&
-                                                                                                                        debitResponse.TRANSACTION.TRANSACTIONSTATUS == "163") {
+                                                                                                                    else if (debitResponse.statusCode == "202" ) {
                                                                                                                         sendResp.sendCustomJSON(null, req, res, true, {
                                                                                                                             play_status: "DEPOSIT-CASH",
                                                                                                                             entry_fee: amount,

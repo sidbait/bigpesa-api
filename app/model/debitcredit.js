@@ -179,7 +179,7 @@ module.exports = {
                 nz_txn_event:event,
                 nz_txn_event_id:event_id,
                 nz_txn_event_name:event_name,
-                amount: amount
+                amount: amount 
             },
             headers: {
                 'x-nazara-app-secret-key': appSecret,
@@ -220,7 +220,75 @@ module.exports = {
                 callback(true, null, err.toString());
             });
     },
+    debitAmountAirpayContestJoin: function (token, airpayToken, order_id, type, amount,event,event_id,event_name, matrix_code,callback) {
+        var appSecret = config.app.client_key;
+        var app_id = config.app.app_id;
+        if(type.toUpperCase() == "CREDIT"){
+            order_id = "BP-Cr-"+order_id
+        }else if (type.toUpperCase() == "DEBIT"){
+            order_id = "BP-Dr-"+order_id
+        }
+        var param1 = airpayToken + "$" + order_id + "$" + amount.toString() + "$" + type;
+        var param2 = appSecret + "$" + app_id;
+        var now = new Date();
+        var param3 = dateformat(now, "yyyy-mm-dd");
+        
+        var md5checksum = md5(param1) + "|" +
+            md5(param2) + "|" +
+            md5(param3);
 
+        var sha512Checksum = sha512(md5checksum);
+        var options = {
+            method: 'POST',
+            uri: config.webapp_api_server + 'v1/wallet/debit-contest',
+            qs: {
+                airpay_token: airpayToken,
+                order_id: order_id,
+                nz_txn_event:event,
+                nz_txn_event_id:event_id,
+                nz_txn_event_name:event_name,
+                amount: amount,
+                matrix_code : matrix_code
+            },
+            headers: {
+                'x-nazara-app-secret-key': appSecret,
+                'checksum': sha512Checksum,
+                'authorization': token,
+            },
+            json: false,
+        };
+        if(type.toUpperCase() == "DEBIT"){
+            options.qs.balance_type ="DEBIT"
+        }
+
+        logger.info('debitCreditAmountAirpay options - ', options)
+
+        rp(options)
+            .then(function (data) {
+
+                logger.info('debitCreditAmountAirpay response\n' +
+                    'options - ' + JSON.stringify(options) + '\n' +
+                    'response - ' + JSON.stringify(data) + '\n' +
+                    'err - null');
+
+                let _data = JSONbig.parse(data);
+
+                if (_data.statusCode === 200) {
+                    callback(null, _data, _data.message)
+                } else {
+                    callback(true, null, _data.message);
+                }
+            })
+            .catch(function (err) {
+
+                logger.info('debitCreditAmountAirpay err\n' +
+                    'options - ' + JSON.stringify(options) + '\n' +
+                    'response - null \n' +
+                    'err - ' + JSON.stringify(err));
+
+                callback(true, null, err.toString());
+            });
+    },
     paytmDebit: function (req, mobNumberPayee, amount, metadata, callback) {
         let orderId = uniqid();
         let ipAddress = requestIp.getClientIp(req);
