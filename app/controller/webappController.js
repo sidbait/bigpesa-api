@@ -1547,7 +1547,7 @@ module.exports = {
                                                                                                     if (!debitResponse) {
                                                                                                         sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
                                                                                                     } else {
-                                                                                                        debitResponse = debitResponse.data;
+                                                                                                        //debitResponse = debitResponse.data;
                                                                                                         contestModel.joinContest(contestId, appId, playerId, amount,
                                                                                                             debitResponse, deails, contestInfo, channel, debit_type, max_lives,
                                                                                                             function (isJoined) {
