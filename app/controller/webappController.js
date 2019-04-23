@@ -1541,7 +1541,9 @@ module.exports = {
                                                                                                     sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
 
                                                                                                 } else {
-
+                                                                                                    console.log('NEW LOG------------');
+                                                                                                    console.log(debitResponse);
+                                                                                                    
                                                                                                     if (!debitResponse) {
                                                                                                         sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
                                                                                                     } else {
