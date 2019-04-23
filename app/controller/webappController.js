@@ -3334,7 +3334,9 @@ function getNewLives(contestInfo,player_id,userToken,airpayToken,callback){
     let event_name = contestInfo.app_name + "(" + contestInfo.contest_name + ")";
     debitcredit.debitAmountAirpayContestJoin(userToken, airpayToken, orderId, 'DEBIT', amount,
     event, event_id, event_name,matrix_code, function (err, debitResponse) {
+        console.log('NEW RESPONSE ---------------------------');
         console.log(debitResponse)
+        console.log('NEW RESPONSE ---------------------------')
         if(debitResponse.statusCode == "200"){
             let query = ` update tbl_contest_players where used_lives = 0 
                             where player_id = ${playerId} and contest_id = ${event_id} `;
