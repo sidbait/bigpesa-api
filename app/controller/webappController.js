@@ -1342,7 +1342,42 @@ module.exports = {
                                                     }
                                                 }
                                                 else if (checkLives[0].player_status == "GAMEOVER") {
-                                                    sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, You have used all your lives! Try to play other contest.");
+                                                    getNewLives(contestInfo,playerId,userToken,airpayToken,function(err,debitResponse){
+                                                        if(err){
+                                                            sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, You have used all your lives! Try to play other contest.");
+                                                        }else{
+                                                            if(debitResponse.statusCode == "200"){                                                              
+                                                                let isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
+                                                                if (isTokenSave) {
+                                                                    if (isLive) {
+                                                                        increaseLives(playerId,contestId);
+                                                                        sendResp.sendCustomJSON(null, req, res, true,
+                                                                            {
+                                                                                play_status: "PLAY",
+                                                                                deep_link: redirect_link,
+                                                                                session_token: sessionToken,
+                                                                                package_name: package_name,
+                                                                                app_type: app_type
+                                                                            }, "Succesfully Joined", true);
+                                                                    } else {
+                                                                        sendResp.sendCustomJSON(null, req, res, true,
+                                                                            {
+                                                                                play_status: "JOINED",
+                                                                                deep_link: redirect_link,
+                                                                                session_token: sessionToken,
+                                                                                package_name: package_name,
+                                                                                app_type: app_type
+                                                                            }, "Succesfully Joined", true);
+                                                                    }
+                                                                } else {
+                                                                    sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
+                                                                }
+                                                            }else{
+                                                                sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, You have used all your lives! Try to play other contest.");
+                                                            }
+                                                        }
+                                                        //
+                                                    });                                                    
                                                 }
                                                 else {
                                                     sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
@@ -3286,4 +3321,25 @@ function increaseLives(playerId,contestId) {
                        player_id = ${playerId} `; 
                        console.log(updateUsedLives + "|"+updateUsedLives)
     dbConnection.executeQuery(updateUsedLives, "rmg_db", function (err, dbResult) { });
+}
+
+
+function getNewLives(contestInfo,player_id,userToken,airpayToken,callback){
+    console.log('GET NEW LIVES CALLED');
+    let orderId = Date.now();
+    let event = 'JOIN CONTEST';
+    let event_id = contestInfo.contest_id;
+    let amount = contestInfo.entry_fee;
+    let matrix_code = contestInfo.matrix_code;
+    let event_name = contestInfo.app_name + "(" + contestInfo.contest_name + ")";
+    debitcredit.debitAmountAirpayContestJoin(userToken, airpayToken, orderId, 'DEBIT', amount,
+    event, event_id, event_name,matrix_code, function (err, debitResponse) {
+        console.log(debitResponse)
+        if(debitResponse.statusCode == "200"){
+            let query = ` update tbl_contest_players where used_lives = 0 
+                            where player_id = ${playerId} and contest_id = ${event_id} `;
+            dbConnection.executeQuery(query,"rmg_db",function(){});
+        }
+        callback(err,debitResponse);
+    });
 }
