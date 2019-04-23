@@ -10,13 +10,13 @@ var logger = require('tracer').colorConsole();
 var debitcredit = require('../model/debitcredit');
 const crypto = require('crypto');
 const moment = require('moment-timezone');
-var request = require('request');
 const TokenGenerator = require('uuid-token-generator');
 const tokgen2 = new TokenGenerator(256, TokenGenerator.BASE62);
 var config = require('config');
 var uniqid = require('uniqid');
 var redisConnection = require('../model/redisConnection');
 var push = require('../model/push');
+
 module.exports = {
 
     appListing: function (req, res) {
@@ -202,6 +202,8 @@ module.exports = {
                                             contest.max_lives = contests.max_lives;
                                             contest.rank_desc = contests.rank_desc;
                                             contest.contest_minutes = contests.contest_minutes;
+                                            contest.infinite_users = contests.infinite_users;
+                                            contest.matrix_code = contests.matrix_code;
                                             if (contests.contest_icon != undefined && contests.contest_icon != null) {
                                                 contest.contest_icon = contests.contest_icon;
                                             } else {
@@ -478,7 +480,8 @@ module.exports = {
                                 app_id,total_score,'ACTIVE',contest_date, RANK()  
                                  OVER (partition by contest_id  ORDER BY total_score desc ,created_at asc)  
                                  as player_rank from  tbl_contest_leader_board  
-                                 where total_score > 0 and contest_date >=  (now() +  330 * '1 minute'::interval)::date)t 
+                                 where total_score > 0 and contest_date >=  
+                                 (now() +  330 * '1 minute'::interval)::date)t 
                                  where  player_id = ${playerId} `
                             if (appId != '') {
                                 contestquery = contestquery + " and app_id = " + appId;
@@ -564,6 +567,8 @@ module.exports = {
                                                         contest.min_players = contests.min_player;
                                                         contest.max_lives = contests.max_lives;
                                                         contest.used_lives = contests.used_lives;
+                                                        contest.matrix_code = contests.matrix_code;
+                                                        contest.infinite_users = contests.infinite_users;
                                                         //contest.transaction_date = contests.transaction_date;
                                                         let contest_channel = contests.channel;
                                                         contest.contest_date = contests.contest_date;
