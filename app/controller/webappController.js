@@ -1543,7 +1543,7 @@ module.exports = {
                                                                                                 } else {
                                                                                                     console.log('NEW LOG------------');
                                                                                                     console.log(debitResponse);
-                                                                                                    
+
                                                                                                     if (!debitResponse) {
                                                                                                         sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
                                                                                                     } else {
@@ -1554,7 +1554,7 @@ module.exports = {
 
                                                                                                                 //Success
                                                                                                                 if (isJoined == true ) {
-
+                                                                                                                    console.log(debitResponse.statusCode +"|"+"200")
                                                                                                                     if (debitResponse.statusCode == "200") {
 
                                                                                                                         var score = 0;//Initial score set to 0
