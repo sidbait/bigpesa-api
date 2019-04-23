@@ -1343,6 +1343,9 @@ module.exports = {
                                                 }
                                                 else if (checkLives[0].player_status == "GAMEOVER") {
                                                     getNewLives(contestInfo,playerId,userToken,airpayToken,function(err,debitResponse){
+                                                        console.log('NEW LIVES RS---------')
+                                                        console.log(err)
+                                                        console.log(debitResponse)
                                                         if(err){
                                                             sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, You have used all your lives! Try to play other contest.");
                                                         }else{
@@ -3341,7 +3344,10 @@ function getNewLives(contestInfo,player_id,userToken,airpayToken,callback){
             let query = ` update tbl_contest_players where used_lives = 0 
                             where player_id = ${playerId} and contest_id = ${event_id} `;
             dbConnection.executeQuery(query,"rmg_db",function(){});
+            callback(err,debitResponse);
+        }else{
+            callback(true,null);
         }
-        callback(err,debitResponse);
+      
     });
 }
