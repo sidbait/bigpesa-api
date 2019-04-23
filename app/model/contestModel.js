@@ -373,7 +373,7 @@ module.exports = {
         //     }
         // }
          
-        if (debitResponse.statusCode == "200") {
+        if  ( parseInt( debitResponse.statusCode )== 200) {
             status = "ACTIVE";
             RespStatus = "SUCCESS";
         }
