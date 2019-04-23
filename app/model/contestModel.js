@@ -360,9 +360,7 @@ module.exports = {
     },
 
     joinContest: function (contestId, appId, playerId, amount, debitResponse, userInfo,contestInfo,channel,debit_type,max_lives, callback) {
-        console.log('----------------------------')
-        console.log(contestInfo)
-        console.log('----------------------------')
+      
         var status = "FAILED";
         var walletTransId = null;
         var RespStatus = "FAILED";
@@ -421,6 +419,10 @@ module.exports = {
                    //     walletTransId = null;
                    // }
                // }
+               console.log('-SASA---------------------------')
+               console.log( debitResponse.data)
+               console.log('----------------------------')
+             
                walletTransId = debitResponse.data.walletTxnId;
                 insertContestPlayer(contestId, appId, playerId, amount, debitResponse, walletTransId, status,channel,debit_type,max_lives,
                     function (isSuccess) {
