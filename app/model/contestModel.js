@@ -372,10 +372,7 @@ module.exports = {
         //         RespStatus = "SUCCESS";
         //     }
         // } 
-         console.log('-SASA---------------------------')
-        console.log( debitResponse)
-        console.log('----------------------------')
-        console.log( debitResponse.statusCode)
+         
         if  ( parseInt( debitResponse.statusCode )== 200) {
             status = "ACTIVE";
             RespStatus = "SUCCESS";
@@ -422,10 +419,7 @@ module.exports = {
                    //     walletTransId = null;
                    // }
                // }
-               console.log('-SASA---------------------------')
-               console.log( debitResponse.data)
-               console.log('----------------------------')
-             
+               
                walletTransId = debitResponse.data.walletTxnId;
                 insertContestPlayer(contestId, appId, playerId, amount, debitResponse, walletTransId, status,channel,debit_type,max_lives,
                     function (isSuccess) {

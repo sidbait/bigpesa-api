@@ -1540,9 +1540,7 @@ module.exports = {
                                                                                                 if (err) {
                                                                                                     sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
 
-                                                                                                } else {
-                                                                                                    console.log('NEW LOG------------');
-                                                                                                    console.log(debitResponse);
+                                                                                                } else {                                                                                                    
 
                                                                                                     if (!debitResponse) {
                                                                                                         sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
@@ -1554,7 +1552,7 @@ module.exports = {
                                                                                                                 console.log('isJoined' + isJoined)
                                                                                                                 //Success
                                                                                                                 if (isJoined == true ) {
-                                                                                                                    console.log(debitResponse.statusCode +"|"+"200")
+                                                                                                                    
                                                                                                                     if (debitResponse.statusCode == "200") {
 
                                                                                                                         var score = 0;//Initial score set to 0
