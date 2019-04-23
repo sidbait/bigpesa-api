@@ -371,8 +371,11 @@ module.exports = {
         //         status = "ACTIVE";
         //         RespStatus = "SUCCESS";
         //     }
-        // }
-         
+        // } 
+         console.log('-SASA---------------------------')
+        console.log( debitResponse)
+        console.log('----------------------------')
+        console.log( debitResponse.statusCode)
         if  ( parseInt( debitResponse.statusCode )== 200) {
             status = "ACTIVE";
             RespStatus = "SUCCESS";
