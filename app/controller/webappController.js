@@ -3341,8 +3341,10 @@ function getNewLives(contestInfo,player_id,userToken,airpayToken,callback){
         console.log(debitResponse)
         console.log('NEW RESPONSE ---------------------------')
         if(debitResponse.statusCode == "200"){
+
             let query = ` update tbl_contest_players where used_lives = 0 
                             where player_id = ${playerId} and contest_id = ${event_id} `;
+                            console.log(query)
             dbConnection.executeQuery(query,"rmg_db",function(){});
             callback(err,debitResponse);
         }else{
