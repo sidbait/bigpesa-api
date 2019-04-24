@@ -3330,7 +3330,7 @@ function increaseLives(playerId,contestId) {
 function getNewLives(contestInfo,player_id,userToken,airpayToken,callback){
     console.log('GET NEW LIVES CALLED');
     let orderId = Date.now();
-    let event = 'JOIN CONTEST';
+    let event = 'RE-JOIN CONTEST';
     let event_id = contestInfo.contest_id;
     let amount = contestInfo.entry_fee;
     let matrix_code = contestInfo.matrix_code;
