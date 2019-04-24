@@ -2114,7 +2114,7 @@ module.exports = {
                      if (depositeCount > 1 && Math.round(amount) >= 100) {
                         amount = Math.round(Math.round(amount) * (0.2));
                         console.log('INSERT GIVING MONEY')
-                        debitcredit.insertIntoWalletQue(traxid, 'DepositBonus', 'DepositBonus', Math.round(amount), 'Deposit Bonus', playerId, true, function (isSuccess, data) {
+                        debitcredit.insertIntoWalletQue(traxid, 'DepositBonus',txnId, Math.round(amount), 'Deposit Bonus', playerId, true, function (isSuccess, data) {
                             if (isSuccess) {
                                 data.amout = Math.round(amount);
                                 sendResp.sendCustomJSON(null, req, res, true, data, "Updated Successfully", true);
@@ -2130,7 +2130,7 @@ module.exports = {
                         if(amount < 500){
                             amount = Math.round(Math.round(amount) * (0.7));
                         }
-                        debitcredit.insertIntoWalletQue(traxid, 'DepositBonus', 'DepositBonus', Math.round(amount), 'Deposit Bonus', playerId, true, function (isSuccess, data) {
+                        debitcredit.insertIntoWalletQue(traxid, 'DepositBonus',txnId, Math.round(amount), 'Deposit Bonus', playerId, true, function (isSuccess, data) {
                             if (isSuccess) {
                                 data.amout = Math.round(amount);
                                 sendResp.sendCustomJSON(null, req, res, true, data, "Updated Successfully", true);
