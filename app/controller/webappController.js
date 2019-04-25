@@ -3248,7 +3248,7 @@ module.exports = {
                                 ContestOut.forEach(contests => {
                                     if (contests.app_id == element.app_id) {
                                         let contest = {}
-                                        if (contests.css_class.toLowerCase().indexOf('special') > -1 && contests.live_status == true) {
+                                        if ( contests.css_class!= null &&  contests.css_class.toLowerCase().indexOf('special') > -1 && contests.live_status == true) {
                                             contest.contest_id = contests.contest_id;
                                             contest.contest_name = contests.contest_name;
                                             contest.contest_desc = contests.contest_desc;
