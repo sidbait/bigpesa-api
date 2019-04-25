@@ -3358,16 +3358,18 @@ module.exports = {
                                         }
                                     }
                                 });
-                                if (isPlaystoreApp || hideapk == true) {
-                                    if (app.app_type.toLowerCase() != 'android') {
-                                        distinctApps.push(app);
-                                    }
-                                } else {
-                                    if (platform.toLowerCase() != 'ios') {
-                                        distinctApps.push(app);
-                                    } else {
+                                if (app.contests.length > 0) {
+                                    if (isPlaystoreApp || hideapk == true) {
                                         if (app.app_type.toLowerCase() != 'android') {
                                             distinctApps.push(app);
+                                        }
+                                    } else {
+                                        if (platform.toLowerCase() != 'ios') {
+                                            distinctApps.push(app);
+                                        } else {
+                                            if (app.app_type.toLowerCase() != 'android') {
+                                                distinctApps.push(app);
+                                            }
                                         }
                                     }
                                 }
