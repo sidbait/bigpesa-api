@@ -248,7 +248,7 @@ module.exports = {
                                                 //console.log('ISFULL')
                                             }
 
-                                            if(remainingendseconds < 300 &&  contest.play_status != 'FULL'  &&  contest.play_status != 'JOINED'){
+                                            if (remainingendseconds < 300 && contest.play_status != 'FULL' && contest.play_status != 'JOINED') {
                                                 contest.play_status = 'ENTRY-CLOSED';
                                             }
 
@@ -277,24 +277,24 @@ module.exports = {
                                             //     }
                                             // }
                                             //console.log('contest.contest_minutes' + contest.contest_minutes + "|" + contest.play_status)
-                                            if (contest_channel != "" && contest_channel != null && contest_channel!=undefined) {
+                                            if (contest_channel != "" && contest_channel != null && contest_channel != undefined) {
                                                 if (channel.toUpperCase() == "PLAYSTORE" && contest_channel.toUpperCase() == "PLAYSTORE") {
-                                                   if(contest.contest_minutes >0 && contest.play_status == 'FULL'){
-                                                   }else{
-                                                    app.contests.push(contest);
-                                                   }  
+                                                    if (contest.contest_minutes > 0 && contest.play_status == 'FULL') {
+                                                    } else {
+                                                        app.contests.push(contest);
+                                                    }
                                                 }
                                                 else if (channel.toUpperCase() == "NON-PLAYSTORE" && contest_channel.toUpperCase() == "NON-PLAYSTORE") {
-                                                    if(contest.contest_minutes > 0 && contest.play_status == 'FULL'){
-                                                    }else{
-                                                     app.contests.push(contest);
-                                                    }  
+                                                    if (contest.contest_minutes > 0 && contest.play_status == 'FULL') {
+                                                    } else {
+                                                        app.contests.push(contest);
+                                                    }
                                                 }
                                             } else {
-                                                if(contest.contest_minutes >0 && contest.play_status == 'FULL'){
-                                                }else{
-                                                 app.contests.push(contest);
-                                                }  
+                                                if (contest.contest_minutes > 0 && contest.play_status == 'FULL') {
+                                                } else {
+                                                    app.contests.push(contest);
+                                                }
                                             }
                                         }
                                     });
@@ -1318,7 +1318,7 @@ module.exports = {
                                                     let isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
                                                     if (isTokenSave) {
                                                         if (isLive) {
-                                                            increaseLives(playerId,contestId);
+                                                            increaseLives(playerId, contestId);
                                                             sendResp.sendCustomJSON(null, req, res, true,
                                                                 {
                                                                     play_status: "PLAY",
@@ -1342,18 +1342,18 @@ module.exports = {
                                                     }
                                                 }
                                                 else if (checkLives[0].player_status == "GAMEOVER") {
-                                                    getNewLives(contestInfo,playerId,userToken,airpayToken,function(err,debitResponse){
+                                                    getNewLives(contestInfo, playerId, userToken, airpayToken, function (err, debitResponse) {
                                                         console.log('NEW LIVES RS---------')
                                                         console.log(err)
                                                         console.log(debitResponse)
-                                                        if(err){
+                                                        if (err) {
                                                             sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, You have used all your lives! Try to play other contest.");
-                                                        }else{
-                                                            if(debitResponse.statusCode == "200"){                                                              
+                                                        } else {
+                                                            if (debitResponse.statusCode == "200") {
                                                                 let isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
                                                                 if (isTokenSave) {
                                                                     if (isLive) {
-                                                                        increaseLives(playerId,contestId);
+                                                                        increaseLives(playerId, contestId);
                                                                         sendResp.sendCustomJSON(null, req, res, true,
                                                                             {
                                                                                 play_status: "PLAY",
@@ -1375,12 +1375,12 @@ module.exports = {
                                                                 } else {
                                                                     sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
                                                                 }
-                                                            }else{
+                                                            } else {
                                                                 sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, You have used all your lives! Try to play other contest.");
                                                             }
                                                         }
                                                         //
-                                                    });                                                    
+                                                    });
                                                 }
                                                 else {
                                                     sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
@@ -1390,7 +1390,7 @@ module.exports = {
                                             let isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
                                             if (isTokenSave) {
                                                 if (isLive) {
-                                                    increaseLives(playerId,contestId);
+                                                    increaseLives(playerId, contestId);
                                                     sendResp.sendCustomJSON(null, req, res, true,
                                                         {
                                                             play_status: "PLAY",
@@ -1450,7 +1450,7 @@ module.exports = {
                                                         console.log(isAlreadyJoin);
                                                         if (isAlreadyJoin[0].ct > 0) {
                                                             if (isLive) {
-                                                                increaseLives(playerId,contestId);
+                                                                increaseLives(playerId, contestId);
                                                                 sendResp.sendCustomJSON(null, req, res, true, {
                                                                     play_status: "DEBITED",
                                                                     deep_link: redirect_link,
@@ -1505,7 +1505,7 @@ module.exports = {
                                                                                             var isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
                                                                                             if (isTokenSave) {
                                                                                                 if (isLive) {
-                                                                                                    increaseLives(playerId,contestId);
+                                                                                                    increaseLives(playerId, contestId);
                                                                                                     sendResp.sendCustomJSON(null, req, res, true, {
                                                                                                         play_status: "DEBITED",
                                                                                                         deep_link: redirect_link,
@@ -1529,7 +1529,7 @@ module.exports = {
                                                                                             var isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
                                                                                             if (isTokenSave) {
                                                                                                 if (isLive) {
-                                                                                                    increaseLives(playerId,contestId);
+                                                                                                    increaseLives(playerId, contestId);
                                                                                                     sendResp.sendCustomJSON(null, req, res, true, {
                                                                                                         play_status: "DEBITED",
                                                                                                         deep_link: redirect_link,
@@ -1573,12 +1573,12 @@ module.exports = {
                                                                                         var event_id = contestInfo.contest_id;
                                                                                         var event_name = contestInfo.app_name + "(" + contestInfo.contest_name + ")";
                                                                                         debitcredit.debitAmountAirpayContestJoin(userToken, airpayToken, orderId, 'DEBIT', amount,
-                                                                                            event, event_id, event_name,matrix_code, function (err, debitResponse) {
+                                                                                            event, event_id, event_name, matrix_code, function (err, debitResponse) {
 
                                                                                                 if (err) {
                                                                                                     sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
 
-                                                                                                } else {                                                                                                    
+                                                                                                } else {
 
                                                                                                     if (!debitResponse) {
                                                                                                         sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
@@ -1589,8 +1589,8 @@ module.exports = {
                                                                                                             function (isJoined) {
                                                                                                                 console.log('isJoined' + isJoined)
                                                                                                                 //Success
-                                                                                                                if (isJoined == true ) {
-                                                                                                                    
+                                                                                                                if (isJoined == true) {
+
                                                                                                                     if (debitResponse.statusCode == "200") {
 
                                                                                                                         var score = 0;//Initial score set to 0
@@ -1607,7 +1607,7 @@ module.exports = {
                                                                                                                                 if (isTokenSave) {
                                                                                                                                     console.log('CHECKING IS LIVE 1' + isLive)
                                                                                                                                     if (isLive) {
-                                                                                                                                        increaseLives(playerId,contestId);
+                                                                                                                                        increaseLives(playerId, contestId);
                                                                                                                                         sendResp.sendCustomJSON(null, req, res, true, {
                                                                                                                                             play_status: "DEBITED",
                                                                                                                                             deep_link: redirect_link,
@@ -1632,7 +1632,7 @@ module.exports = {
                                                                                                                                 var isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
                                                                                                                                 if (isTokenSave) {
                                                                                                                                     if (isLive) {
-                                                                                                                                        increaseLives(playerId,contestId);
+                                                                                                                                        increaseLives(playerId, contestId);
                                                                                                                                         sendResp.sendCustomJSON(null, req, res, true, {
                                                                                                                                             play_status: "DEBITED",
                                                                                                                                             deep_link: redirect_link,
@@ -1656,7 +1656,7 @@ module.exports = {
                                                                                                                             }
                                                                                                                         });
                                                                                                                     }
-                                                                                                                    else if (debitResponse.statusCode == "202" ) {
+                                                                                                                    else if (debitResponse.statusCode == "202") {
                                                                                                                         sendResp.sendCustomJSON(null, req, res, true, {
                                                                                                                             play_status: "DEPOSIT-CASH",
                                                                                                                             entry_fee: amount,
@@ -1708,8 +1708,8 @@ module.exports = {
                                                                                                                     // request('http://localhost:3001/amounts?playerid=' + playerId);
                                                                                                                     var isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
                                                                                                                     if (isTokenSave) {
-                                                                                                                        if(isLive){
-                                                                                                                            increaseLives(playerId,contestId);
+                                                                                                                        if (isLive) {
+                                                                                                                            increaseLives(playerId, contestId);
                                                                                                                             sendResp.sendCustomJSON(null, req, res, true, {
                                                                                                                                 play_status: "DEBITED",
                                                                                                                                 deep_link: redirect_link,
@@ -1717,7 +1717,7 @@ module.exports = {
                                                                                                                                 package_name: package_name,
                                                                                                                                 app_type: app_type
                                                                                                                             }, "Bonus Debited Successfully", true);
-                                                                                                                        }else{
+                                                                                                                        } else {
                                                                                                                             sendResp.sendCustomJSON(null, req, res, true, {
                                                                                                                                 play_status: "JOINED",
                                                                                                                                 deep_link: redirect_link,
@@ -1726,7 +1726,7 @@ module.exports = {
                                                                                                                                 app_type: app_type
                                                                                                                             }, "Bonus Debited Successfully", true);
                                                                                                                         }
-                                                                                                                        
+
                                                                                                                     } else {
                                                                                                                         sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
                                                                                                                     }
@@ -1945,12 +1945,12 @@ module.exports = {
                 if (element.days == 'Today') {
                     WinAmountSumToday = WinAmountSumToday + parseFloat(element.winprize);
                     //if (outJson.Today.TopWinner.length <= 500) {
-                        outJson.Today.TopWinner.push(element);
+                    outJson.Today.TopWinner.push(element);
                     //}
                 } else if (element.days == 'Yesterday') {
                     WinAmountSumYesterday = WinAmountSumYesterday + parseFloat(element.winprize);
                     //if (outJson.Yesterday.TopWinner.length <= 500) {
-                        outJson.Yesterday.TopWinner.push(element);
+                    outJson.Yesterday.TopWinner.push(element);
                     //}
                 }
             });
@@ -2111,10 +2111,10 @@ module.exports = {
                     //     });
 
                     // } else
-                     if (depositeCount > 1 && Math.round(amount) >= 100) {
+                    if (depositeCount > 1 && Math.round(amount) >= 100) {
                         amount = Math.round(Math.round(amount) * (0.2));
                         console.log('INSERT GIVING MONEY')
-                        debitcredit.insertIntoWalletQue(traxid, 'DepositBonus',txnId, Math.round(amount), 'Deposit Bonus', playerId, true, function (isSuccess, data) {
+                        debitcredit.insertIntoWalletQue(traxid, 'DepositBonus', txnId, Math.round(amount), 'Deposit Bonus', playerId, true, function (isSuccess, data) {
                             if (isSuccess) {
                                 data.amout = Math.round(amount);
                                 sendResp.sendCustomJSON(null, req, res, true, data, "Updated Successfully", true);
@@ -2122,15 +2122,15 @@ module.exports = {
                                 sendResp.sendCustomJSON(null, req, res, false, [], "Transaction Failed");
                             }
                         });
-                    } else if(Math.round(amount) >= 100 && depositeCount == 1) {
+                    } else if (Math.round(amount) >= 100 && depositeCount == 1) {
                         amount = Math.round(amount);
-                        if(amount >= 500){
+                        if (amount >= 500) {
                             amount = 500;
                         }
-                        if(amount < 500){
+                        if (amount < 500) {
                             amount = Math.round(Math.round(amount) * (0.7));
                         }
-                        debitcredit.insertIntoWalletQue(traxid, 'DepositBonus',txnId, Math.round(amount), 'Deposit Bonus', playerId, true, function (isSuccess, data) {
+                        debitcredit.insertIntoWalletQue(traxid, 'DepositBonus', txnId, Math.round(amount), 'Deposit Bonus', playerId, true, function (isSuccess, data) {
                             if (isSuccess) {
                                 data.amout = Math.round(amount);
                                 sendResp.sendCustomJSON(null, req, res, true, data, "Updated Successfully", true);
@@ -3114,8 +3114,8 @@ module.exports = {
 
     getdepositeCount: (req, res) => {
         var userToken = req.headers["authorization"];
-        userModel.getUserDetails(userToken,async function (err, userDetails) {
-            if (err ||  userDetails.playerId =='') {
+        userModel.getUserDetails(userToken, async function (err, userDetails) {
+            if (err || userDetails.playerId == '') {
                 sendResp.sendCustomJSON(null, req, res, false, [], "Token Is Invalid", false, false);
             } else {
                 console.log(userDetails)
@@ -3131,6 +3131,252 @@ module.exports = {
             }
         });
 
+    },
+
+    contestoftheday: async (req, res) => {
+
+        var playerId = req.body.playerId;
+        var contestId = req.body.contestId;
+        var appId = req.body.appId;
+        var appSecretKey = req.headers["x-nazara-app-secret-key"];
+        var userToken = req.headers["authorization"];
+        var checkSum = req.headers["checksum"];
+        var isPlaystoreApp = req.body.isPlaystoreApp;
+        var isPlaystore = req.body.isPlaystore;
+        var platform = req.body.platform;
+        var channel = req.body.channel;
+        var hideapk = req.body.hideapk; 
+        var api_source =req.body.api_source;
+
+        if (appId == null || appId == undefined) {
+            appId = '';
+        }
+        if (isPlaystoreApp == null || isPlaystoreApp == undefined) {
+            isPlaystoreApp = false;
+        }
+        if (platform == null || platform == undefined) {
+            platform = '';
+        }
+        if (contestId == null || contestId == undefined) {
+            contestId = '';
+        }
+        userModel.getUserDetails(userToken, function (err, userDetails) {
+            if (err) {
+                playerId = "";
+            } else {
+                playerId = userDetails.playerId;
+            }
+
+            let contestRankquery = " select * from vw_Upcoming_rankDetails where 1=1 ";
+            var contestquery = "select * from vw_apps_upcoming_contests_new where 1=1";
+            let playerquery = ` select * from vw_playerjoined where player_id = ${playerId} `
+
+            if (process.env.NODE_ENV == "preprod") {
+                contestquery = "select * from  vw_apps_upcoming_contests_preprod where 1=1";
+            }
+
+            if (contestId != null && contestId != "" && contestId != undefined && contestId != "undefined") {
+                contestId = contestId.toString();
+                contestquery = contestquery + " and contest_id = " + contestId;
+                contestRankquery = contestRankquery + " and contest_id = " + contestId;
+            }
+            if (isPlaystore != null && isPlaystore != "" && isPlaystore != undefined && isPlaystore != "undefined") {
+                contestquery = contestquery + " and debit_type = 'COIN' ";
+            }
+            if (appId != null && appId != "" && appId != undefined && appId != "undefined") {
+                contestquery = contestquery + " and app_id = " + appId;
+            }
+            if (playerId != null && playerId != "" && playerId != undefined && playerId != "undefined") {
+                // playerquery = playerquery + " and player_id = " + playerId;
+            } else {
+                playerquery = "select now()";
+            }
+
+            //console.log(playerquery)
+            //contestquery = contestquery + " order by  app_priority,contest_priority";
+            //console.log(contestquery)
+            async.parallel({
+                contestquery: function (callback) {
+                    dbConnection.executeQuery(contestquery, "rmg_db", function (err, dbResult) {
+                        callback(err, dbResult);
+                    }, true, 40);
+                },
+                playerquery: function (callback) {
+                    dbConnection.executeQuery(playerquery, "rmg_db", function (err, dbResult) {
+                        callback(err, dbResult);
+                    });
+                }
+            },
+                function (err_async, result_async) {
+                    var ContestOut = result_async.contestquery;
+                    //console.log(result_async.playerquery)
+                    var PlayerContests = [];
+                    if (playerId != null && playerId != "" && playerId != undefined && playerId != "undefined") {
+                        PlayerContests = result_async.playerquery;
+                    }
+                    var distinctApps = [];
+                    if (ContestOut != undefined) {
+                        ContestOut.forEach(element => {
+                            let isnew = true;
+                            distinctApps.forEach(distinctElement => {
+                                if (distinctElement.app_id == element.app_id) {
+                                    isnew = false;
+                                }
+                            });
+                            if (isnew) {
+                                let app = {};
+                                app.app_id = element.app_id;
+                                app.app_name = element.app_name;
+                                app.app_type = element.app_type;
+                                app.app_code = element.app_code;
+                                app.app_icon = element.app_icon;
+                                if (element.app_icon_url != undefined && element.app_icon_url != null) {
+                                    app.app_icon_url = element.app_icon_url;
+                                } else {
+                                    app.app_icon_url = "";
+                                }
+                                app.app_secret = element.app_secret;
+                                app.app_status = element.app_status;
+                                app.package_name = element.package_name;
+                                app.download_path = config.api_url + "app/v1/filedownload?appid=" + element.app_id;
+                                app.download_file = config.api_url + element.filename;
+
+                                app.contests = [];
+
+                                //console.log("app.download_path", app.download_path);
+
+                                ContestOut.forEach(contests => {
+                                    if (contests.app_id == element.app_id) {
+                                        let contest = {}
+                                        if (contests.css_class.toLowerCase().indexOf('special') > -1 && contests.live_status == true) {
+                                            contest.contest_id = contests.contest_id;
+                                            contest.contest_name = contests.contest_name;
+                                            contest.contest_desc = contests.contest_desc;
+                                            contest.start_date_actual = contests.start_date_actual;
+                                            contest.end_date_actual = contests.end_date_actual;
+                                            contest.start_date = contests.start_date;
+                                            contest.end_date = contests.end_date;
+                                            contest.from_time = contests.from_time;
+                                            contest.to_time = contests.to_time;
+                                            contest.package_name = contests.package_name;
+                                            contest.max_players = contests.max_players;
+                                            contest.winners = contests.winners;
+                                            contest.currency = contests.currency;
+                                            contest.debit_type = contests.debit_type;
+                                            contest.credit_type = contests.credit_type;
+                                            contest.entry_fee = contests.entry_fee;
+                                            contest.profit_margin = contests.profit_margin;
+                                            contest.cash_margin = 0;//contests.cash_margin;
+                                            contest.total_amount = contests.total_amount;
+                                            contest.win_amount = contests.win_amount;
+                                            contest.css_class = contests.css_class;
+                                            contest.win_amount = contests.win_amount;
+                                            contest.contest_status = contests.contest_status;
+                                            contest.currenttime = contests.currenttime;
+                                            contest.min_players = contests.min_player;
+                                            contest.max_lives = contests.max_lives;
+                                            contest.rank_desc = contests.rank_desc;
+                                            contest.contest_minutes = contests.contest_minutes;
+                                            contest.infinite_users = contests.infinite_users;
+                                            contest.matrix_code = contests.matrix_code;
+                                            if (contests.contest_icon != undefined && contests.contest_icon != null) {
+                                                contest.contest_icon = contests.contest_icon;
+                                            } else {
+                                                contest.contest_icon = "";
+                                            }
+                                            let publish_type = contests.publish_type;
+                                            let contest_channel = contests.channel;
+
+                                            var currenttime = new Date(contest.currenttime);
+                                            var conteststarttime = new Date(contest.start_date_actual);
+                                            var contestendtime = new Date(contest.end_date_actual);
+
+                                            var remainingstartseconds = (conteststarttime.getTime() - currenttime.getTime()) / 1000;
+                                            var remainingendseconds = (contestendtime.getTime() - currenttime.getTime()) / 1000;
+
+                                            contest.remainingstartseconds = remainingstartseconds;
+                                            contest.remainingendseconds = remainingendseconds;
+
+                                            contest.contest_rank = [];
+                                            g15daysRankDetails.forEach(contestRank => {
+                                                if (contestRank.contest_id == contest.contest_id) {
+                                                    let rank = {}
+                                                    rank.contest_rank_id = contestRank.contest_rank_id;
+                                                    rank.rank_name = contestRank.rank_name;
+                                                    rank.rank_desc = contestRank.rank_desc;
+                                                    rank.lower_rank = contestRank.lower_rank;
+                                                    rank.upper_rank = contestRank.upper_rank;
+                                                    rank.credit_type = contestRank.credit_type;
+                                                    rank.prize_amount = contestRank.prize_amount;
+                                                    contest.contest_rank.push(rank);
+                                                }
+                                            });
+
+                                            contest.player_joined = contests.player_joined;
+                                            contest.live_status = contests.live_status;
+                                            contest.play_status = 'JOIN';
+                                            contest.used_lives = 0;
+                                            //console.log(contest.player_joined +"|"+ contest.max_players)
+                                            if (parseInt(contest.player_joined) >= parseInt(contest.max_players)) {
+                                                contest.play_status = 'FULL';
+                                                contest.player_joined = contest.max_players;
+                                                //console.log('ISFULL')
+                                            }
+
+                                            if (remainingendseconds < 300 && contest.play_status != 'FULL' && contest.play_status != 'JOINED') {
+                                                contest.play_status = 'ENTRY-CLOSED';
+                                            }
+
+                                            if (playerId != undefined && playerId != null && playerId != '') {
+                                                PlayerContests.forEach(contestplayer => {
+                                                    if (contestplayer.contest_id == contest.contest_id) {
+                                                        contest.play_status = contestplayer.player_status;
+                                                        contest.used_lives = contestplayer.used_lives;
+                                                    }
+                                                });
+                                            }
+
+                                            if (contest_channel != "" && contest_channel != null && contest_channel != undefined) {
+                                                if (channel.toUpperCase() == "PLAYSTORE" && contest_channel.toUpperCase() == "PLAYSTORE") {
+                                                    if (contest.contest_minutes > 0 && contest.play_status == 'FULL') {
+                                                    } else {
+                                                        app.contests.push(contest);
+                                                    }
+                                                }
+                                                else if (channel.toUpperCase() == "NON-PLAYSTORE" && contest_channel.toUpperCase() == "NON-PLAYSTORE") {
+                                                    if (contest.contest_minutes > 0 && contest.play_status == 'FULL') {
+                                                    } else {
+                                                        app.contests.push(contest);
+                                                    }
+                                                }
+                                            } else {
+                                                if (contest.contest_minutes > 0 && contest.play_status == 'FULL') {
+                                                } else {
+                                                    app.contests.push(contest);
+                                                }
+                                            }
+                                        }
+                                    }
+                                });
+                                if (isPlaystoreApp || hideapk == true) {
+                                    if (app.app_type.toLowerCase() != 'android') {
+                                        distinctApps.push(app);
+                                    }
+                                } else {
+                                    if (platform.toLowerCase() != 'ios') {
+                                        distinctApps.push(app);
+                                    } else {
+                                        if (app.app_type.toLowerCase() != 'android') {
+                                            distinctApps.push(app);
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                    sendResp.sendCustomJSON(null, req, res, true, distinctApps, "App List")
+                });
+        });
     }
 }
 
@@ -3318,16 +3564,15 @@ function scoreUpdown(contest_id, winnerList, callback) {
     callback('ok')
 }
 
-function increaseLives(playerId,contestId) {
+function increaseLives(playerId, contestId) {
     let updateUsedLives = `update tbl_contest_players set used_lives = 
                        COALESCE( used_lives ,0) + 1  where contest_id = ${contestId} and 
-                       player_id = ${playerId} `; 
-                       console.log(updateUsedLives + "|"+updateUsedLives)
+                       player_id = ${playerId} `;
+    console.log(updateUsedLives + "|" + updateUsedLives)
     dbConnection.executeQuery(updateUsedLives, "rmg_db", function (err, dbResult) { });
 }
 
-
-function getNewLives(contestInfo,player_id,userToken,airpayToken,callback){
+function getNewLives(contestInfo, player_id, userToken, airpayToken, callback) {
     console.log('GET NEW LIVES CALLED');
     let orderId = Date.now();
     let event = 'RE-JOIN CONTEST';
@@ -3336,21 +3581,21 @@ function getNewLives(contestInfo,player_id,userToken,airpayToken,callback){
     let matrix_code = contestInfo.matrix_code;
     let event_name = contestInfo.app_name + "(" + contestInfo.contest_name + ")";
     debitcredit.debitAmountAirpayContestJoin(userToken, airpayToken, orderId, 'DEBIT', amount,
-    event, event_id, event_name,matrix_code, function (err, debitResponse) {
-        console.log('NEW RESPONSE ---------------------------');
-        console.log(debitResponse);
-        console.log(debitResponse.statusCode)
-        console.log('NEW RESPONSE ---------------------------')
-        if(debitResponse.statusCode == "200"){
+        event, event_id, event_name, matrix_code, function (err, debitResponse) {
+            console.log('NEW RESPONSE ---------------------------');
+            console.log(debitResponse);
+            console.log(debitResponse.statusCode)
+            console.log('NEW RESPONSE ---------------------------')
+            if (debitResponse.statusCode == "200") {
 
-            let query = ` update tbl_contest_players set used_lives = 0 
+                let query = ` update tbl_contest_players set used_lives = 0 
                             where player_id = ${player_id} and contest_id = ${event_id} `;
-                            console.log(query)
-            dbConnection.executeQuery(query,"rmg_db",function(){});
-            callback(err,debitResponse);
-        }else{
-            callback(true,null);
-        }
-      
-    });
+                console.log(query)
+                dbConnection.executeQuery(query, "rmg_db", function () { });
+                callback(err, debitResponse);
+            } else {
+                callback(true, null);
+            }
+
+        });
 }
