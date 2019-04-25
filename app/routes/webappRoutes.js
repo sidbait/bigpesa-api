@@ -107,7 +107,7 @@ webAppRoutes.get('/topgamewinner',webappController.topGameWinnerList)
 webAppRoutes.get('/checkisprouser/:device_id', logController.checkisProUser)
 webAppRoutes.post('/fileupload', fileuploadController.upload);
 webAppRoutes.get('/depositcount', webappController.getdepositeCount);
-webAppRoutes.get('/contestoftheday', webappController.contestoftheday);
+webAppRoutes.post('/contestoftheday', webappController.contestoftheday);
 
 
 module.exports = webAppRoutes;
