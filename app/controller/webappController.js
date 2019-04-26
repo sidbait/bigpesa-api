@@ -1341,7 +1341,7 @@ module.exports = {
                                                         sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
                                                     }
                                                 }
-                                                else if (checkLives[0].player_status == "GAMEOVER") {
+                                                else if (checkLives && checkLives.length > 0 && checkLives[0].player_status == "GAMEOVER") {
                                                     getNewLives(contestInfo, playerId, userToken, airpayToken, function (err, debitResponse) {
                                                         console.log('NEW LIVES RS---------')
                                                         console.log(err)
