@@ -3145,8 +3145,8 @@ module.exports = {
         var isPlaystore = req.body.isPlaystore;
         var platform = req.body.platform;
         var channel = req.body.channel;
-        var hideapk = req.body.hideapk; 
-        var api_source =req.body.api_source;
+        var hideapk = req.body.hideapk;
+        var api_source = req.body.api_source;
 
         if (appId == null || appId == undefined) {
             appId = '';
@@ -3248,7 +3248,7 @@ module.exports = {
                                 ContestOut.forEach(contests => {
                                     if (contests.app_id == element.app_id) {
                                         let contest = {}
-                                        if ( contests.css_class!= null &&  contests.css_class.toLowerCase().indexOf('special') > -1 && contests.live_status == true) {
+                                        if (contests.css_class != null && contests.css_class.toLowerCase().indexOf('special') > -1 && contests.live_status == true) {
                                             contest.contest_id = contests.contest_id;
                                             contest.contest_name = contests.contest_name;
                                             contest.contest_desc = contests.contest_desc;
@@ -3378,6 +3378,30 @@ module.exports = {
                     }
                     sendResp.sendCustomJSON(null, req, res, true, distinctApps, "App List")
                 });
+        });
+    },
+
+    showConversionPopup: async (req, res) => {
+        var userToken = req.headers["authorization"];
+        userModel.getUserDetails(userToken, function (err, userDetails) {
+            if (err) {
+                playerId = "";
+            } else {
+                playerId = userDetails.playerId;
+            }
+            if (playerId == "") {
+                sendResp.sendCustomJSON(null, req, res, false, [], "Invalid Token");
+            } else {
+                let query = `select * from tbl_bonus_transfer where player_id = ${playerId} and popup_shown =true `;
+                var result = await dbConnection.executeQueryAll(query, "rmg_db");
+                if (result != null && result != undefined && result.length > 0) {
+                    let query = `update tbl_bonus_transfer  set popup_shown = true where player_id = ${playerId} `;
+                    let updateResult  = await dbConnection.executeQueryAll(query, "rmg_db");
+                    sendResp.sendCustomJSON(null, req, res, true, result, "Popup Details");
+                } else {
+                    sendResp.sendCustomJSON(null, req, res, false, [], "Nothing To Show");
+                }
+            }
         });
     }
 }

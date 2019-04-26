@@ -108,6 +108,5 @@ webAppRoutes.get('/checkisprouser/:device_id', logController.checkisProUser)
 webAppRoutes.post('/fileupload', fileuploadController.upload);
 webAppRoutes.get('/depositcount', webappController.getdepositeCount);
 webAppRoutes.post('/contestoftheday', webappController.contestoftheday);
-
-
+webAppRoutes.post('/showConversionPopup',webappController.showConversionPopup);
 module.exports = webAppRoutes;
