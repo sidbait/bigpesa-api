@@ -1314,7 +1314,7 @@ module.exports = {
                                             let validateLives = ` select * from vw_playerjoined where player_id =${playerId} and contest_id = ${contestId} `;
                                             console.log(validateLives)
                                             dbConnection.executeQuery(validateLives, "rmg_db", function (err, checkLives) {
-                                                if (checkLives[0].player_status == "PLAY") {
+                                                if (checkLives && checkLives.length > 0 &&checkLives[0].player_status == "PLAY") {
                                                     let isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
                                                     if (isTokenSave) {
                                                         if (isLive) {
