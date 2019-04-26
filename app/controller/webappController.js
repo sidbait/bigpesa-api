@@ -3392,10 +3392,10 @@ module.exports = {
             if (playerId == "") {
                 sendResp.sendCustomJSON(null, req, res, false, [], "Invalid Token");
             } else {
-                let query = `select * from tbl_bonus_transfer where player_id = ${playerId} and popup_shown =true `;
+                let query = `select * from tbl_bonus_transfer where player_id = ${playerId} and popup_shown =false `;
                 var result = await dbConnection.executeQueryAll(query, "rmg_db");
                 if (result != null && result != undefined && result.length > 0) {
-                    let query = `update tbl_bonus_transfer  set popup_shown = true where player_id = ${playerId} `;
+                    let query = `update tbl_bonus_transfer  set popup_shown = true , popup_shown_at =now() where player_id = ${playerId} `;
                     let updateResult  = await dbConnection.executeQueryAll(query, "rmg_db");
                     sendResp.sendCustomJSON(null, req, res, true, result, "Popup Details");
                 } else {
