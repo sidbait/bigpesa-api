@@ -3383,7 +3383,7 @@ module.exports = {
 
     showConversionPopup: async (req, res) => {
         var userToken = req.headers["authorization"];
-        userModel.getUserDetails(userToken, function (err, userDetails) {
+        userModel.getUserDetails(userToken,async function (err, userDetails) {
             if (err) {
                 playerId = "";
             } else {
