@@ -476,13 +476,20 @@ module.exports = {
                                 applistquery = "select * from vw_live_app_list where 1=1  ";
                             }
                             let contestquery = "select * from vw_player_contest_withrank where player_id = " + playerId;
+                            // let liveContestRankQuery = ` select contest_id ,player_id,player_rank from (  select  contest_id,player_id,  
+                            //     app_id,total_score,'ACTIVE',contest_date, RANK()  
+                            //      OVER (partition by contest_id  ORDER BY total_score desc ,created_at asc)  
+                            //      as player_rank from  tbl_contest_leader_board  
+                            //      where total_score > 0 and contest_date >=  
+                            //      (now() +  330 * '1 minute'::interval)::date)t 
+                            //      where  player_id = ${playerId} `
                             let liveContestRankQuery = ` select contest_id ,player_id,player_rank from (  select  contest_id,player_id,  
-                                app_id,total_score,'ACTIVE',contest_date, RANK()  
-                                 OVER (partition by contest_id  ORDER BY total_score desc ,created_at asc)  
-                                 as player_rank from  tbl_contest_leader_board  
-                                 where total_score > 0 and contest_date >=  
-                                 (now() +  330 * '1 minute'::interval)::date)t 
-                                 where  player_id = ${playerId} `
+                                    app_id,total_score,'ACTIVE',contest_date, RANK()  
+                                    OVER (partition by contest_id  ORDER BY total_score desc ,created_at asc)  
+                                    as player_rank from  tbl_contest_leader_board  
+                                    where total_score > 0 and contest_date >=  
+                                    (now() -  (2::int * '1 day'::interval))::date)t 
+                                    where  player_id =  ${playerId} `;
                             if (appId != '') {
                                 contestquery = contestquery + " and app_id = " + appId;
                                 applistquery = applistquery + " and tbl_app.app_id = " + appId;
@@ -3383,7 +3390,7 @@ module.exports = {
 
     showConversionPopup: async (req, res) => {
         var userToken = req.headers["authorization"];
-        userModel.getUserDetails(userToken,async function (err, userDetails) {
+        userModel.getUserDetails(userToken, async function (err, userDetails) {
             if (err) {
                 playerId = "";
             } else {
@@ -3396,7 +3403,7 @@ module.exports = {
                 var result = await dbConnection.executeQueryAll(query, "rmg_db");
                 if (result != null && result != undefined && result.length > 0) {
                     let query = `update tbl_bonus_transfer  set popup_shown = true , popup_shown_at =now() where player_id = ${playerId} `;
-                    let updateResult  = await dbConnection.executeQueryAll(query, "rmg_db");
+                    let updateResult = await dbConnection.executeQueryAll(query, "rmg_db");
                     sendResp.sendCustomJSON(null, req, res, true, result, "Popup Details");
                 } else {
                     sendResp.sendCustomJSON(null, req, res, false, [], "Nothing To Show");
