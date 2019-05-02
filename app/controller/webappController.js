@@ -2574,7 +2574,7 @@ module.exports = {
                                                 // let updateUsedLives = `update tbl_contest_players set used_lives = 
                                                 //             COALESCE( used_lives ,0) + 1  where contest_id = ${contestId} and 
                                                 //             player_id = ${playerId} `;
-                                                // console.log('query_leader_board: ' + query_leader_board);
+                                                 console.log('query_leader_board: ' + query_leader_board);
                                                 // dbConnection.executeQuery(updateUsedLives, "rmg_db", function (err, dbResult) { });
                                                 dbConnection.executeQuery(query_leader_board, "rmg_db", function (err, dbResult) {
                                                     if (dbResult == null || dbResult == undefined) {
