@@ -46,7 +46,6 @@ webAppRoutes.get('/leaderboard', authToken.validateAppReq, authToken.Authorizati
 webAppRoutes.post('/updateAppStatusSdk', function (req, res) {
     webappController.updateAppStatusSdk(req, res);
 });
-
 webAppRoutes.post('/updatePoints', function (req, res) {
     webappController.updatePoints(req, res);
 });
@@ -65,10 +64,7 @@ webAppRoutes.post('/visitorLog', function (req, res) {
 webAppRoutes.post('/postScore', function (req, res) {
     console.log('postScore');
     webappController.postScore(req, res);
-});
-// webAppRoutes.post('/postScore',function(req, res){
-//     webappController.postScore(req, res);
-// });
+}); 
 webAppRoutes.get('/game/data/:token', function (req, res) {
     webappController.checkToken(req, res);
 });

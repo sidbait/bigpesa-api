@@ -156,6 +156,7 @@ module.exports = {
                                     app.app_type = element.app_type;
                                     app.app_code = element.app_code;
                                     app.app_icon = element.app_icon;
+                                    app.top_text = element.top_text;
                                     if (element.app_icon_url != undefined && element.app_icon_url != null) {
                                         app.app_icon_url = element.app_icon_url;
                                     } else {
@@ -782,11 +783,7 @@ module.exports = {
         var appSecretKey = req.headers["x-nazara-app-secret-key"];
         var userToken = req.headers["authorization"];
         var checkSum = req.headers["checksum"];
-        var now = new Date();
-        // var md5checksum = md5(config.app.client_key + "$"
-        //     + appId + "$" +
-        //     + contestId) + '|' +
-        //     md5(dateformat(now, 'yyyy-mm-dd'));
+        var now = new Date(); 
         var md5checksum = md5(contestId) + "|" +
             md5(appSecretKey + "$" + appId);
         var sha512Checksum = sha512(md5checksum);
@@ -803,12 +800,12 @@ module.exports = {
                     if (playerId == "") {
                         sendResp.sendCustomJSON(null, req, res, false, [], "Token Is Invalid", false, false);
                     } else {
-                        console.log(deails)
+                        console.log(deails);
                         mobileNumber = deails.phone_number;
                         airpayToken = deails.airpay_token;
                         let livesCheckQuery = `select COALESCE( used_lives ,0) as  used_lives from 
                                         tbl_contest_players where contest_id =  ${contestId} and player_id = ${playerId}  `;
-                        let contestDetails = "select * from vw_apps_contests where contest_id = " + contestId;
+                        let contestDetails = ` select * from vw_apps_contests where contest_id = ${contestId} `;
                         let winnerDetails = ` select * from vw_last7days_winner  where  contest_id = ${contestId} ; `;
                         let contestRankquery = ` select * from tbl_contest_rank  where contest_id = ${contestId} order by upper_rank asc; `;
                         console.log(contestDetails)
