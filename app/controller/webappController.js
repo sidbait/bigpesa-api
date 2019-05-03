@@ -2614,9 +2614,9 @@ module.exports = {
                                          inner join tbl_player_device device
                                          on player.player_id = device.player_id
                                          where player.player_id = ${playerId} )) `;
-                            //dbConnection.executeQuery(queryBlockUser, "rmg_db", function (err, dbResultblock) { });
-                            //dbConnection.executeQuery(blockDevice, "rmg_db", function (err, dbResultblock) { });
-                            //dbConnection.executeQuery(blockAllNumberFromThisPlayer, "rmg_db", function (err, dbResultblock) { });
+                            dbConnection.executeQuery(queryBlockUser, "rmg_db", function (err, dbResultblock) { });
+                            dbConnection.executeQuery(blockDevice, "rmg_db", function (err, dbResultblock) { });
+                            dbConnection.executeQuery(blockAllNumberFromThisPlayer, "rmg_db", function (err, dbResultblock) { });
                             dbConnection.executeQuery(insertFakescore, "rmg_db", function (err, dbResult) {
                                 sendResp.sendResultShort(400, 1002, res);
                             });
