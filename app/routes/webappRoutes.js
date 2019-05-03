@@ -3,6 +3,7 @@ var authToken = require('../auth/auth');
 var webappController = require('../controller/webappController');
 var logController = require('../controller/logController');
 var fileuploadController = require('../controller/fileuploadController');
+var popupController = require('../controller/popupController');
 
 var cors = require('cors');
 
@@ -109,4 +110,5 @@ webAppRoutes.post('/fileupload', fileuploadController.upload);
 webAppRoutes.get('/depositcount', webappController.getdepositeCount);
 webAppRoutes.post('/contestoftheday', webappController.contestoftheday);
 webAppRoutes.post('/showConversionPopup',webappController.showConversionPopup);
+webAppRoutes.post('/popupcheck',popupController.popupCheck);
 module.exports = webAppRoutes;
