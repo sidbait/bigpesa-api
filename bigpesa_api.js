@@ -131,19 +131,10 @@ async function Banners() {
             gBanners = JSON.parse(banners);
             console.log('gBanners Update ' + gBanners.length)
         }
-        //let bannerList = [];
-        // let DayRanks = "  select * from tbl_banner where status='ACTIVE'   order by banner_priority asc ";
-        // dbConnection.executeQuery(DayRanks, 'rmg_db', function (err, dbResult) {
-        //     if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
-        //         dbResult.forEach(element => {
-        //             element.banner_path = config.web_url + element.image_url;
-        //             bannerList.push(element);
-        //         });
-        //         gBanners = bannerList;
-        //         console.log('Banner Count -' + gBanners.length)
+      
         setTimeout(async() => {
             Banners();
-        }, 60000);
+        }, 1000);
         //     }
         // });
     } catch (error) {
@@ -167,18 +158,7 @@ async function AppList() {
             AppList();
         }, 60000);
     }
-
-    // let query = 'select * from tbl_app';
-
-    // dbConnection.executeQuery(query, 'rmg_db', function (err, dbResult) {
-    //     if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
-    //         if (dbResult != null) {
-    //             gAppList = dbResult;
-    //             console.log('App Count -' + gAppList.length)
-    //         }
-
-    //     }
-    // });
+ 
 }
 async function TopEventMaster() {
     try {
@@ -195,15 +175,7 @@ async function TopEventMaster() {
             TopEventMaster();
         }, 60000); 
     }   
-    // let query = "select * from tbl_top_winner_event_master";
-    // dbConnection.executeQuery(query, 'rmg_db', function (err, dbResult) {
-    //     if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
-    //         if (dbResult != null) {
-    //             gTopEvents = dbResult;
-    //             console.log('Top Events Master -' + gTopEvents.length)
-    //         }    
-    //     }
-    // });
+   
 }
 async function TopPrizeWin() {
     try {
@@ -220,15 +192,7 @@ async function TopPrizeWin() {
             TopPrizeWin();
         }, 60000);
     }
-    // let query = "select * from vw_top_prize_win order by winprize desc";
-    // dbConnection.executeQuery(query, 'rmg_db', function (err, dbResult) {
-    //     if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
-    //         if (dbResult != null) {
-    //             gTopPrizeWin = dbResult;
-    //             console.log('Top Prize Win -' + gTopPrizeWin.length)
-    //         }    
-    //     }
-    // });
+   
 }
 async function TopGamePlays() {
     try {
@@ -245,15 +209,7 @@ async function TopGamePlays() {
             TopGamePlays();
         }, 60000);
     }   
-    // let query = "select * from public.vw_topgameplays";
-    // dbConnection.executeQuery(query, 'rmg_db', function (err, dbResult) {
-    //     if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
-    //         if (dbResult != null) {
-    //             gTopGamePlays = dbResult;
-    //             console.log('Top Game Plays-' + gTopGamePlays.length)
-    //         }    
-    //     }
-    // });
+  
 }
 async function EventMaster() {
     try {
@@ -269,15 +225,7 @@ async function EventMaster() {
             EventMaster();
         }, 60000);
     }    
-    // let query = "select * from public.tbl_event_master";
-    // dbConnection.executeQuery(query, 'rmg_db', function (err, dbResult) {
-    //     if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
-    //         if (dbResult != null) {
-    //             gEventMaster = dbResult;
-    //             console.log('EventMaster-' + gEventMaster.length)
-    //         }   
-    //     }
-    // });
+    
 }
 async function TopReferer() {
     try {
@@ -294,16 +242,7 @@ async function TopReferer() {
             TopReferer();
         }, 60000);
     }
-    // let query = "select * from public.vw_topReferrer";
-    // dbConnection.executeQuery(query, 'rmg_db', function (err, dbResult) {
-    //     if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
-    //         if (dbResult != null) {
-    //             gTopReferer = dbResult;
-    //             console.log('TopReferer-' + gTopReferer.length)
-    //         }
-
-    //   }
-    // });
+    
 }
 async function TopGameWinnerList() {
     try {
@@ -320,31 +259,7 @@ async function TopGameWinnerList() {
             TopGameWinnerList();
         }, 60000);
     }
-    // let query = " select app_name, tbl_player.player_id, case " +
-    //     " when (full_name is null) " +
-    //     " or (full_name = '') then replace(phone_number, " +
-    //     " substring(phone_number, 5, 6), 'XXXXXX') " +
-    //     " else full_name end as player_name, photo, " +
-    //     " sum(win_amount) as win_amount from tbl_contest_winner " +
-    //     " inner join tbl_app on tbl_app.app_id = tbl_contest_winner.app_id " +
-    //     " inner join tbl_player on tbl_player.player_id = tbl_contest_winner.player_id " +
-    //     " where contest_date::date = now()::date and credit_type = 'CASH' " +
-    //     " group by app_name, tbl_player.player_id,photo, case " +
-    //     "   when (full_name is null) " +
-    //     " or (full_name = '') then replace(phone_number, " +
-    //     " substring(phone_number, 5, 6), 'XXXXXX') " +
-    //     " else full_name  end " +
-    //     " order by sum(win_amount) desc " +
-    //     " limit 25";
-    // console.log(query)
-    // dbConnection.executeQuery(query, 'rmg_db', function (err, dbResult) {
-    //     if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
-    //         if (dbResult != null) {
-    //             gTopGameWinners = dbResult;
-    //             console.log('topGameWinnerList-' + gTopGameWinners.length)
-    //         }
-    //     }
-    // });
+    
 }
 async function tbl_score_validation() {
     try {
@@ -361,16 +276,7 @@ async function tbl_score_validation() {
             tbl_score_validation();
         }, 60000);
     }
-    // let query = " select * from tbl_score_validation ";
-    // console.log(query)
-    // dbConnection.executeQuery(query, 'rmg_db', function (err, dbResult) {
-    //     if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
-    //         if (dbResult != null) {
-    //             gValidScores = dbResult;
-    //             console.log('gValidScores-' + gValidScores.length)
-    //         }
-    //     }
-    // });
+   
 }
 
 
