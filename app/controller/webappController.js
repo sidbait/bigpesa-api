@@ -3171,7 +3171,7 @@ module.exports = {
             } else {
                 playerId = userDetails.playerId;
             }
-
+            let sendOutContest =[];
             let contestRankquery = " select * from vw_Upcoming_rankDetails where 1=1 ";
             var contestquery = "select * from vw_apps_upcoming_contests_new where 1=1";
             let playerquery = ` select * from vw_playerjoined where player_id = ${playerId} `
@@ -3221,6 +3221,15 @@ module.exports = {
                     }
                     var distinctApps = [];
                     if (ContestOut != undefined) {
+                        let splContestCt = 0;
+                        ContestOut.forEach(contests => {
+                            if (contests.css_class != null
+                                && contests.css_class.toLowerCase().indexOf('special') > -1
+                                && contests.live_status == true) {
+                                    splContestCt = splContestCt+1;
+                            }
+                        });
+
                         ContestOut.forEach(element => {
                             let isnew = true;
                             distinctApps.forEach(distinctElement => {
@@ -3249,6 +3258,7 @@ module.exports = {
                                 app.contests = [];
 
                                 //console.log("app.download_path", app.download_path);
+                               
 
                                 ContestOut.forEach(contests => {
                                     if (contests.app_id == element.app_id) {
@@ -3381,7 +3391,15 @@ module.exports = {
                             }
                         });
                     }
-                    sendResp.sendCustomJSON(null, req, res, true, distinctApps, "App List")
+                    if(distinctApps.length > 1){
+                        console.log(distinctApps.length);
+                       let randomNumber = Math.floor(Math.random() * distinctApps.length-1) + 1 ;
+                      console.log('Random Number -'+randomNumber)
+                      console.log('count-'+distinctApps.length)
+                       sendOutContest.push(distinctApps[randomNumber]);
+                       
+                    }
+                    sendResp.sendCustomJSON(null, req, res, true, sendOutContest, "App List")
                 });
         });
     },

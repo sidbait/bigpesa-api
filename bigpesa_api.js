@@ -134,7 +134,7 @@ async function Banners() {
       
         setTimeout(async() => {
             Banners();
-        }, 1000);
+        }, 10000);
         //     }
         // });
     } catch (error) {
