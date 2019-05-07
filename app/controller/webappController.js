@@ -3442,18 +3442,22 @@ module.exports = {
         let contest_id = req.body.contestId;
         if(contest_id!= undefined && contest_id !=null){
       
-        let query = ` select tbl_player.player_id,CASE
-                      WHEN tbl_player.full_name IS NULL OR tbl_player.full_name = ''::text 
-                      THEN replace(tbl_player.phone_number, "substring"(tbl_player.phone_number, 
-                        5, 6), 'XXXXXX'::text)
-                        ELSE tbl_player.full_name
+        let query = `  select tbl_contest_leader_board.total_score, tbl_player.player_id,CASE
+                        WHEN tbl_player.full_name IS NULL OR tbl_player.full_name = ''::text 
+                         THEN replace(tbl_player.phone_number, "substring"(tbl_player.phone_number, 
+                          5, 6), 'XXXXXX'::text)
+                         ELSE tbl_player.full_name
                         END AS player_name,
-                     tbl_player.photo
-                    from tbl_contest_leader_board  
-                    inner join tbl_player on tbl_player.player_id = 
-                    tbl_contest_leader_board.player_id where  
-                    contest_id = ${contest_id} and 
-                    total_score > 0 order by total_score desc limit 3;`;
+                        tbl_player.photo
+                        from tbl_contest_leader_board  
+                        inner join tbl_player on tbl_player.player_id = 
+                        tbl_contest_leader_board.player_id where  
+                        contest_id =  ${contest_id} and 
+                        total_score > 0 order by 
+                        tbl_contest_leader_board.total_score  desc,
+                        tbl_contest_leader_board.created_at asc   
+                        limit 3 `;
+
                     console.log(query)
         var result = await dbConnection.executeQueryAll(query, "rmg_db");
         if (result != null && result != undefined && result.length != 0 &&  result.length ==3) {
