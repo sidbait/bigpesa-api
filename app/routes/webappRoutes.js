@@ -107,4 +107,7 @@ webAppRoutes.get('/depositcount', webappController.getdepositeCount);
 webAppRoutes.post('/contestoftheday', webappController.contestoftheday);
 webAppRoutes.post('/showConversionPopup',webappController.showConversionPopup);
 webAppRoutes.post('/popupcheck',popupController.popupCheck);
+webAppRoutes.post('/topwinnersContest' ,authToken.validateAppReq,webappController.topwinnersContest);
+
+
 module.exports = webAppRoutes;
