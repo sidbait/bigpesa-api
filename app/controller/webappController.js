@@ -208,7 +208,7 @@ module.exports = {
                                             contest.matrix_desc ="";
                                             if (contest.matrix_code != "") {
                                                 gdebitMatrix.forEach(matrix => {
-                                                    if (matrix.matrix_code == matrix.matrix_code) {
+                                                    if (matrix.matrix_code == contest.matrix_code) {
                                                         if (matrix.description != null) {
                                                             contest.matrix_desc = matrix.description;
                                                         }
