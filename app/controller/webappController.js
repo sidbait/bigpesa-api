@@ -3439,7 +3439,7 @@ module.exports = {
     },
 
     topwinnersContest: async (req, res) => {
-        let contest_id = req.body.contest_id;
+        let contest_id = req.body.contestId;
         if(contest_id!= undefined && contest_id !=null){
       
         let query = ` select tbl_player.player_id,CASE
