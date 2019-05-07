@@ -205,6 +205,16 @@ module.exports = {
                                             contest.contest_minutes = contests.contest_minutes;
                                             contest.infinite_users = contests.infinite_users;
                                             contest.matrix_code = contests.matrix_code;
+                                            contest.matrix_desc ="";
+                                            if (contest.matrix_code != "") {
+                                                gdebitMatrix.forEach(matrix => {
+                                                    if (matrix.matrix_code == matrix.matrix_code) {
+                                                        if (matrix.description != null) {
+                                                            contest.matrix_desc = matrix.description;
+                                                        }
+                                                    }
+                                                });
+                                            }
                                             if (contests.contest_icon != undefined && contests.contest_icon != null) {
                                                 contest.contest_icon = contests.contest_icon;
                                             } else {

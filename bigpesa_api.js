@@ -278,6 +278,25 @@ async function tbl_score_validation() {
     }
    
 }
+async function tbl_debit_matrix() {
+    console.log('CHECK gdebitMatrix')
+    try {
+        let debitMatrix = await redisConnection.getRedisPromise('gdebitMatrix');
+        
+        if (debitMatrix != null) {
+            gdebitMatrix = JSON.parse(debitMatrix);
+            console.log('gdebitMatrix Update ' + gdebitMatrix.length)
+        }
+        setTimeout(async() => {
+            tbl_debit_matrix();
+        }, 60000);
+    } catch (error) {
+        setTimeout(async() => {
+            tbl_debit_matrix();
+        }, 60000);
+    }
+   
+}
 
 
 client.on("connect", function (err) {
@@ -292,5 +311,6 @@ client.on("connect", function (err) {
     TopReferer();
     TopGameWinnerList();
     tbl_score_validation();
+    tbl_debit_matrix();
 });
 
