@@ -553,7 +553,7 @@ module.exports = {
                             ' tbl_visitbonus_master.credit_bonus, ' +
                             ' tbl_visitbonus_master.fromtime, ' +
                             ' tbl_visitbonus_master.totime ,\'TIMESLOT\' as type, ' +
-                            ' count(*) from vw_todays_visitors  as tbl_visit_spin_log ' +
+                            ' count(*) from tbl_visit_spin_log  as tbl_visit_spin_log ' +
                             ' inner join tbl_visitbonus_master ' +
                             ' on (tbl_visit_spin_log.visit_date + (330 * interval \'1 minute\'))  ::time ' +
                             ' between tbl_visitbonus_master.fromtime::time  ' +
@@ -571,7 +571,7 @@ module.exports = {
                             ' select  tbl_visitbonus_master.credit_type, ' +
                             ' tbl_visitbonus_master.credit_bonus, ' +
                             ' \'20:00:00\'::time as fromtime, \'20:00:00\'::time as totime,\'DAILY\' as type , ' +
-                            ' count(*) from vw_todays_visitors  as tbl_visit_spin_log ' +
+                            ' count(*) from tbl_visit_spin_log  as tbl_visit_spin_log ' +
                             ' inner join tbl_visitbonus_master  on  ' +
                             ' tbl_visitbonus_master.type = \'DAILY\' ' +
                             ' where  playerid = ' + playerId + ' ' +
@@ -655,7 +655,7 @@ module.exports = {
                                                                     " credit_type, credit_bonus, is_credited,type,status,next_retry ) " +
                                                                     " VALUES( " + playerId + ", now(), '00:00:00' " +
                                                                     " , '00:00:00', '" + data.dailybonus.credit_type + "', " +
-                                                                    " " + data.dailybonus.amount + ", false,'DAILY-BONUS','ACTIVE',now());";
+                                                                    " " + data.dailybonus.amount + ", false,'DAILY-BONUS','QUE',now());";
                                                                 // console.log(insertDailyBonusLog)
                                                                 dbConnection.executeQuery(insertDailyBonusLog, "rmg_db", function (err, visitLog) {
                                                                     if (err) {
@@ -694,7 +694,7 @@ module.exports = {
                                                     " credit_type, credit_bonus, is_credited,type,status,next_retry ) " +
                                                     " VALUES( " + playerId + ", now(), '00:00:00' " +
                                                     " , '00:00:00', '" + data.dailybonus.credit_type + "', " +
-                                                    " " + data.dailybonus.amount + ", false,'DAILY-BONUS','ACTIVE',now());";
+                                                    " " + data.dailybonus.amount + ", false,'DAILY-BONUS','QUE',now());";
                                                 // console.log(insertDailyBonusLog)
                                                 dbConnection.executeQuery(insertDailyBonusLog, "rmg_db", function (err, visitLog) {
                                                     if (err) {
@@ -723,9 +723,36 @@ module.exports = {
             });
         });
     },
-    claimDailySpin : function(req,res){
-        
-    },    
+    claimDailySpin: async function (req, res) {
+        var appSecretKey = req.headers["x-nazara-app-secret-key"];
+        let userToken = req.headers["authorization"];
+        let app_id = req.body.appid ? req.body.appid : null;
+        let channel = req.body.channel;
+        let playerInfo = await userModel.getUserDetailPromise(userToken);
+        let player_id = playerInfo.playerId;
+        console.log(playerInfo)
+        if (player_id == "") {
+            sendResp.sendCustomJSON(null, req, res, false, [], "Token Invalid!");
+        } else {
+            let query = ` select id,credit_bonus,credit_type,is_credited,player_id,status 
+            from tbl_visit_bonus_log  where player_id = ${player_id}
+            and type ='DAILY-BONUS'
+            and (visit_datetime + (330 * interval '1 minute'))::date  = nowInd()::date  `;
+            console.log(query);
+            let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
+            if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
+                if (dbResult[0].status.toUpperCase() == 'QUE') {
+                    let que_id = dbResult[0].id;
+                    let query_claim = ` update  tbl_bonus_credit_que set status = 'ACTIVE' where id = ${que_id} `;
+                    let dbResult = await dbConnection.executeQueryAll(query_claim, 'rmg_db');
+                }else{
+                    sendResp.sendCustomJSON(null, req, res, false, [], "Come back tommarow!"); 
+                }
+            } else {
+                sendResp.sendCustomJSON(null, req, res, false, [], "Come back tommarow!");
+            }
+        }
+    },
     checkSpinToday: async function (req, res) {
         var appSecretKey = req.headers["x-nazara-app-secret-key"];
         let userToken = req.headers["authorization"];
@@ -737,30 +764,29 @@ module.exports = {
         if (player_id == "") {
             sendResp.sendCustomJSON(null, req, res, false, [], "Token Invalid!");
         } else {
-            let query = ` select 'CASH' as credit_type, que_id,event_id,event_type,event_name,amount,
-                        comment,player_id,is_claim from tbl_wallet_credit_que  where player_id = ${player_id}
-                        and event_type ='DAILY-BONUS'
-                        and (add_date + (330 * interval '1 minute'))::date  = nowInd()::date `;
+            let query = ` select id,credit_bonus,credit_type,is_credited,player_id,status from tbl_visit_bonus_log  where player_id = ${player_id}
+            and type ='DAILY-BONUS'
+            and (visit_datetime + (330 * interval '1 minute'))::date  = nowInd()::date  `;
             let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
             if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
-               if(dbResult[0].is_claim){
+                if (dbResult[0].status.toUpperCase() == "QUE") {
 
-                var getSpinWheelquery = " select * from tbl_dailybonus_spin_master where  status = 'ACTIVE' and upper(channel) = '" + channel + "'";
-                dbConnection.executeQuery(getSpinWheelquery, "rmg_db", function (err, spinwheelData) {
-                    if (err || spinwheelData == undefined || spinwheelData.length == 0) {
-                        sendResp.sendCustomJSON(null, req, res, false, [], "Something got wrong!");
-                    } else {
-                        let data ={};
-                        data.isDailyBonus = true;
-                        data.dailybonus = { credit_type: dbResult[0].credit_type, amount: dbResult[0].amount };
-                        data.spinWheel = spinwheelData;
-                        sendResp.sendCustomJSON(null, req, res, false,data, "Daily Spin Data Found!");
-                    }
-                });
-               }else{
-                sendResp.sendCustomJSON(null, req, res, false, [], "Come back tommarow!");
-               }
-            }else{
+                    var getSpinWheelquery = " select * from tbl_dailybonus_spin_master where  status = 'ACTIVE' and upper(channel) = '" + channel + "'";
+                    dbConnection.executeQuery(getSpinWheelquery, "rmg_db", function (err, spinwheelData) {
+                        if (err || spinwheelData == undefined || spinwheelData.length == 0) {
+                            sendResp.sendCustomJSON(null, req, res, false, [], "Something got wrong!");
+                        } else {
+                            let data = {};
+                            data.isDailyBonus = true;
+                            data.dailybonus = { credit_type: dbResult[0].credit_type, amount: dbResult[0].credit_bonus };
+                            data.spinWheel = spinwheelData;
+                            sendResp.sendCustomJSON(null, req, res, false, data, "Daily Spin Data Found!");
+                        }
+                    });
+                } else {
+                    sendResp.sendCustomJSON(null, req, res, false, [], "Come back tommarow!");
+                }
+            } else {
                 sendResp.sendCustomJSON(null, req, res, false, [], "Come back tommarow!");
             }
         }
