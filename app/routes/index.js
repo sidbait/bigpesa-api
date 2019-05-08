@@ -9,6 +9,7 @@ var webappRoutes = require('../routes/webappRoutes');
 var referrerRoutes = require('../routes/referrerRoutes');
 var notificationRoutes = require('../routes/notificationRoutes');
 var leaderBoardRoutes = require('../routes/leaderBoardRoutes');
+var logRoutes = require('../routes/logRoutes');
 
 var profileRoutes =require('./profileRoutes');
 
@@ -22,5 +23,6 @@ apiRoutes.use(referrerRoutes);
 apiRoutes.use(notificationRoutes);
 apiRoutes.use(profileRoutes);
 apiRoutes.use(leaderBoardRoutes);
+apiRoutes.use(logRoutes);
 module.exports = apiRoutes;
 
