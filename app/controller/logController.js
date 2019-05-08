@@ -737,7 +737,8 @@ module.exports = {
         if (player_id == "") {
             sendResp.sendCustomJSON(null, req, res, false, [], "Token Invalid!");
         } else {
-            let query = ` select * from tbl_wallet_credit_que  where player_id = ${player_id}
+            let query = ` select 'CASH' as credit_type, que_id,event_id,event_type,event_name,amount,
+                        comment,player_id,is_claim from tbl_wallet_credit_que  where player_id = ${player_id}
                         and event_type ='DAILY-BONUS'
                         and (add_date + (330 * interval '1 minute'))::date  = nowInd()::date `;
             let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
@@ -749,25 +750,11 @@ module.exports = {
                     if (err || spinwheelData == undefined || spinwheelData.length == 0) {
                         sendResp.sendCustomJSON(null, req, res, false, [], "Something got wrong!");
                     } else {
+                        let data ={};
                         data.isDailyBonus = true;
-                        data.dailybonus = { credit_type: VisitRow.credit_type, amount: VisitRow.credit_bonus };
-                      
+                        data.dailybonus = { credit_type: dbResult[0].credit_type, amount: dbResult[0].amount };
                         data.spinWheel = spinwheelData;
-                        // console.log('DAILY VISIT')
-                        let insertDailyBonusLog = "INSERT INTO public.tbl_visit_bonus_log " +
-                            " (player_id, visit_datetime, fromtime, totime, " +
-                            " credit_type, credit_bonus, is_credited,type,status,next_retry ) " +
-                            " VALUES( " + playerId + ", now(), '00:00:00' " +
-                            " , '00:00:00', '" + data.dailybonus.credit_type + "', " +
-                            " " + data.dailybonus.amount + ", false,'DAILY-BONUS','ACTIVE',now());";
-                        // console.log(insertDailyBonusLog)
-                        dbConnection.executeQuery(insertDailyBonusLog, "rmg_db", function (err, visitLog) {
-                            if (err) {
-                                sendResp.sendCustomJSON(null, req, res, false, [], "Something got wrong!");
-                            } else {
-                                sendResp.sendCustomJSON(null, req, res, true, data, "Got Daily Bonus " + data.dailybonus.credit_type + "(" + data.dailybonus.amount + ")");
-                            }
-                        });
+                        sendResp.sendCustomJSON(null, req, res, false,data, "Daily Spin Data Found!");
                     }
                 });
                }else{
