@@ -740,11 +740,15 @@ module.exports = {
             and (visit_datetime + (330 * interval '1 minute'))::date  = nowInd()::date  `;
             console.log(query);
             let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
+            console.log(dbResult)
             if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
+                console.log(dbResult[0].status.toUpperCase())
                 if (dbResult[0].status.toUpperCase() == 'QUE') {
                     let que_id = dbResult[0].id;
-                    let query_claim = ` update  tbl_bonus_credit_que set status = 'ACTIVE' where id = ${que_id} `;
-                    let dbResult = await dbConnection.executeQueryAll(query_claim, 'rmg_db');
+                    let query_claim = ` update  tbl_visit_bonus_log set status = 'ACTIVE' where id = ${que_id} `;
+                    let dbResultClaim = await dbConnection.executeQueryAll(query_claim, 'rmg_db');
+                    console.log(dbResultClaim)
+                    sendResp.sendCustomJSON(null, req, res, true, {claim:"SUCCESS"}, "Claim Successfully!"); 
                 }else{
                     sendResp.sendCustomJSON(null, req, res, false, [], "Come back tommarow!"); 
                 }
