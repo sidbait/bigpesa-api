@@ -2525,7 +2525,8 @@ module.exports = {
         if (appSecretKey != null && appSecretKey != undefined && appSecretKey != "" &&
             sessionToken != null && sessionToken != undefined && sessionToken != "") {
             validateToken(sessionToken, app_max_game_minute).then(isSessionTokenDetails => {
-                if (isSessionTokenDetails != null && isSessionTokenDetails != undefined && isSessionTokenDetails.length > 0) {
+                if (isSessionTokenDetails != null && isSessionTokenDetails != undefined 
+                    && isSessionTokenDetails.length > 0) {
                     console.log(isSessionTokenDetails)
                     var contestId = isSessionTokenDetails[0].contest_id;
                     var appId = isSessionTokenDetails[0].app_id;
@@ -3657,7 +3658,8 @@ function scoreUpdown(contest_id, winnerList, callback) {
 
 function increaseLives(playerId, contestId) {
     let updateUsedLives = `update tbl_contest_players set used_lives = 
-                       COALESCE( used_lives ,0) + 1  where contest_id = ${contestId} and 
+                       COALESCE( used_lives ,0) + 1 ,last_play_date = now()  
+                       where contest_id = ${contestId} and 
                        player_id = ${playerId} `;
     console.log(updateUsedLives + "|" + updateUsedLives)
     dbConnection.executeQuery(updateUsedLives, "rmg_db", function (err, dbResult) { });
