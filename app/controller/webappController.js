@@ -1246,7 +1246,7 @@ module.exports = {
                         let redisKey = 'JOIN' + playerId + "|" + contestId;
                         let isInProcess = await redisConnection.getRedisPromise(redisKey);
                         console.log('IS IN PROCESS---' + isInProcess);
-                       // if (isInProcess == null) {
+                         if (isInProcess == null) {
 
                             redisConnection.setRedisPromise(redisKey,true,2);
                             mobileNumber = deails.phone_number;
@@ -1806,9 +1806,9 @@ module.exports = {
                                 }
                             });
 
-                       // } else {
-                       //     sendResp.sendCustomJSON(null, req, res, false, [], "Your Request In Process!", false, false);
-                       // }
+                        } else {
+                             sendResp.sendCustomJSON(null, req, res, false, [], "Your Request In Process!", false, false);
+                         }
 
                     }
                 }
