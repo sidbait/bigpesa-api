@@ -1235,7 +1235,7 @@ module.exports = {
             sendResp.sendCustomJSON(null, req, res, false, [], "Invalid checksum!")
         }
         else {
-            userModel.getUserDetails(userToken, function (err, deails) {
+            userModel.getUserDetails(userToken,async function (err, deails) {
                 if (err) {
                     sendResp.sendCustomJSON(null, req, res, false, [], "Token Is Invalid", false, false);
                 } else {
@@ -1244,7 +1244,7 @@ module.exports = {
                         sendResp.sendCustomJSON(null, req, res, false, [], "Token Is Invalid", false, false);
                     } else {
                         let redisKey = 'JOIN' + playerId + "|" + contestId;
-                        let isInProcess = redisConnection.getRedisPromise(redisKey);
+                        let isInProcess = await redisConnection.getRedisPromise(redisKey);
                         console.log('IS IN PROCESS---' + isInProcess);
                        // if (isInProcess == null) {
 
