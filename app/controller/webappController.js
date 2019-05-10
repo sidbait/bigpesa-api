@@ -215,6 +215,11 @@ module.exports = {
                                                     }
                                                 });
                                             }
+                                            if( parseInt(contests.max_players) == 2){
+                                                contest.allow_rejoin = false;
+                                            }else{
+                                                contest.allow_rejoin = true;
+                                            }
                                             if (contests.contest_icon != undefined && contests.contest_icon != null) {
                                                 contest.contest_icon = contests.contest_icon;
                                             } else {
@@ -272,23 +277,7 @@ module.exports = {
                                                 });
                                             }
 
-                                            // if (isPlaystoreApp) {
-                                            //     if (contest.debit_type.toUpperCase() != "CASH") {
-                                            //         app.contests.push(contest);
-                                            //     }
-
-                                            // } else {
-                                            //     //console.log(contest.debit_type);
-                                            //     //console.log(contest.credit_type)
-                                            //     if (contest.debit_type.toUpperCase() == "COIN" &&
-                                            //         contest.credit_type.toUpperCase() == "COIN") {
-
-                                            //     } else {
-                                            //         app.contests.push(contest);
-                                            //     }
-                                            // }
-                                            //console.log('contest.contest_minutes' + contest.contest_minutes + "|" + contest.play_status)
-                                            if (contest_channel != "" && contest_channel != null && contest_channel != undefined) {
+                                                   if (contest_channel != "" && contest_channel != null && contest_channel != undefined) {
                                                 if (channel.toUpperCase() == "PLAYSTORE" && contest_channel.toUpperCase() == "PLAYSTORE") {
                                                     if (contest.contest_minutes > 0 && contest.play_status == 'FULL') {
                                                     } else {
@@ -614,7 +603,13 @@ module.exports = {
                                                         contest.remainingendseconds = remainingendseconds;
                                                         contest.start_date = (contest.start_date).toString().substring(0, 16).replace('T', ' ');
                                                         contest.end_date = (contest.end_date).toString().substring(0, 16).replace('T', ' ');
-
+                                                       
+                                                        if( parseInt(contests.max_players) == 2){
+                                                            contest.allow_rejoin = false;
+                                                        }else{
+                                                            contest.allow_rejoin = true;
+                                                        }
+                                                       
                                                         if (contest.contest_status == "LIVE") {
 
                                                             let livecontest = contest;
