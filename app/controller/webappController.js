@@ -862,7 +862,11 @@ module.exports = {
 
                                     contestdetails[0].remainingstartseconds = remainingstartseconds;
                                     contestdetails[0].remainingendseconds = remainingendseconds;
-
+                                    if( parseInt(contestdetails[0].max_players) == 2){
+                                        contestdetails[0].allow_rejoin = false;
+                                    }else{
+                                        contestdetails[0].allow_rejoin = true;
+                                    }
                                     contestdetails[0].contest_rank = [];
                                     rankDetails.forEach(contestRank => {
                                         if (contestRank.contest_id == contestdetails[0].contest_id) {
@@ -1235,566 +1239,576 @@ module.exports = {
                 if (err) {
                     sendResp.sendCustomJSON(null, req, res, false, [], "Token Is Invalid", false, false);
                 } else {
-                    playerId = deails.playerId;
+                    playerId = deails.playerId;                    
                     if (playerId == "") {
                         sendResp.sendCustomJSON(null, req, res, false, [], "Token Is Invalid", false, false);
                     } else {
-                        mobileNumber = deails.phone_number;
-                        airpayToken = deails.airpay_token;
-                        let player_name = deails.player_name;
-                        let imgurl = deails.imgurl;
-                        contestModel.getLiveContestDetails(contestId, appId, playerId, function (err, contestInfo) {
+                        let redisKey = 'JOIN' + playerId + "|" + contestId;
+                        let isInProcess = redisConnection.getRedisPromise(redisKey);
+                        if (isInProcess == null) {
 
-                            if (err) {
-                                sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
-                            }
-                            else {
+                            redisConnection.setRedisPromise(redisKey,true,2);
+                            mobileNumber = deails.phone_number;
+                            airpayToken = deails.airpay_token;
+                            let player_name = deails.player_name;
+                            let imgurl = deails.imgurl;
+                            contestModel.getLiveContestDetails(contestId, appId, playerId, function (err, contestInfo) {
 
-                                if (contestInfo == null || contestInfo == undefined)
-                                    contestInfo = null;
-                                else if (contestInfo.length == 0)
-                                    contestInfo = null;
-                                else
-                                    contestInfo = contestInfo[0];
+                                if (err) {
+                                    sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
+                                }
+                                else {
+
+                                    if (contestInfo == null || contestInfo == undefined)
+                                        contestInfo = null;
+                                    else if (contestInfo.length == 0)
+                                        contestInfo = null;
+                                    else
+                                        contestInfo = contestInfo[0];
 
 
 
-                                if (contestInfo == null || contestInfo == undefined) {
-                                    sendResp.sendCustomJSON(null, req, res, false, [], "Contest details not available!");
-                                } else {
-
-                                    if (contestInfo.app_type == null || contestInfo.app_type == undefined)
-                                        contestInfo.app_type = "";
-                                    let isLive = contestInfo.live_status;
-                                    let matrix_code = contestInfo.matrix_code;
-                                    let debit_type = contestInfo.debit_type;
-                                    let max_lives = contestInfo.max_lives;
-                                    let passData = "contestId=" + contestId.toString();
-                                    let isSendParams = contestInfo.send_params;
-                                    let package_name = contestInfo.package_name;
-                                    let app_type = contestInfo.app_type;
-                                    let gc = contestInfo.game_conf ? contestInfo.game_conf : '';
-                                    if (contestInfo.app_type.toLowerCase() == "android") {
-                                        passData = "contestId=" + contestId.toString()
-                                            + "&playToken=" + sessionToken
-                                            + "&userToken=" + userToken;
-                                    }
-                                    else {
-                                        if (isSendParams) {
-                                            passData = "appId=" + appId.toString() +
-                                                "&contestId=" + contestId.toString() +
-                                                "&playerId=" + playerId.toString() +
-                                                "&userToken=" + userToken + "&playToken="
-                                                + sessionToken + "&rn="
-                                                + randomNumber + "&gc=" + gc;
-                                        } else {
-                                            passData = "playToken=" + sessionToken;
-                                        }
-                                    }
-                                    var redirect_link = "";
-                                    console.log('isSendParams:' + isSendParams)
-                                    if (isSendParams) {
-                                        console.log('DATA: ' + passData);
-                                        var dt = moment.tz((new Date()), "UTC").format('YYYYMMDD');
-                                        var enPass = "auth.bigpesa.com" + dt
-                                        var iv = dt + "zJq6BMXu"
-                                        const cipher = crypto.createCipheriv('aes192', enPass, iv);
-                                        let encrypted = cipher.update(passData, 'utf8', 'hex');
-                                        encrypted += cipher.final('hex');
-                                        redirect_link = contestInfo.deep_link.replace(/{dldata}/gi, encrypted);
-                                        redirect_link = redirect_link.replace(/{appid}/gi, appId);
+                                    if (contestInfo == null || contestInfo == undefined) {
+                                        sendResp.sendCustomJSON(null, req, res, false, [], "Contest details not available!");
                                     } else {
-                                        if (contestInfo.deep_link.indexOf('?') > 0) {
 
-                                        } else {
-                                            redirect_link = contestInfo.deep_link + "?";
+                                        if (contestInfo.app_type == null || contestInfo.app_type == undefined)
+                                            contestInfo.app_type = "";
+                                        let isLive = contestInfo.live_status;
+                                        let matrix_code = contestInfo.matrix_code;
+                                        let debit_type = contestInfo.debit_type;
+                                        let max_lives = contestInfo.max_lives;
+                                        let passData = "contestId=" + contestId.toString();
+                                        let isSendParams = contestInfo.send_params;
+                                        let package_name = contestInfo.package_name;
+                                        let app_type = contestInfo.app_type;
+                                        let gc = contestInfo.game_conf ? contestInfo.game_conf : '';
+                                        if (contestInfo.app_type.toLowerCase() == "android") {
+                                            passData = "contestId=" + contestId.toString()
+                                                + "&playToken=" + sessionToken
+                                                + "&userToken=" + userToken;
                                         }
-                                        if (contestInfo.deep_link.indexOf('&') > 0) {
-                                            redirect_link = contestInfo.deep_link + "&playToken=" + sessionToken + "gc=" + gc + "&rn=" + randomNumber + "&playerName=" + player_name + "&imgUrl=" + imgurl;
-                                        } else {
-                                            redirect_link = contestInfo.deep_link + "playToken=" + sessionToken + "&gc=" + gc + "&rn=" + randomNumber + "&playerName=" + player_name + "&imgUrl=" + imgurl;
+                                        else {
+                                            if (isSendParams) {
+                                                passData = "appId=" + appId.toString() +
+                                                    "&contestId=" + contestId.toString() +
+                                                    "&playerId=" + playerId.toString() +
+                                                    "&userToken=" + userToken + "&playToken="
+                                                    + sessionToken + "&rn="
+                                                    + randomNumber + "&gc=" + gc;
+                                            } else {
+                                                passData = "playToken=" + sessionToken;
+                                            }
                                         }
-                                    }
+                                        var redirect_link = "";
+                                        console.log('isSendParams:' + isSendParams)
+                                        if (isSendParams) {
+                                            console.log('DATA: ' + passData);
+                                            var dt = moment.tz((new Date()), "UTC").format('YYYYMMDD');
+                                            var enPass = "auth.bigpesa.com" + dt
+                                            var iv = dt + "zJq6BMXu"
+                                            const cipher = crypto.createCipheriv('aes192', enPass, iv);
+                                            let encrypted = cipher.update(passData, 'utf8', 'hex');
+                                            encrypted += cipher.final('hex');
+                                            redirect_link = contestInfo.deep_link.replace(/{dldata}/gi, encrypted);
+                                            redirect_link = redirect_link.replace(/{appid}/gi, appId);
+                                        } else {
+                                            if (contestInfo.deep_link.indexOf('?') > 0) {
 
-                                    console.log('redirect_link - ', redirect_link);
+                                            } else {
+                                                redirect_link = contestInfo.deep_link + "?";
+                                            }
+                                            if (contestInfo.deep_link.indexOf('&') > 0) {
+                                                redirect_link = contestInfo.deep_link + "&playToken=" + sessionToken + "gc=" + gc + "&rn=" + randomNumber + "&playerName=" + player_name + "&imgUrl=" + imgurl;
+                                            } else {
+                                                redirect_link = contestInfo.deep_link + "playToken=" + sessionToken + "&gc=" + gc + "&rn=" + randomNumber + "&playerName=" + player_name + "&imgUrl=" + imgurl;
+                                            }
+                                        }
 
-                                    //console.log('contestInfo.play_status - ' + contestInfo.play_status);
-                                    if (contestInfo.play_status == "PLAY") {
-                                        if (max_lives != 0) {
-                                            let validateLives = ` select * from vw_playerjoined where player_id =${playerId} and contest_id = ${contestId} `;
-                                            console.log(validateLives)
-                                            dbConnection.executeQuery(validateLives, "rmg_db", function (err, checkLives) {
-                                                if (checkLives && checkLives.length > 0 &&checkLives[0].player_status == "PLAY") {
-                                                    let isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
-                                                    if (isTokenSave) {
-                                                        if (isLive) {
-                                                            increaseLives(playerId, contestId);
-                                                            sendResp.sendCustomJSON(null, req, res, true,
-                                                                {
-                                                                    play_status: "PLAY",
-                                                                    deep_link: redirect_link,
-                                                                    session_token: sessionToken,
-                                                                    package_name: package_name,
-                                                                    app_type: app_type
-                                                                }, "Succesfully Joined", true);
+                                        console.log('redirect_link - ', redirect_link);
+
+                                        //console.log('contestInfo.play_status - ' + contestInfo.play_status);
+                                        if (contestInfo.play_status == "PLAY") {
+                                            if (max_lives != 0) {
+                                                let validateLives = ` select * from vw_playerjoined where player_id =${playerId} and contest_id = ${contestId} `;
+                                                console.log(validateLives)
+                                                dbConnection.executeQuery(validateLives, "rmg_db", function (err, checkLives) {
+                                                    if (checkLives && checkLives.length > 0 && checkLives[0].player_status == "PLAY") {
+                                                        let isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
+                                                        if (isTokenSave) {
+                                                            if (isLive) {
+                                                                increaseLives(playerId, contestId);
+                                                                sendResp.sendCustomJSON(null, req, res, true,
+                                                                    {
+                                                                        play_status: "PLAY",
+                                                                        deep_link: redirect_link,
+                                                                        session_token: sessionToken,
+                                                                        package_name: package_name,
+                                                                        app_type: app_type
+                                                                    }, "Succesfully Joined", true);
+                                                            } else {
+                                                                sendResp.sendCustomJSON(null, req, res, true,
+                                                                    {
+                                                                        play_status: "JOINED",
+                                                                        deep_link: redirect_link,
+                                                                        session_token: sessionToken,
+                                                                        package_name: package_name,
+                                                                        app_type: app_type
+                                                                    }, "Succesfully Joined", true);
+                                                            }
                                                         } else {
-                                                            sendResp.sendCustomJSON(null, req, res, true,
-                                                                {
-                                                                    play_status: "JOINED",
-                                                                    deep_link: redirect_link,
-                                                                    session_token: sessionToken,
-                                                                    package_name: package_name,
-                                                                    app_type: app_type
-                                                                }, "Succesfully Joined", true);
+                                                            sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
                                                         }
-                                                    } else {
-                                                        sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
                                                     }
-                                                }
-                                                else if (checkLives && checkLives.length > 0 && checkLives[0].player_status == "GAMEOVER") {
-                                                    getNewLives(contestInfo, playerId, userToken, airpayToken, function (err, debitResponse) {
-                                                        console.log('NEW LIVES RS---------')
-                                                        console.log(err)
-                                                        console.log(debitResponse)
-                                                        if (err) {
-                                                            sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, You have used all your lives! Try to play other contest.");
-                                                        } else {
-                                                            if (debitResponse.statusCode == "200") {
-                                                                let isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
-                                                                if (isTokenSave) {
-                                                                    if (isLive) {
-                                                                        increaseLives(playerId, contestId);
-                                                                        sendResp.sendCustomJSON(null, req, res, true,
-                                                                            {
-                                                                                play_status: "PLAY",
-                                                                                deep_link: redirect_link,
-                                                                                session_token: sessionToken,
-                                                                                package_name: package_name,
-                                                                                app_type: app_type
-                                                                            }, "Succesfully Joined", true);
+                                                    else if (checkLives && checkLives.length > 0 && checkLives[0].player_status == "GAMEOVER") {
+                                                        getNewLives(contestInfo, playerId, userToken, airpayToken, function (err, debitResponse) {
+                                                            console.log('NEW LIVES RS---------')
+                                                            console.log(err)
+                                                            console.log(debitResponse)
+                                                            if (err) {
+                                                                sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, You have used all your lives! Try to play other contest.");
+                                                            } else {
+                                                                if (debitResponse.statusCode == "200") {
+                                                                    let isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
+                                                                    if (isTokenSave) {
+                                                                        if (isLive) {
+                                                                            increaseLives(playerId, contestId);
+                                                                            sendResp.sendCustomJSON(null, req, res, true,
+                                                                                {
+                                                                                    play_status: "PLAY",
+                                                                                    deep_link: redirect_link,
+                                                                                    session_token: sessionToken,
+                                                                                    package_name: package_name,
+                                                                                    app_type: app_type
+                                                                                }, "Succesfully Joined", true);
+                                                                        } else {
+                                                                            sendResp.sendCustomJSON(null, req, res, true,
+                                                                                {
+                                                                                    play_status: "JOINED",
+                                                                                    deep_link: redirect_link,
+                                                                                    session_token: sessionToken,
+                                                                                    package_name: package_name,
+                                                                                    app_type: app_type
+                                                                                }, "Succesfully Joined", true);
+                                                                        }
                                                                     } else {
-                                                                        sendResp.sendCustomJSON(null, req, res, true,
-                                                                            {
-                                                                                play_status: "JOINED",
-                                                                                deep_link: redirect_link,
-                                                                                session_token: sessionToken,
-                                                                                package_name: package_name,
-                                                                                app_type: app_type
-                                                                            }, "Succesfully Joined", true);
+                                                                        sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
                                                                     }
                                                                 } else {
-                                                                    sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
+                                                                    sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, You have used all your lives! Try to play other contest.");
                                                                 }
-                                                            } else {
-                                                                sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, You have used all your lives! Try to play other contest.");
                                                             }
-                                                        }
-                                                        //
-                                                    });
-                                                }
-                                                else {
+                                                            //
+                                                        });
+                                                    }
+                                                    else {
+                                                        sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
+                                                    }
+                                                });
+                                            } else {
+                                                let isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
+                                                if (isTokenSave) {
+                                                    if (isLive) {
+                                                        increaseLives(playerId, contestId);
+                                                        sendResp.sendCustomJSON(null, req, res, true,
+                                                            {
+                                                                play_status: "PLAY",
+                                                                deep_link: redirect_link,
+                                                                session_token: sessionToken,
+                                                                package_name: package_name,
+                                                                app_type: app_type
+                                                            }, "Succesfully Joined", true);
+                                                    } else {
+                                                        sendResp.sendCustomJSON(null, req, res, true,
+                                                            {
+                                                                play_status: "JOINED",
+                                                                deep_link: redirect_link,
+                                                                session_token: sessionToken,
+                                                                package_name: package_name,
+                                                                app_type: app_type
+                                                            }, "Succesfully Joined", true);
+                                                    }
+                                                } else {
                                                     sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
                                                 }
-                                            });
-                                        } else {
-                                            let isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
+                                            }
+                                        } else if (contestInfo.play_status == "JOINED") {
+                                            var isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
                                             if (isTokenSave) {
-                                                if (isLive) {
-                                                    increaseLives(playerId, contestId);
-                                                    sendResp.sendCustomJSON(null, req, res, true,
-                                                        {
-                                                            play_status: "PLAY",
-                                                            deep_link: redirect_link,
-                                                            session_token: sessionToken,
-                                                            package_name: package_name,
-                                                            app_type: app_type
-                                                        }, "Succesfully Joined", true);
-                                                } else {
-                                                    sendResp.sendCustomJSON(null, req, res, true,
-                                                        {
-                                                            play_status: "JOINED",
-                                                            deep_link: redirect_link,
-                                                            session_token: sessionToken,
-                                                            package_name: package_name,
-                                                            app_type: app_type
-                                                        }, "Succesfully Joined", true);
-                                                }
+                                                sendResp.sendCustomJSON(null, req, res, true, {
+                                                    play_status: "JOINED",
+                                                    deep_link: redirect_link,
+                                                    session_token: sessionToken,
+                                                    package_name: package_name,
+                                                    app_type: app_type
+                                                }, "You have joined the contest!", true);
                                             } else {
                                                 sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
                                             }
-                                        }
-                                    } else if (contestInfo.play_status == "JOINED") {
-                                        var isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
-                                        if (isTokenSave) {
-                                            sendResp.sendCustomJSON(null, req, res, true, {
-                                                play_status: "JOINED",
-                                                deep_link: redirect_link,
-                                                session_token: sessionToken,
-                                                package_name: package_name,
-                                                app_type: app_type
-                                            }, "You have joined the contest!", true);
-                                        } else {
-                                            sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
-                                        }
 
-                                    } else if (contestInfo.play_status == "PAY") {
+                                        } else if (contestInfo.play_status == "PAY") {
 
-                                        if (contestInfo.players_joined >= contestInfo.max_players) {
-                                            sendResp.sendCustomJSON(null, req, res, false, [], "Sorry all seats just got filled.");
-                                        } else {
-                                            // let query_isContestFull =" select case when  count(1) >= contest.max_players " +
-                                            // " then 'full' else 'pay' end as state from tbl_contest contest " +
-                                            // " inner join tbl_contest_players contest_player on contest_player.contest_id = contest.contest_id " +
-                                            // " where contest.contest_id = "+ contestId +" " +
-                                            // " group by contest.max_players ";
-                                            let checkIfAlreadyJoined = " select  coalesce(count(1),0) as ct from tbl_contest_players where " +
-                                                " player_id = " + playerId + " and contest_id =" + contestId + " ";
+                                            if (contestInfo.players_joined >= contestInfo.max_players) {
+                                                sendResp.sendCustomJSON(null, req, res, false, [], "Sorry all seats just got filled.");
+                                            } else {
+                                                // let query_isContestFull =" select case when  count(1) >= contest.max_players " +
+                                                // " then 'full' else 'pay' end as state from tbl_contest contest " +
+                                                // " inner join tbl_contest_players contest_player on contest_player.contest_id = contest.contest_id " +
+                                                // " where contest.contest_id = "+ contestId +" " +
+                                                // " group by contest.max_players ";
+                                                let checkIfAlreadyJoined = " select  coalesce(count(1),0) as ct from tbl_contest_players where " +
+                                                    " player_id = " + playerId + " and contest_id =" + contestId + " ";
 
-                                            dbConnection.executeQuery(checkIfAlreadyJoined, "rmg_db", function (err, isAlreadyJoin) {
-                                                if (err) {
-                                                    sendResp.sendCustomJSON(null, req, res, false, [], "Contest details not available!");
-                                                } else {
-                                                    if (isAlreadyJoin != undefined &&
-                                                        isAlreadyJoin != null &&
-                                                        isAlreadyJoin.length > 0) {
-                                                        console.log(isAlreadyJoin);
-                                                        if (isAlreadyJoin[0].ct > 0) {
-                                                            if (isLive) {
-                                                                increaseLives(playerId, contestId);
-                                                                sendResp.sendCustomJSON(null, req, res, true, {
-                                                                    play_status: "DEBITED",
-                                                                    deep_link: redirect_link,
-                                                                    session_token: sessionToken,
-                                                                    package_name: package_name,
-                                                                    app_type: app_type
-                                                                }, "Already Joined", true);
-                                                            } else {
-                                                                sendResp.sendCustomJSON(null, req, res, true, {
-                                                                    play_status: "JOINED",
-                                                                    deep_link: redirect_link,
-                                                                    session_token: sessionToken,
-                                                                    package_name: package_name,
-                                                                    app_type: app_type
-                                                                }, "Joined Successfully", true);
-                                                            }
-                                                        } else {
-                                                            let query_isContestFull = " select case when  count( distinct contest_player.player_id ) >= contest.max_players " +
-                                                                " then 'full' else 'pay' end as state  from tbl_contest contest  " +
-                                                                " left join tbl_contest_players contest_player on " +
-                                                                " contest_player.contest_id = contest.contest_id   " +
-                                                                " where contest.contest_id = " + contestId + "  " +
-                                                                " group by contest.max_players ";
-                                                            dbConnection.executeQuery(query_isContestFull, "rmg_db", function (err, resultIsFull) {
-                                                                if (err) {
-                                                                    sendResp.sendCustomJSON(null, req, res, false, [], "Contest details not available!");
+                                                dbConnection.executeQuery(checkIfAlreadyJoined, "rmg_db", function (err, isAlreadyJoin) {
+                                                    if (err) {
+                                                        sendResp.sendCustomJSON(null, req, res, false, [], "Contest details not available!");
+                                                    } else {
+                                                        if (isAlreadyJoin != undefined &&
+                                                            isAlreadyJoin != null &&
+                                                            isAlreadyJoin.length > 0) {
+                                                            console.log(isAlreadyJoin);
+                                                            if (isAlreadyJoin[0].ct > 0) {
+                                                                if (isLive) {
+                                                                    increaseLives(playerId, contestId);
+                                                                    sendResp.sendCustomJSON(null, req, res, true, {
+                                                                        play_status: "DEBITED",
+                                                                        deep_link: redirect_link,
+                                                                        session_token: sessionToken,
+                                                                        package_name: package_name,
+                                                                        app_type: app_type
+                                                                    }, "Already Joined", true);
                                                                 } else {
-                                                                    console.log('----XXXX------------------------');
-                                                                    console.log(query_isContestFull);
-                                                                    console.log(err);
-                                                                    console.log(resultIsFull);
-                                                                    console.log('----XXXX------------------------');
-                                                                    if (resultIsFull != undefined &&
-                                                                        resultIsFull != null &&
-                                                                        resultIsFull.length > 0 &&
-                                                                        resultIsFull[0].state.toLowerCase() == 'pay') {
-                                                                        // console.log('YOU CAN JOIN :' + resultIsFull[0].state);
-                                                                        if (contestInfo.debit_type == "FREE") {
+                                                                    sendResp.sendCustomJSON(null, req, res, true, {
+                                                                        play_status: "JOINED",
+                                                                        deep_link: redirect_link,
+                                                                        session_token: sessionToken,
+                                                                        package_name: package_name,
+                                                                        app_type: app_type
+                                                                    }, "Joined Successfully", true);
+                                                                }
+                                                            } else {
+                                                                let query_isContestFull = " select case when  count( distinct contest_player.player_id ) >= contest.max_players " +
+                                                                    " then 'full' else 'pay' end as state  from tbl_contest contest  " +
+                                                                    " left join tbl_contest_players contest_player on " +
+                                                                    " contest_player.contest_id = contest.contest_id   " +
+                                                                    " where contest.contest_id = " + contestId + "  " +
+                                                                    " group by contest.max_players ";
+                                                                dbConnection.executeQuery(query_isContestFull, "rmg_db", function (err, resultIsFull) {
+                                                                    if (err) {
+                                                                        sendResp.sendCustomJSON(null, req, res, false, [], "Contest details not available!");
+                                                                    } else {
+                                                                        console.log('----XXXX------------------------');
+                                                                        console.log(query_isContestFull);
+                                                                        console.log(err);
+                                                                        console.log(resultIsFull);
+                                                                        console.log('----XXXX------------------------');
+                                                                        if (resultIsFull != undefined &&
+                                                                            resultIsFull != null &&
+                                                                            resultIsFull.length > 0 &&
+                                                                            resultIsFull[0].state.toLowerCase() == 'pay') {
+                                                                            // console.log('YOU CAN JOIN :' + resultIsFull[0].state);
+                                                                            if (contestInfo.debit_type == "FREE") {
 
-                                                                            contestModel.joinContestPlayer(contestId, appId, playerId, 0,
-                                                                                "FREE-CONTEST", "FRC-" + Date.now().toString(), "ACTIVE", channel, debit_type, max_lives, function (isJoined) {
+                                                                                contestModel.joinContestPlayer(contestId, appId, playerId, 0,
+                                                                                    "FREE-CONTEST", "FRC-" + Date.now().toString(), "ACTIVE", channel, debit_type, max_lives, function (isJoined) {
 
-                                                                                    var score = 0;//Initial score set to 0
-                                                                                    contestModel.insertContestScore(contestId, appId, playerId, score, function (response) {
-                                                                                    });
+                                                                                        var score = 0;//Initial score set to 0
+                                                                                        contestModel.insertContestScore(contestId, appId, playerId, score, function (response) {
+                                                                                        });
 
-                                                                                    let checkContestIslive = " select count(1) from tbl_contest where (now() + (5 * interval '1 hour') + " +
-                                                                                        " (30 * interval '1 minute'))::TIME between from_time and to_time and contest_id = " + contestId + " "
+                                                                                        let checkContestIslive = " select count(1) from tbl_contest where (now() + (5 * interval '1 hour') + " +
+                                                                                            " (30 * interval '1 minute'))::TIME between from_time and to_time and contest_id = " + contestId + " "
 
-                                                                                    dbConnection.executeQuery(checkContestIslive, "rmg_db", function (err, dbResult) {
-                                                                                        if (dbResult[0].count > 0) {
-                                                                                            var isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
-                                                                                            if (isTokenSave) {
-                                                                                                if (isLive) {
-                                                                                                    increaseLives(playerId, contestId);
-                                                                                                    sendResp.sendCustomJSON(null, req, res, true, {
-                                                                                                        play_status: "DEBITED",
-                                                                                                        deep_link: redirect_link,
-                                                                                                        session_token: sessionToken,
-                                                                                                        package_name: package_name,
-                                                                                                        app_type: app_type
-                                                                                                    }, "Balance Debited Successfully", true);
-                                                                                                } else {
-                                                                                                    sendResp.sendCustomJSON(null, req, res, true, {
-                                                                                                        play_status: "JOINED",
-                                                                                                        deep_link: redirect_link,
-                                                                                                        session_token: sessionToken,
-                                                                                                        package_name: package_name,
-                                                                                                        app_type: app_type
-                                                                                                    }, "Balance Debited Successfully", true);
-                                                                                                }
-                                                                                            } else {
-                                                                                                sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
-                                                                                            }
-                                                                                        } else {
-                                                                                            var isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
-                                                                                            if (isTokenSave) {
-                                                                                                if (isLive) {
-                                                                                                    increaseLives(playerId, contestId);
-                                                                                                    sendResp.sendCustomJSON(null, req, res, true, {
-                                                                                                        play_status: "DEBITED",
-                                                                                                        deep_link: redirect_link,
-                                                                                                        session_token: sessionToken,
-                                                                                                        package_name: package_name,
-                                                                                                        app_type: app_type
-                                                                                                    }, "Balance Debited Successfully", true);
-                                                                                                } else {
-                                                                                                    sendResp.sendCustomJSON(null, req, res, true, {
-                                                                                                        play_status: "JOINED",
-                                                                                                        deep_link: redirect_link,
-                                                                                                        session_token: sessionToken,
-                                                                                                        package_name: package_name,
-                                                                                                        app_type: app_type
-                                                                                                    }, "Balance Debited Successfully", true);
-                                                                                                }
-                                                                                            } else {
-                                                                                                sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
-                                                                                            }
-                                                                                        }
-                                                                                    });
-                                                                                })
-                                                                        }
-                                                                        else {
-                                                                            //userModel.playerWalletBalance(mobileNumber, airpayToken, function (walletBalance) {
-                                                                            userModel.playerWalletBalance(appId, appSecretKey, userToken, airpayToken, function (walletBalance, nzBonus) {
-
-                                                                                // console.log('walletBalance - ' + walletBalance)
-                                                                                // console.log('nzBonus - ' + nzBonus)
-
-                                                                                var amount = contestInfo.entry_fee;
-
-                                                                                if (contestInfo.debit_type == "CASH") {
-                                                                                    console.log('CHECK CASH--------------' + walletBalance + "|" + amount)
-                                                                                    if (walletBalance >= amount) {
-                                                                                        let token = Date.now();
-                                                                                        let orderId = Date.now();
-
-                                                                                        console.log('IN CASH--------------' + walletBalance + "|" + amount)
-                                                                                        var event = 'JOIN CONTEST';
-                                                                                        var event_id = contestInfo.contest_id;
-                                                                                        var event_name = contestInfo.app_name + "(" + contestInfo.contest_name + ")";
-                                                                                        debitcredit.debitAmountAirpayContestJoin(userToken, airpayToken, orderId, 'DEBIT', amount,
-                                                                                            event, event_id, event_name, matrix_code, function (err, debitResponse) {
-
-                                                                                                if (err) {
-                                                                                                    sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
-
-                                                                                                } else {
-
-                                                                                                    if (!debitResponse) {
-                                                                                                        sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
+                                                                                        dbConnection.executeQuery(checkContestIslive, "rmg_db", function (err, dbResult) {
+                                                                                            if (dbResult[0].count > 0) {
+                                                                                                var isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
+                                                                                                if (isTokenSave) {
+                                                                                                    if (isLive) {
+                                                                                                        increaseLives(playerId, contestId);
+                                                                                                        sendResp.sendCustomJSON(null, req, res, true, {
+                                                                                                            play_status: "DEBITED",
+                                                                                                            deep_link: redirect_link,
+                                                                                                            session_token: sessionToken,
+                                                                                                            package_name: package_name,
+                                                                                                            app_type: app_type
+                                                                                                        }, "Balance Debited Successfully", true);
                                                                                                     } else {
-                                                                                                        //debitResponse = debitResponse.data;
-                                                                                                        contestModel.joinContest(contestId, appId, playerId, amount,
-                                                                                                            debitResponse, deails, contestInfo, channel, debit_type, max_lives,
-                                                                                                            function (isJoined) {
-                                                                                                                console.log('isJoined' + isJoined)
-                                                                                                                //Success
-                                                                                                                if (isJoined == true) {
+                                                                                                        sendResp.sendCustomJSON(null, req, res, true, {
+                                                                                                            play_status: "JOINED",
+                                                                                                            deep_link: redirect_link,
+                                                                                                            session_token: sessionToken,
+                                                                                                            package_name: package_name,
+                                                                                                            app_type: app_type
+                                                                                                        }, "Balance Debited Successfully", true);
+                                                                                                    }
+                                                                                                } else {
+                                                                                                    sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
+                                                                                                }
+                                                                                            } else {
+                                                                                                var isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
+                                                                                                if (isTokenSave) {
+                                                                                                    if (isLive) {
+                                                                                                        increaseLives(playerId, contestId);
+                                                                                                        sendResp.sendCustomJSON(null, req, res, true, {
+                                                                                                            play_status: "DEBITED",
+                                                                                                            deep_link: redirect_link,
+                                                                                                            session_token: sessionToken,
+                                                                                                            package_name: package_name,
+                                                                                                            app_type: app_type
+                                                                                                        }, "Balance Debited Successfully", true);
+                                                                                                    } else {
+                                                                                                        sendResp.sendCustomJSON(null, req, res, true, {
+                                                                                                            play_status: "JOINED",
+                                                                                                            deep_link: redirect_link,
+                                                                                                            session_token: sessionToken,
+                                                                                                            package_name: package_name,
+                                                                                                            app_type: app_type
+                                                                                                        }, "Balance Debited Successfully", true);
+                                                                                                    }
+                                                                                                } else {
+                                                                                                    sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
+                                                                                                }
+                                                                                            }
+                                                                                        });
+                                                                                    })
+                                                                            }
+                                                                            else {
+                                                                                //userModel.playerWalletBalance(mobileNumber, airpayToken, function (walletBalance) {
+                                                                                userModel.playerWalletBalance(appId, appSecretKey, userToken, airpayToken, function (walletBalance, nzBonus) {
 
-                                                                                                                    if (debitResponse.statusCode == "200") {
+                                                                                    // console.log('walletBalance - ' + walletBalance)
+                                                                                    // console.log('nzBonus - ' + nzBonus)
 
-                                                                                                                        var score = 0;//Initial score set to 0
-                                                                                                                        contestModel.insertContestScore(contestId, appId, playerId, score, function (response) {
-                                                                                                                        });
+                                                                                    var amount = contestInfo.entry_fee;
 
-                                                                                                                        let checkContestIslive = " select count(1) from tbl_contest where (now() + (5 * interval '1 hour') + " +
-                                                                                                                            " (30 * interval '1 minute'))::TIME between from_time and to_time and contest_id = " + contestId + " "
+                                                                                    if (contestInfo.debit_type == "CASH") {
+                                                                                        console.log('CHECK CASH--------------' + walletBalance + "|" + amount)
+                                                                                        if (walletBalance >= amount) {
+                                                                                            let token = Date.now();
+                                                                                            let orderId = Date.now();
 
-                                                                                                                        dbConnection.executeQuery(checkContestIslive, "rmg_db", function (err, dbResult) {
-                                                                                                                            //request('http://localhost:3001/amounts?playerid=' + playerId);
-                                                                                                                            if (dbResult[0].count > 0) {
-                                                                                                                                var isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
-                                                                                                                                if (isTokenSave) {
-                                                                                                                                    console.log('CHECKING IS LIVE 1' + isLive)
-                                                                                                                                    if (isLive) {
-                                                                                                                                        increaseLives(playerId, contestId);
-                                                                                                                                        sendResp.sendCustomJSON(null, req, res, true, {
-                                                                                                                                            play_status: "DEBITED",
-                                                                                                                                            deep_link: redirect_link,
-                                                                                                                                            session_token: sessionToken,
-                                                                                                                                            package_name: package_name,
-                                                                                                                                            app_type: app_type
-                                                                                                                                        }, "Balance Debited Successfully", true);
+                                                                                            console.log('IN CASH--------------' + walletBalance + "|" + amount)
+                                                                                            var event = 'JOIN CONTEST';
+                                                                                            var event_id = contestInfo.contest_id;
+                                                                                            var event_name = contestInfo.app_name + "(" + contestInfo.contest_name + ")";
+                                                                                            debitcredit.debitAmountAirpayContestJoin(userToken, airpayToken, orderId, 'DEBIT', amount,
+                                                                                                event, event_id, event_name, matrix_code, function (err, debitResponse) {
+
+                                                                                                    if (err) {
+                                                                                                        sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
+
+                                                                                                    } else {
+
+                                                                                                        if (!debitResponse) {
+                                                                                                            sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
+                                                                                                        } else {
+                                                                                                            //debitResponse = debitResponse.data;
+                                                                                                            contestModel.joinContest(contestId, appId, playerId, amount,
+                                                                                                                debitResponse, deails, contestInfo, channel, debit_type, max_lives,
+                                                                                                                function (isJoined) {
+                                                                                                                    console.log('isJoined' + isJoined)
+                                                                                                                    //Success
+                                                                                                                    if (isJoined == true) {
+
+                                                                                                                        if (debitResponse.statusCode == "200") {
+
+                                                                                                                            var score = 0;//Initial score set to 0
+                                                                                                                            contestModel.insertContestScore(contestId, appId, playerId, score, function (response) {
+                                                                                                                            });
+
+                                                                                                                            let checkContestIslive = " select count(1) from tbl_contest where (now() + (5 * interval '1 hour') + " +
+                                                                                                                                " (30 * interval '1 minute'))::TIME between from_time and to_time and contest_id = " + contestId + " "
+
+                                                                                                                            dbConnection.executeQuery(checkContestIslive, "rmg_db", function (err, dbResult) {
+                                                                                                                                //request('http://localhost:3001/amounts?playerid=' + playerId);
+                                                                                                                                if (dbResult[0].count > 0) {
+                                                                                                                                    var isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
+                                                                                                                                    if (isTokenSave) {
+                                                                                                                                        console.log('CHECKING IS LIVE 1' + isLive)
+                                                                                                                                        if (isLive) {
+                                                                                                                                            increaseLives(playerId, contestId);
+                                                                                                                                            sendResp.sendCustomJSON(null, req, res, true, {
+                                                                                                                                                play_status: "DEBITED",
+                                                                                                                                                deep_link: redirect_link,
+                                                                                                                                                session_token: sessionToken,
+                                                                                                                                                package_name: package_name,
+                                                                                                                                                app_type: app_type
+                                                                                                                                            }, "Balance Debited Successfully", true);
+                                                                                                                                        } else {
+                                                                                                                                            sendResp.sendCustomJSON(null, req, res, true, {
+                                                                                                                                                play_status: "JOINED",
+                                                                                                                                                deep_link: redirect_link,
+                                                                                                                                                session_token: sessionToken,
+                                                                                                                                                package_name: package_name,
+                                                                                                                                                app_type: app_type
+                                                                                                                                            }, "Balance Debited Successfully", true);
+                                                                                                                                        }
                                                                                                                                     } else {
-                                                                                                                                        sendResp.sendCustomJSON(null, req, res, true, {
-                                                                                                                                            play_status: "JOINED",
-                                                                                                                                            deep_link: redirect_link,
-                                                                                                                                            session_token: sessionToken,
-                                                                                                                                            package_name: package_name,
-                                                                                                                                            app_type: app_type
-                                                                                                                                        }, "Balance Debited Successfully", true);
+                                                                                                                                        sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
                                                                                                                                     }
-                                                                                                                                } else {
-                                                                                                                                    sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
-                                                                                                                                }
 
-                                                                                                                            } else {
-                                                                                                                                var isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
-                                                                                                                                if (isTokenSave) {
-                                                                                                                                    if (isLive) {
-                                                                                                                                        increaseLives(playerId, contestId);
-                                                                                                                                        sendResp.sendCustomJSON(null, req, res, true, {
-                                                                                                                                            play_status: "DEBITED",
-                                                                                                                                            deep_link: redirect_link,
-                                                                                                                                            session_token: sessionToken,
-                                                                                                                                            package_name: package_name,
-                                                                                                                                            app_type: app_type
-                                                                                                                                        }, "Balance Debited Successfully", true);
+                                                                                                                                } else {
+                                                                                                                                    var isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
+                                                                                                                                    if (isTokenSave) {
+                                                                                                                                        if (isLive) {
+                                                                                                                                            increaseLives(playerId, contestId);
+                                                                                                                                            sendResp.sendCustomJSON(null, req, res, true, {
+                                                                                                                                                play_status: "DEBITED",
+                                                                                                                                                deep_link: redirect_link,
+                                                                                                                                                session_token: sessionToken,
+                                                                                                                                                package_name: package_name,
+                                                                                                                                                app_type: app_type
+                                                                                                                                            }, "Balance Debited Successfully", true);
+                                                                                                                                        } else {
+                                                                                                                                            sendResp.sendCustomJSON(null, req, res, true, {
+                                                                                                                                                play_status: "JOINED",
+                                                                                                                                                deep_link: redirect_link,
+                                                                                                                                                session_token: sessionToken,
+                                                                                                                                                package_name: package_name,
+                                                                                                                                                app_type: app_type
+                                                                                                                                            }, "Balance Debited Successfully", true);
+                                                                                                                                        }
                                                                                                                                     } else {
-                                                                                                                                        sendResp.sendCustomJSON(null, req, res, true, {
-                                                                                                                                            play_status: "JOINED",
-                                                                                                                                            deep_link: redirect_link,
-                                                                                                                                            session_token: sessionToken,
-                                                                                                                                            package_name: package_name,
-                                                                                                                                            app_type: app_type
-                                                                                                                                        }, "Balance Debited Successfully", true);
+                                                                                                                                        sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
                                                                                                                                     }
-                                                                                                                                } else {
-                                                                                                                                    sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
-                                                                                                                                }
 
-                                                                                                                            }
-                                                                                                                        });
-                                                                                                                    }
-                                                                                                                    else if (debitResponse.statusCode == "202") {
-                                                                                                                        sendResp.sendCustomJSON(null, req, res, true, {
-                                                                                                                            play_status: "DEPOSIT-CASH",
-                                                                                                                            entry_fee: amount,
-                                                                                                                            wallet_balance: walletBalance
-                                                                                                                        }, "Low Balance", true);
+                                                                                                                                }
+                                                                                                                            });
+                                                                                                                        }
+                                                                                                                        else if (debitResponse.statusCode == "202") {
+                                                                                                                            sendResp.sendCustomJSON(null, req, res, true, {
+                                                                                                                                play_status: "DEPOSIT-CASH",
+                                                                                                                                entry_fee: amount,
+                                                                                                                                wallet_balance: walletBalance
+                                                                                                                            }, "Low Balance", true);
+                                                                                                                        }
+                                                                                                                        else {
+                                                                                                                            sendResp.sendCustomJSON(null, req, res, false, [], debitResponse.TRANSACTION.MESSAGE);
+                                                                                                                        }
                                                                                                                     }
                                                                                                                     else {
-                                                                                                                        sendResp.sendCustomJSON(null, req, res, false, [], debitResponse.TRANSACTION.MESSAGE);
+                                                                                                                        sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
                                                                                                                     }
+                                                                                                                })
+                                                                                                        }
+                                                                                                    }
+                                                                                                })
+                                                                                        }
+                                                                                        else {
+                                                                                            sendResp.sendCustomJSON(null, req, res, true, {
+                                                                                                play_status: "DEPOSIT-CASH",
+                                                                                                entry_fee: amount,
+                                                                                                wallet_balance: walletBalance,
+                                                                                                nzBonus: nzBonus,
+                                                                                            }, "Low Balance", true);
+                                                                                        }
+                                                                                    }
+                                                                                    else if (contestInfo.debit_type == "COIN") {
+
+                                                                                        if (nzBonus >= amount) {
+
+                                                                                            userModel.creditDebitBonus(contestId, "CONTEST-JOIN", contestId, "DEBIT", amount,
+                                                                                                "Contest Join Debit - " + contestId, null,
+                                                                                                appSecretKey, userToken, function (isDebited, debitResponse) {
+                                                                                                    if (isDebited == false) {
+                                                                                                        sendResp.sendCustomJSON(null, req, res, false, [], debitResponse);
+                                                                                                    } else {
+                                                                                                        contestModel.joinContestPlayer(contestId, appId, playerId, amount,
+                                                                                                            "COIN-CONTEST", "COIN-" + Date.now().toString(), "ACTIVE", channel, debit_type, max_lives, function (isJoined) {
+                                                                                                                if (isJoined) {
+                                                                                                                    var score = 0;//Initial score set to 0
+                                                                                                                    contestModel.insertContestScore(contestId, appId, playerId, score, function (response) {
+                                                                                                                    });
+
+                                                                                                                    let checkContestIslive = " select count(1) from tbl_contest where (now() + (5 * interval '1 hour') + " +
+                                                                                                                        " (30 * interval '1 minute'))::TIME between from_time and to_time and contest_id = " + contestId + " "
+
+                                                                                                                    dbConnection.executeQuery(checkContestIslive, "rmg_db", function (err, dbResult) {
+                                                                                                                        // request('http://localhost:3001/amounts?playerid=' + playerId);
+                                                                                                                        var isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
+                                                                                                                        if (isTokenSave) {
+                                                                                                                            if (isLive) {
+                                                                                                                                increaseLives(playerId, contestId);
+                                                                                                                                sendResp.sendCustomJSON(null, req, res, true, {
+                                                                                                                                    play_status: "DEBITED",
+                                                                                                                                    deep_link: redirect_link,
+                                                                                                                                    session_token: sessionToken,
+                                                                                                                                    package_name: package_name,
+                                                                                                                                    app_type: app_type
+                                                                                                                                }, "Bonus Debited Successfully", true);
+                                                                                                                            } else {
+                                                                                                                                sendResp.sendCustomJSON(null, req, res, true, {
+                                                                                                                                    play_status: "JOINED",
+                                                                                                                                    deep_link: redirect_link,
+                                                                                                                                    session_token: sessionToken,
+                                                                                                                                    package_name: package_name,
+                                                                                                                                    app_type: app_type
+                                                                                                                                }, "Bonus Debited Successfully", true);
+                                                                                                                            }
+
+                                                                                                                        } else {
+                                                                                                                            sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
+                                                                                                                        }
+                                                                                                                    });
                                                                                                                 }
                                                                                                                 else {
                                                                                                                     sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
                                                                                                                 }
-                                                                                                            })
+                                                                                                            });
                                                                                                     }
-                                                                                                }
-                                                                                            })
+                                                                                                })
+                                                                                        }
+                                                                                        else {
+                                                                                            sendResp.sendCustomJSON(null, req, res, true, {
+                                                                                                play_status: "DEPOSIT-COIN",
+                                                                                                entry_fee: amount,
+                                                                                                wallet_balance: walletBalance,
+                                                                                                nzBonus: nzBonus,
+                                                                                            }, "Insufficient Coins to join the contest!", true);
+                                                                                        }
                                                                                     }
                                                                                     else {
                                                                                         sendResp.sendCustomJSON(null, req, res, true, {
-                                                                                            play_status: "DEPOSIT-CASH",
+                                                                                            play_status: "FAILED",
                                                                                             entry_fee: amount,
                                                                                             wallet_balance: walletBalance,
                                                                                             nzBonus: nzBonus,
-                                                                                        }, "Low Balance", true);
+                                                                                        }, "Debit Type is not defined ", true);
                                                                                     }
-                                                                                }
-                                                                                else if (contestInfo.debit_type == "COIN") {
-
-                                                                                    if (nzBonus >= amount) {
-
-                                                                                        userModel.creditDebitBonus(contestId, "CONTEST-JOIN", contestId, "DEBIT", amount,
-                                                                                            "Contest Join Debit - " + contestId, null,
-                                                                                            appSecretKey, userToken, function (isDebited, debitResponse) {
-                                                                                                if (isDebited == false) {
-                                                                                                    sendResp.sendCustomJSON(null, req, res, false, [], debitResponse);
-                                                                                                } else {
-                                                                                                    contestModel.joinContestPlayer(contestId, appId, playerId, amount,
-                                                                                                        "COIN-CONTEST", "COIN-" + Date.now().toString(), "ACTIVE", channel, debit_type, max_lives, function (isJoined) {
-                                                                                                            if (isJoined) {
-                                                                                                                var score = 0;//Initial score set to 0
-                                                                                                                contestModel.insertContestScore(contestId, appId, playerId, score, function (response) {
-                                                                                                                });
-
-                                                                                                                let checkContestIslive = " select count(1) from tbl_contest where (now() + (5 * interval '1 hour') + " +
-                                                                                                                    " (30 * interval '1 minute'))::TIME between from_time and to_time and contest_id = " + contestId + " "
-
-                                                                                                                dbConnection.executeQuery(checkContestIslive, "rmg_db", function (err, dbResult) {
-                                                                                                                    // request('http://localhost:3001/amounts?playerid=' + playerId);
-                                                                                                                    var isTokenSave = insertIntoScore(contestId, playerId, appId, 0, sessionToken, randomNumber);
-                                                                                                                    if (isTokenSave) {
-                                                                                                                        if (isLive) {
-                                                                                                                            increaseLives(playerId, contestId);
-                                                                                                                            sendResp.sendCustomJSON(null, req, res, true, {
-                                                                                                                                play_status: "DEBITED",
-                                                                                                                                deep_link: redirect_link,
-                                                                                                                                session_token: sessionToken,
-                                                                                                                                package_name: package_name,
-                                                                                                                                app_type: app_type
-                                                                                                                            }, "Bonus Debited Successfully", true);
-                                                                                                                        } else {
-                                                                                                                            sendResp.sendCustomJSON(null, req, res, true, {
-                                                                                                                                play_status: "JOINED",
-                                                                                                                                deep_link: redirect_link,
-                                                                                                                                session_token: sessionToken,
-                                                                                                                                package_name: package_name,
-                                                                                                                                app_type: app_type
-                                                                                                                            }, "Bonus Debited Successfully", true);
-                                                                                                                        }
-
-                                                                                                                    } else {
-                                                                                                                        sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
-                                                                                                                    }
-                                                                                                                });
-                                                                                                            }
-                                                                                                            else {
-                                                                                                                sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
-                                                                                                            }
-                                                                                                        });
-                                                                                                }
-                                                                                            })
-                                                                                    }
-                                                                                    else {
-                                                                                        sendResp.sendCustomJSON(null, req, res, true, {
-                                                                                            play_status: "DEPOSIT-COIN",
-                                                                                            entry_fee: amount,
-                                                                                            wallet_balance: walletBalance,
-                                                                                            nzBonus: nzBonus,
-                                                                                        }, "Insufficient Coins to join the contest!", true);
-                                                                                    }
-                                                                                }
-                                                                                else {
-                                                                                    sendResp.sendCustomJSON(null, req, res, true, {
-                                                                                        play_status: "FAILED",
-                                                                                        entry_fee: amount,
-                                                                                        wallet_balance: walletBalance,
-                                                                                        nzBonus: nzBonus,
-                                                                                    }, "Debit Type is not defined ", true);
-                                                                                }
-                                                                            });
+                                                                                });
+                                                                            }
+                                                                        } else {
+                                                                            console.log('----XXXX-CONTEST FULL--------------------');
+                                                                            sendResp.sendCustomJSON(null, req, res, false, [], "Sorry all seats just got filled.");
                                                                         }
-                                                                    } else {
-                                                                        console.log('----XXXX-CONTEST FULL--------------------');
-                                                                        sendResp.sendCustomJSON(null, req, res, false, [], "Sorry all seats just got filled.");
                                                                     }
-                                                                }
-                                                            });
+                                                                });
+                                                            }
+                                                        } else {
+                                                            sendResp.sendCustomJSON(null, req, res, false, [], "Contest details not available!");
                                                         }
-                                                    } else {
-                                                        sendResp.sendCustomJSON(null, req, res, false, [], "Contest details not available!");
                                                     }
-                                                }
-                                            })
+                                                })
 
+                                            }
+                                        }
+                                        else if (contestInfo.play_status == "FULL") {
+                                            sendResp.sendCustomJSON(null, req, res, false, [], "Contest Is Full!");
+                                        }
+                                        else if (contestInfo.play_status == "ENTRY-CLOSED") {
+                                            sendResp.sendCustomJSON(null, req, res, false, [], "Entry Closed!");
+                                        }
+                                        else {
+                                            sendResp.sendCustomJSON(null, req, res, false, [], "Contest not started yet to play!");
                                         }
                                     }
-                                    else if (contestInfo.play_status == "FULL") {
-                                        sendResp.sendCustomJSON(null, req, res, false, [], "Contest Is Full!");
-                                    }
-                                    else if (contestInfo.play_status == "ENTRY-CLOSED") {
-                                        sendResp.sendCustomJSON(null, req, res, false, [], "Entry Closed!");
-                                    }
-                                    else {
-                                        sendResp.sendCustomJSON(null, req, res, false, [], "Contest not started yet to play!");
-                                    }
                                 }
-                            }
-                        })
+                            });
+
+                        } else {
+                            sendResp.sendCustomJSON(null, req, res, false, [], "Your Request In Process!", false, false);
+                        }
+
                     }
                 }
             });
@@ -2735,6 +2749,12 @@ module.exports = {
                                     contestdetails[0].contest_rank.push(rank);
                                 }
                             });
+
+                            if( parseInt(contestdetails[0].max_players) == 2){
+                                contestdetails[0].allow_rejoin = false;
+                            }else{
+                                contestdetails[0].allow_rejoin = true;
+                            }
 
                             contestdetails[0].used_lives = livesCheck[0].used_lives;
                             if (contestdetails[0].live_status == true) {
