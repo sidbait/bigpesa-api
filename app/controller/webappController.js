@@ -1211,7 +1211,7 @@ module.exports = {
         let getUserDetails = " select * from vw_userdetail where token = " + appSecretKey;
         let randomNumber = (Math.floor(Math.random() * 90000) + 1);
         var now = new Date();
-
+        
         console.log('CHANNEL ----------------' + channel)
         // var md5checksum = md5(config.app.client_key + "$"
         //     + appId + "$" +
@@ -1362,7 +1362,7 @@ module.exports = {
                                                         }
                                                     }
                                                     else if (checkLives && checkLives.length > 0 && checkLives[0].player_status == "GAMEOVER") {
-                                                        getNewLives(contestInfo, playerId, userToken, airpayToken, function (err, debitResponse) {
+                                                        getNewLives(contestInfo, playerId, userToken, airpayToken, channel ,function (err, debitResponse) {
                                                             console.log('NEW LIVES RS---------')
                                                             console.log(err)
                                                             console.log(debitResponse)
@@ -1593,7 +1593,7 @@ module.exports = {
                                                                                             var event_id = contestInfo.contest_id;
                                                                                             var event_name = contestInfo.app_name + "(" + contestInfo.contest_name + ")";
                                                                                             debitcredit.debitAmountAirpayContestJoin(userToken, airpayToken, orderId, 'DEBIT', amount,
-                                                                                                event, event_id, event_name, matrix_code, function (err, debitResponse) {
+                                                                                                event, event_id, event_name, matrix_code,channel, function (err, debitResponse) {
 
                                                                                                     if (err) {
                                                                                                         sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
@@ -3681,7 +3681,7 @@ function increaseLives(playerId, contestId) {
     dbConnection.executeQuery(updateUsedLives, "rmg_db", function (err, dbResult) { });
 }
 
-function getNewLives(contestInfo, player_id, userToken, airpayToken, callback) {
+function getNewLives(contestInfo, player_id, userToken, airpayToken,channel, callback) {
     console.log('GET NEW LIVES CALLED');
     let orderId = Date.now();
     let event = 'RE-JOIN CONTEST';
@@ -3690,7 +3690,7 @@ function getNewLives(contestInfo, player_id, userToken, airpayToken, callback) {
     let matrix_code = contestInfo.matrix_code;
     let event_name = contestInfo.app_name + "(" + contestInfo.contest_name + ")";
     debitcredit.debitAmountAirpayContestJoin(userToken, airpayToken, orderId, 'DEBIT', amount,
-        event, event_id, event_name, matrix_code, function (err, debitResponse) {
+        event, event_id, event_name, matrix_code,channel, function (err, debitResponse) {
             console.log('NEW RESPONSE ---------------------------');
             console.log(debitResponse);
             console.log(debitResponse.statusCode)

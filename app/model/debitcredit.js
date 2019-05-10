@@ -220,7 +220,7 @@ module.exports = {
                 callback(true, null, err.toString());
             });
     },
-    debitAmountAirpayContestJoin: function (token, airpayToken, order_id, type, amount,event,event_id,event_name, matrix_code,callback) {
+    debitAmountAirpayContestJoin: function (token, airpayToken, order_id, type, amount,event,event_id,event_name, matrix_code,channel,callback) {
         var appSecret = config.app.client_key;
         var app_id = config.app.app_id;
         if(type.toUpperCase() == "CREDIT"){
@@ -248,7 +248,8 @@ module.exports = {
                 nz_txn_event_id:event_id,
                 nz_txn_event_name:event_name,
                 amount: amount,
-                matrix_code : matrix_code
+                matrix_code : matrix_code,
+                channel: channel 
             },
             headers: {
                 'x-nazara-app-secret-key': appSecret,
