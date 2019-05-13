@@ -105,6 +105,8 @@ module.exports = {
         let referCode = req.body.referCode;
         let fingerPrint = req.body.fingerPrint;
         let refererSource = req.body.refererSource;
+        let channel = req.body.channel ? req.body.channel : '';
+
         let isvalidEvent = false;
         let eventDetails = {}
  
@@ -153,8 +155,8 @@ module.exports = {
                                                     console.log(dbResult)
                                                     if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
                                                         let InsertEventTransactionQuery = " insert into tbl_referer_transaction (event_id,referer_id, " +
-                                                            " from_player_id,player_id,referer_source,is_credited,created_at) " +
-                                                            " values (" + eventId + ",0,0," + playerId + ",'',false,now()) ";
+                                                            " from_player_id,player_id,referer_source,is_credited,created_at,channel) " +
+                                                            " values (" + eventId + ",0,0," + playerId + ",'',false,now(),'"+ channel +"') ";
                                                         console.log(InsertEventTransactionQuery)
                                                         dbConnection.executeQuery(InsertEventTransactionQuery, "rmg_db", function (err, dbResult) {
                                                             if (err) {
@@ -190,8 +192,9 @@ module.exports = {
                                                 " group by tbl_referer_transaction.event_id ,tbl_event_master.repeat_count " +
                                                 " having count(*) >= tbl_event_master.repeat_count  )t )";
                                             let InsertEventTransactionQuery = " insert into tbl_referer_transaction (event_id,referer_id, " +
-                                                " from_player_id,player_id,referer_source,is_credited,created_at) " +
-                                                " values (" + eventId + "," + refererId + "," + fromPlayerId + "," + playerId + ",'',false,now()) ";
+                                                " from_player_id,player_id,referer_source,is_credited,created_at,channel) " +
+                                                " values (" + eventId + "," + refererId + "," + fromPlayerId 
+                                                + "," + playerId + ",'',false,now(),'"+ channel +"') ";
                                             console.log(checkRepeatReferer);                                    
 
                                             dbConnection.executeQuery(checkIsNewuser, "rmg_db", function (err, checkIsNewuserResult) {
