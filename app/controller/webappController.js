@@ -1514,7 +1514,7 @@ module.exports = {
 
                                                                                         var score = 0;//Initial score set to 0
                                                                                         contestModel.insertContestScore(contestId, appId, playerId, score, function (response) {
-                                                                                        });
+                                                                                        },channel);
 
                                                                                         let checkContestIslive = " select count(1) from tbl_contest where (now() + (5 * interval '1 hour') + " +
                                                                                             " (30 * interval '1 minute'))::TIME between from_time and to_time and contest_id = " + contestId + " "
@@ -1614,7 +1614,7 @@ module.exports = {
 
                                                                                                                             var score = 0;//Initial score set to 0
                                                                                                                             contestModel.insertContestScore(contestId, appId, playerId, score, function (response) {
-                                                                                                                            });
+                                                                                                                            },channel);
 
                                                                                                                             let checkContestIslive = " select count(1) from tbl_contest where (now() + (5 * interval '1 hour') + " +
                                                                                                                                 " (30 * interval '1 minute'))::TIME between from_time and to_time and contest_id = " + contestId + " "
@@ -1718,7 +1718,7 @@ module.exports = {
                                                                                                                 if (isJoined) {
                                                                                                                     var score = 0;//Initial score set to 0
                                                                                                                     contestModel.insertContestScore(contestId, appId, playerId, score, function (response) {
-                                                                                                                    });
+                                                                                                                    },channel);
 
                                                                                                                     let checkContestIslive = " select count(1) from tbl_contest where (now() + (5 * interval '1 hour') + " +
                                                                                                                         " (30 * interval '1 minute'))::TIME between from_time and to_time and contest_id = " + contestId + " "

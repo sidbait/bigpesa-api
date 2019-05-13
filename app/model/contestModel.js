@@ -470,12 +470,12 @@ module.exports = {
         })
     },
 
-    insertContestScore: function (contestId, appId, playerId, score, callback) {
+    insertContestScore: function (contestId, appId, playerId, score, callback,channel) {
  
                     var query_leader_board = "INSERT INTO public.tbl_contest_leader_board " +
-                        "(contest_id, player_id, app_id, total_score, status, contest_date, created_at) " +
+                        "(contest_id, player_id, app_id, total_score, status, contest_date, created_at,channel) " +
                         "VALUES(" + contestId + ", " + playerId + ", " + appId + ", " + score + ", 'ACTIVE', " +
-                        "now()::date, now()) " +
+                        "now()::date, now(),'"+ channel +"') " +
                         "ON CONFLICT (contest_id, player_id) " +
                         "DO UPDATE SET total_score = (select total_score from tbl_contest_leader_board  " +
                         "where contest_id =  " + contestId + " and app_id = " + appId + " and player_id = " + playerId + "  " +
