@@ -163,10 +163,10 @@ module.exports = {
 
                                     let insertVisitBonusLog = "INSERT INTO public.tbl_visit_bonus_log " +
                                         " (player_id, visit_datetime, fromtime, totime, " +
-                                        " credit_type, credit_bonus, is_credited,type,status,next_retry ) " +
+                                        " credit_type, credit_bonus, is_credited,type,status,next_retry,channel ) " +
                                         " VALUES( " + playerId + ", now(), '" + TimeSlotRow.fromtime + "' " +
                                         " , '" + TimeSlotRow.totime + "', '" + TimeSlotRow.credit_type + "', " +
-                                        " " + TimeSlotRow.credit_bonus + ", false,'TIME-BONUS','ACTIVE',now());"
+                                        " " + TimeSlotRow.credit_bonus + ", false,'TIME-BONUS','ACTIVE',now(),'"+ channel +"');"
                                     //console.log(insertVisitBonusLog);
                                     dbConnection.executeQuery(insertVisitBonusLog, "rmg_db", function (err, ress) {
                                         if (!err) {
@@ -211,10 +211,10 @@ module.exports = {
                                                                 // console.log('DAILY VISIT')
                                                                 let insertDailyBonusLog = "INSERT INTO public.tbl_visit_bonus_log " +
                                                                     " (player_id, visit_datetime, fromtime, totime, " +
-                                                                    " credit_type, credit_bonus, is_credited,type,status,next_retry ) " +
+                                                                    " credit_type, credit_bonus, is_credited,type,status,next_retry,channel ) " +
                                                                     " VALUES( " + playerId + ", now(), '00:00:00' " +
                                                                     " , '00:00:00', '" + data.dailybonus.credit_type + "', " +
-                                                                    " " + data.dailybonus.amount + ", false,'DAILY-BONUS','ACTIVE',now());";
+                                                                    " " + data.dailybonus.amount + ", false,'DAILY-BONUS','ACTIVE',now(),'"+channel+"');";
                                                                 // console.log(insertDailyBonusLog)
                                                                 dbConnection.executeQuery(insertDailyBonusLog, "rmg_db", function (err, visitLog) {
                                                                     if (err) {
@@ -250,10 +250,10 @@ module.exports = {
                                                 // console.log('DAILY VISIT')
                                                 let insertDailyBonusLog = "INSERT INTO public.tbl_visit_bonus_log " +
                                                     " (player_id, visit_datetime, fromtime, totime, " +
-                                                    " credit_type, credit_bonus, is_credited,type,status,next_retry ) " +
+                                                    " credit_type, credit_bonus, is_credited,type,status,next_retry,channel ) " +
                                                     " VALUES( " + playerId + ", now(), '00:00:00' " +
                                                     " , '00:00:00', '" + data.dailybonus.credit_type + "', " +
-                                                    " " + data.dailybonus.amount + ", false,'DAILY-BONUS','ACTIVE',now());";
+                                                    " " + data.dailybonus.amount + ", false,'DAILY-BONUS','ACTIVE',now(),'"+ channel +"');";
                                                 // console.log(insertDailyBonusLog)
                                                 dbConnection.executeQuery(insertDailyBonusLog, "rmg_db", function (err, visitLog) {
                                                     if (err) {
@@ -604,10 +604,10 @@ module.exports = {
 
                                     let insertVisitBonusLog = "INSERT INTO public.tbl_visit_bonus_log " +
                                         " (player_id, visit_datetime, fromtime, totime, " +
-                                        " credit_type, credit_bonus, is_credited,type,status,next_retry ) " +
+                                        " credit_type, credit_bonus, is_credited,type,status,next_retry,channel ) " +
                                         " VALUES( " + playerId + ", now(), '" + TimeSlotRow.fromtime + "' " +
                                         " , '" + TimeSlotRow.totime + "', '" + TimeSlotRow.credit_type + "', " +
-                                        " " + TimeSlotRow.credit_bonus + ", false,'TIME-BONUS','ACTIVE',now());"
+                                        " " + TimeSlotRow.credit_bonus + ", false,'TIME-BONUS','ACTIVE',now(),'"+ channel +"');"
                                     //console.log(insertVisitBonusLog);
                                     dbConnection.executeQuery(insertVisitBonusLog, "rmg_db", function (err, ress) {
                                         if (!err) {
@@ -652,10 +652,10 @@ module.exports = {
                                                                 // console.log('DAILY VISIT')
                                                                 let insertDailyBonusLog = "INSERT INTO public.tbl_visit_bonus_log " +
                                                                     " (player_id, visit_datetime, fromtime, totime, " +
-                                                                    " credit_type, credit_bonus, is_credited,type,status,next_retry ) " +
+                                                                    " credit_type, credit_bonus, is_credited,type,status,next_retry,channel ) " +
                                                                     " VALUES( " + playerId + ", now(), '00:00:00' " +
                                                                     " , '00:00:00', '" + data.dailybonus.credit_type + "', " +
-                                                                    " " + data.dailybonus.amount + ", false,'DAILY-BONUS','QUE',now());";
+                                                                    " " + data.dailybonus.amount + ", false,'DAILY-BONUS','QUE',now(),'"+ channel +"');";
                                                                 // console.log(insertDailyBonusLog)
                                                                 dbConnection.executeQuery(insertDailyBonusLog, "rmg_db", function (err, visitLog) {
                                                                     if (err) {
@@ -691,10 +691,10 @@ module.exports = {
                                                 // console.log('DAILY VISIT')
                                                 let insertDailyBonusLog = "INSERT INTO public.tbl_visit_bonus_log " +
                                                     " (player_id, visit_datetime, fromtime, totime, " +
-                                                    " credit_type, credit_bonus, is_credited,type,status,next_retry ) " +
+                                                    " credit_type, credit_bonus, is_credited,type,status,next_retry,channel ) " +
                                                     " VALUES( " + playerId + ", now(), '00:00:00' " +
                                                     " , '00:00:00', '" + data.dailybonus.credit_type + "', " +
-                                                    " " + data.dailybonus.amount + ", false,'DAILY-BONUS','QUE',now());";
+                                                    " " + data.dailybonus.amount + ", false,'DAILY-BONUS','QUE',now(),'"+channel+"');";
                                                 // console.log(insertDailyBonusLog)
                                                 dbConnection.executeQuery(insertDailyBonusLog, "rmg_db", function (err, visitLog) {
                                                     if (err) {
