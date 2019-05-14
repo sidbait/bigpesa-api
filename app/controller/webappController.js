@@ -934,18 +934,23 @@ module.exports = {
                                                     let lower_percent = contestRank.lower_rank;//20
                                                     let upperRank = Math.round((parseInt(player_joined) * upper_percent) / 100);
                                                     let lowerRank = Math.round((parseInt(player_joined) * lower_percent) / 100);
-                                                    console.log('HERE22PERCENT RANK '+players.player_rank+"|"+player_joined +"|"+upper_percent+"|"+ lower_percent +"|"+ lowerRank +"|"+ upperRank);
+                                                    if(players.player_rank==2){
+                                                    console.log('prize-'+contestRank.prize_amount+"|player_rank-"+ players.player_rank+"|player_joined-"+player_joined +"|upper_percent-"+upper_percent+"|lower_percent-"+ lower_percent +"|lowerRank-"+ lowerRank +"|upperRank-"+ upperRank);
+                                                    }
                                                     if (contestRank.contest_id == contestdetails[0].contest_id &&
                                                         parseInt(players.player_rank) >= parseInt(lowerRank) &&
                                                         parseInt(players.player_rank) <= parseInt(upperRank)) {
                                                         if (players.player_id == playerId) {
+                                                            
+                                                                console.log('check|' + outJson.PlayerRank.winPrize + "|" +  contestRank.prize_amount)
+                                                            
                                                             if (outJson.PlayerRank.winPrize < contestRank.prize_amount) {
                                                                 outJson.PlayerRank.winPrize = contestRank.prize_amount;
                                                             } 
                                                             outJson.PlayerRank.credit_type = contestRank.credit_type;
                                                             //players.winPrize = contestRank.prize_amount;
                                                             if (parseFloat(players.total_score) > 0) {
-                                                                console.log('prize|' + players.winPrize + "|" + players.winPrize)
+                                                               
                                                                 if (players.winPrize < contestRank.prize_amount) {
                                                                     players.winPrize = contestRank.prize_amount;
                                                                 }
@@ -956,17 +961,30 @@ module.exports = {
                                                             }
                                                             players.credit_type = contestRank.credit_type;
                                                         } else {
-                                                            players.winPrize = contestRank.prize_amount;
+                                                          
+                                                            if(players.winPrize !=undefined){
+                                                                if(  players.winPrize < contestRank.prize_amount){
+                                                                    players.winPrize = contestRank.prize_amount;
+                                                                }
+                                                            }else{
+                                                                players.winPrize = contestRank.prize_amount;
+                                                            } 
+                                                          
                                                             players.credit_type = contestRank.credit_type;
                                                         }
                                                     }
                                                 }
                                             }
                                         });
+                                        
                                         if (parseFloat(players.total_score) > 0) {
                                             outJson.Winners.push(players);
                                         }
+                                        
                                     });
+                                    console.log('--------------------------------------')
+                                    console.log(outJson.Winners)
+                                    console.log('--------------------------------------')
                                     var NextRank = playerRankNo + 1;
                                     var PrevRank = playerRankNo - 1;
                                     winnerDetails.forEach(element => {
@@ -983,7 +1001,7 @@ module.exports = {
                                                                 parseInt(NextRank) >= parseInt(contestRank.lower_rank) &&
                                                                 parseInt(NextRank) <= parseInt(contestRank.upper_rank)) {
                                                                 outJson.NextRank.winPrize = contestRank.prize_amount;
-                                                                outJson.NextRank.credit_type = contestRank.credit_type;
+                                                               outJson.NextRank.credit_type = contestRank.credit_type;
                                                             }
                                                         } else {
                                                             let upper_percent = contestRank.upper_rank; 
@@ -993,7 +1011,10 @@ module.exports = {
                                                             if (contestRank.contest_id == contestdetails[0].contest_id &&
                                                                 parseInt(NextRank) >= parseInt(lowerRank) &&
                                                                 parseInt(NextRank) <= parseInt(upperRank)) {
-                                                                outJson.NextRank.winPrize = contestRank.prize_amount;
+                                                                    if( outJson.NextRank.winPrize  < contestRank.prize_amount){
+                                                                        outJson.NextRank.winPrize = contestRank.prize_amount;
+                                                                    }
+                                                             
                                                                 outJson.NextRank.credit_type = contestRank.credit_type;
                                                             }
                                                         }
@@ -1009,8 +1030,10 @@ module.exports = {
                                                             if (contestRank.contest_id == contestdetails[0].contest_id &&
                                                                 parseInt(PrevRank) >= parseInt(contestRank.lower_rank) &&
                                                                 parseInt(PrevRank) <= parseInt(contestRank.upper_rank)) {
-                                                                outJson.PreviousRank.winPrize = contestRank.prize_amount;
-                                                                outJson.PreviousRank.credit_type = contestRank.credit_type;
+                                                                    
+                                                                        outJson.PreviousRank.winPrize = contestRank.prize_amount;
+                                                                     
+                                                                 outJson.PreviousRank.credit_type = contestRank.credit_type;
                                                             }
                                                         } else {
                                                           
@@ -1022,7 +1045,10 @@ module.exports = {
                                                             if (contestRank.contest_id == contestdetails[0].contest_id &&
                                                                 parseInt(PrevRank) >= parseInt(lowerRank) &&
                                                                 parseInt(PrevRank) <= parseInt(upperRank)) {
-                                                                outJson.PreviousRank.winPrize = contestRank.prize_amount;
+                                                                    if( outJson.PreviousRank.winPrize  < contestRank.prize_amount){
+                                                                        outJson.PreviousRank.winPrize = contestRank.prize_amount;
+                                                                    }
+                                                                
                                                                 outJson.PreviousRank.credit_type = contestRank.credit_type;
                                                             }
                                                         }
@@ -1032,6 +1058,9 @@ module.exports = {
                                             }
                                         }
                                     });
+                                    console.log('------------CCC--------------------------')
+                                    console.log(outJson.Winners)
+                                    console.log('--------------------------------------')
                                     sendResp.sendCustomJSON(null, req, res, true, outJson, "Contest Details")
                                 }
 
