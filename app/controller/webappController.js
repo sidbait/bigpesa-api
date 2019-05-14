@@ -907,7 +907,7 @@ module.exports = {
                                         }
                                         rankDetails.forEach(contestRank => {
                                             if (contestRank.contest_id == contestdetails[0].contest_id) {
-                                                console.log( 'PERCENT:' + contestRank.is_percent);
+                                                
                                                 if (!contestRank.is_percent) {
                                                     if (contestRank.contest_id == contestdetails[0].contest_id &&
                                                         parseInt(players.player_rank) >= parseInt(contestRank.lower_rank) &&
@@ -928,22 +928,31 @@ module.exports = {
                                                         }
                                                     }
                                                 } else { 
+                                                   // console.log('HERE')
+                                                  
                                                     let upper_percent = contestRank.upper_rank;//0
                                                     let lower_percent = contestRank.lower_rank;//20
                                                     let upperRank = Math.round((parseInt(player_joined) * upper_percent) / 100);
                                                     let lowerRank = Math.round((parseInt(player_joined) * lower_percent) / 100);
-                                                    console.log('PERCENT RANK ' + lowerRank +"|"+ upperRank);
+                                                    console.log('HERE22PERCENT RANK '+players.player_rank+"|"+player_joined +"|"+upper_percent+"|"+ lower_percent +"|"+ lowerRank +"|"+ upperRank);
                                                     if (contestRank.contest_id == contestdetails[0].contest_id &&
                                                         parseInt(players.player_rank) >= parseInt(lowerRank) &&
                                                         parseInt(players.player_rank) <= parseInt(upperRank)) {
                                                         if (players.player_id == playerId) {
-                                                            outJson.PlayerRank.winPrize = contestRank.prize_amount;
+                                                            if (outJson.PlayerRank.winPrize < contestRank.prize_amount) {
+                                                                outJson.PlayerRank.winPrize = contestRank.prize_amount;
+                                                            } 
                                                             outJson.PlayerRank.credit_type = contestRank.credit_type;
                                                             //players.winPrize = contestRank.prize_amount;
                                                             if (parseFloat(players.total_score) > 0) {
-                                                                players.winPrize = contestRank.prize_amount;
+                                                                console.log('prize|' + players.winPrize + "|" + players.winPrize)
+                                                                if (players.winPrize < contestRank.prize_amount) {
+                                                                    players.winPrize = contestRank.prize_amount;
+                                                                }
                                                             } else {
-                                                                players.winPrize = 0;
+                                                                if (players.winPrize == undefined) {
+                                                                    players.winPrize = 0;
+                                                                }
                                                             }
                                                             players.credit_type = contestRank.credit_type;
                                                         } else {
@@ -995,6 +1004,7 @@ module.exports = {
                                                 outJson.PreviousRank.winPrize = 0;
                                                 rankDetails.forEach(contestRank => {
                                                     if (contestRank.contest_id == contestdetails[0].contest_id) {
+
                                                         if (!contestRank.is_percent) {
                                                             if (contestRank.contest_id == contestdetails[0].contest_id &&
                                                                 parseInt(PrevRank) >= parseInt(contestRank.lower_rank) &&
@@ -1003,11 +1013,12 @@ module.exports = {
                                                                 outJson.PreviousRank.credit_type = contestRank.credit_type;
                                                             }
                                                         } else {
+                                                          
                                                             let upper_percent = contestRank.upper_rank;//0
                                                             let lower_percent = contestRank.lower_rank;//20
                                                             let upperRank = Math.round((parseInt(player_joined) * upper_percent) / 100);
                                                             let lowerRank = Math.round((parseInt(player_joined) * lower_percent) / 100);
-                                                            console.log('PERCENT RANK ' + lowerRank +"|"+ upperRank);
+                                                          
                                                             if (contestRank.contest_id == contestdetails[0].contest_id &&
                                                                 parseInt(PrevRank) >= parseInt(lowerRank) &&
                                                                 parseInt(PrevRank) <= parseInt(upperRank)) {
