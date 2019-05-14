@@ -2910,7 +2910,7 @@ module.exports = {
                                             let lower_percent = contestRank.lower_rank;//20
                                             let upperRank = Math.round((parseInt(player_joined) * upper_percent) / 100);
                                             let lowerRank = Math.round((parseInt(player_joined) * lower_percent) / 100);
-                                          
+                                          console.log('upperRank:' + upperRank+ 'lowerRank:' + lowerRank);
                                             if (contestRank.contest_id == contestdetails[0].contest_id &&
                                                 parseInt(players.player_rank) >= parseInt(lowerRank) &&
                                                 parseInt(players.player_rank) <= parseInt(upperRank)) {
