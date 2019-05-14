@@ -197,6 +197,9 @@ module.exports = {
                                             contest.css_class = contests.css_class;
                                             if(contest.css_class !=null && contest.css_class.indexOf('special') > -1){
                                                 app.top_text = 'MEGA';
+                                                if(contest.live_status){
+                                                    app.top_text = app.top_text + ' ⭐️';
+                                                }
                                             }
                                             contest.win_amount = contests.win_amount;
                                             contest.contest_status = contests.contest_status;
