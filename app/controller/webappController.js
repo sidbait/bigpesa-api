@@ -2812,7 +2812,6 @@ module.exports = {
                             let livesCheck = result_async.livesCheck;
                             var outJson = {};
 
-
                             var currenttime = new Date(contestdetails[0].currenttime);
                             var conteststarttime = new Date(contestdetails[0].start_date);
                             var contestendtime = new Date(contestdetails[0].end_date);
@@ -2823,8 +2822,6 @@ module.exports = {
                             let contest_type = contestdetails[0].contest_type;
                             contestdetails[0].remainingstartseconds = remainingstartseconds;
                             contestdetails[0].remainingendseconds = remainingendseconds;
-
-
 
                             contestdetails[0].contest_rank = [];
                             rankDetails.forEach(contestRank => {
