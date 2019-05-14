@@ -907,6 +907,7 @@ module.exports = {
                                         }
                                         rankDetails.forEach(contestRank => {
                                             if (contestRank.contest_id == contestdetails[0].contest_id) {
+                                                console.log( 'PERCENT:' + contestRank.is_percent);
                                                 if (!contestRank.is_percent) {
                                                     if (contestRank.contest_id == contestdetails[0].contest_id &&
                                                         parseInt(players.player_rank) >= parseInt(contestRank.lower_rank) &&
@@ -929,8 +930,9 @@ module.exports = {
                                                 } else { 
                                                     let upper_percent = contestRank.upper_rank;//0
                                                     let lower_percent = contestRank.lower_rank;//20
-                                                    let lowerRank = Math.round((parseInt(player_joined) * upper_percent) / 100);
-                                                    let upperRank = Math.round((parseInt(player_joined) * lower_percent) / 100);
+                                                    let upperRank = Math.round((parseInt(player_joined) * upper_percent) / 100);
+                                                    let lowerRank = Math.round((parseInt(player_joined) * lower_percent) / 100);
+                                                    console.log('PERCENT RANK ' + lowerRank +"|"+ upperRank);
                                                     if (contestRank.contest_id == contestdetails[0].contest_id &&
                                                         parseInt(players.player_rank) >= parseInt(lowerRank) &&
                                                         parseInt(players.player_rank) <= parseInt(upperRank)) {
@@ -975,10 +977,10 @@ module.exports = {
                                                                 outJson.NextRank.credit_type = contestRank.credit_type;
                                                             }
                                                         } else {
-                                                            let upper_percent = contestRank.upper_rank;//0
-                                                            let lower_percent = contestRank.lower_rank;//20
-                                                            let lowerRank = Math.round((parseInt(player_joined) * upper_percent) / 100);
-                                                            let upperRank = Math.round((parseInt(player_joined) * lower_percent) / 100);
+                                                            let upper_percent = contestRank.upper_rank; 
+                                                            let lower_percent = contestRank.lower_rank;
+                                                            let upperRank = Math.round((parseInt(player_joined) * upper_percent) / 100);
+                                                            let lowerRank = Math.round((parseInt(player_joined) * lower_percent) / 100);
                                                             if (contestRank.contest_id == contestdetails[0].contest_id &&
                                                                 parseInt(NextRank) >= parseInt(lowerRank) &&
                                                                 parseInt(NextRank) <= parseInt(upperRank)) {
@@ -1001,6 +1003,11 @@ module.exports = {
                                                                 outJson.PreviousRank.credit_type = contestRank.credit_type;
                                                             }
                                                         } else {
+                                                            let upper_percent = contestRank.upper_rank;//0
+                                                            let lower_percent = contestRank.lower_rank;//20
+                                                            let upperRank = Math.round((parseInt(player_joined) * upper_percent) / 100);
+                                                            let lowerRank = Math.round((parseInt(player_joined) * lower_percent) / 100);
+                                                            console.log('PERCENT RANK ' + lowerRank +"|"+ upperRank);
                                                             if (contestRank.contest_id == contestdetails[0].contest_id &&
                                                                 parseInt(PrevRank) >= parseInt(lowerRank) &&
                                                                 parseInt(PrevRank) <= parseInt(upperRank)) {
