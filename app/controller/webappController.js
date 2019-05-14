@@ -579,7 +579,7 @@ module.exports = {
                                                         //contest.transaction_date = contests.transaction_date;
                                                         let contest_channel = contests.channel;
                                                         contest.contest_date = contests.contest_date;
-
+                                                        let player_joined =  contest.player_joined;
                                                         // contest.play_status = 'PAY';
                                                         // if (contest.player_joined >= contest.max_players) {
                                                         //     contest.play_status = 'FULL';
