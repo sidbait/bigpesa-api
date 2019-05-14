@@ -481,13 +481,6 @@ module.exports = {
                                 applistquery = "select * from vw_live_app_list where 1=1  ";
                             }
                             let contestquery = "select * from vw_player_contest_withrank where player_id = " + playerId;
-                            // let liveContestRankQuery = ` select contest_id ,player_id,player_rank from (  select  contest_id,player_id,  
-                            //     app_id,total_score,'ACTIVE',contest_date, RANK()  
-                            //      OVER (partition by contest_id  ORDER BY total_score desc ,created_at asc)  
-                            //      as player_rank from  tbl_contest_leader_board  
-                            //      where total_score > 0 and contest_date >=  
-                            //      (now() +  330 * '1 minute'::interval)::date)t 
-                            //      where  player_id = ${playerId} `
                             let liveContestRankQuery = ` select contest_id ,player_id,player_rank from (  select  contest_id,player_id,  
                                     app_id,total_score,'ACTIVE',contest_date, RANK()  
                                     OVER (partition by contest_id  ORDER BY total_score desc ,created_at asc)  
@@ -582,6 +575,7 @@ module.exports = {
                                                         contest.used_lives = contests.used_lives;
                                                         contest.matrix_code = contests.matrix_code;
                                                         contest.infinite_users = contests.infinite_users;
+                                                        contest.contest_type = contests.contest_type;
                                                         //contest.transaction_date = contests.transaction_date;
                                                         let contest_channel = contests.channel;
                                                         contest.contest_date = contests.contest_date;
@@ -596,7 +590,7 @@ module.exports = {
                                                         //     }
                                                         // });
                                                         contest.currenttime = contests.currenttime;
-
+                                                        var contest_type  = contests.contest_type;
                                                         var currenttime = new Date(contest.currenttime);
                                                         var conteststarttime = new Date(contest.start_date);
                                                         var contestendtime = new Date(contest.end_date);
@@ -633,26 +627,47 @@ module.exports = {
                                                                 liveContestRank.forEach(liveContestRankId => {
                                                                     if (liveContestRankId.contest_id == livecontest.contest_id) {
                                                                         livecontest.rank = liveContestRankId.player_rank;
-                                                                        g15daysRankDetails.forEach(ranks => {
-                                                                            if (livecontest.contest_id == ranks.contest_id &&
-                                                                                parseInt(liveContestRankId.player_rank) >= parseInt(ranks.lower_rank) &&
-                                                                                parseInt(liveContestRankId.player_rank) <= parseInt(ranks.upper_rank)) {
-                                                                                livecontest.player_win_amount = ranks.prize_amount;
-                                                                                livecontest.credit_type = ranks.credit_type;
-                                                                                //livecontest.rank = ranks.lower_rank;
-                                                                            }
-                                                                        });
+                                                                        if(contest_type.toLowerCase() != 'percentagemode'){
+                                                                            g15daysRankDetails.forEach(ranks => {
+                                                                                if (livecontest.contest_id == ranks.contest_id &&
+                                                                                    parseInt(liveContestRankId.player_rank) >= parseInt(ranks.lower_rank) &&
+                                                                                    parseInt(liveContestRankId.player_rank) <= parseInt(ranks.upper_rank)) {
+                                                                                    livecontest.player_win_amount = ranks.prize_amount;
+                                                                                    livecontest.credit_type = ranks.credit_type;
+                                                                                    //livecontest.rank = ranks.lower_rank;
+                                                                                }
+                                                                            });
+                                                                        }else{
+                                                                            g15daysRankDetails.forEach(ranks => {
+                                                                                if (livecontest.contest_id == ranks.contest_id) {
+                                                                                    let upper_percent = ranks.upper_rank; 
+                                                                                    let lower_percent = ranks.lower_rank; 
+                                                                                    let upperRank = Math.round((parseInt(player_joined) * upper_percent) / 100);
+                                                                                    let lowerRank = Math.round((parseInt(player_joined) * lower_percent) / 100);
+
+                                                                                    if (parseInt(liveContestRankId.player_rank) >= parseInt(lowerRank) &&
+                                                                                        parseInt(liveContestRankId.player_rank) <= parseInt(upperRank)) {
+                                                                                            
+                                                                                         if(livecontest.player_win_amount != undefined){
+                                                                                            if( livecontest.player_win_amount  <  ranks.prize_amount){
+                                                                                                livecontest.player_win_amount = ranks.prize_amount;
+                                                                                            }
+                                                                                         }else{
+                                                                                            livecontest.player_win_amount = ranks.prize_amount;
+                                                                                         }
+                                                                                    
+                                                                                        livecontest.credit_type = ranks.credit_type;
+                                                                                        //livecontest.rank = ranks.lower_rank;
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                        }
+                                                                      
                                                                     }
                                                                 })
                                                             }
 
-                                                            // if (isPlaystoreApp) {
-                                                            //     if (contest.debit_type.toUpperCase() != "CASH") {
-                                                            //         app.contests.LIVE.push(livecontest);
-                                                            //     }
-                                                            // } else {
-                                                            //     app.contests.LIVE.push(livecontest);
-                                                            // }
+ 
 
                                                             if (contest_channel != "" && contest_channel != null) {
                                                                 if (channel.toUpperCase() == "PLAYSTORE" && contest_channel.toUpperCase() == "PLAYSTORE") {
@@ -666,13 +681,7 @@ module.exports = {
                                                             }
 
                                                         } else if (contest.contest_status == "UPCOMING") {
-                                                            // if (isPlaystoreApp) {
-                                                            //     if (contest.debit_type.toUpperCase() != "CASH") {
-                                                            //         app.contests.UPCOMING.push(contest);
-                                                            //     }
-                                                            // } else {
-                                                            //     app.contests.UPCOMING.push(contest);
-                                                            // }
+                                                             
                                                             if (contest_channel != "" && contest_channel != null) {
                                                                 if (channel.toUpperCase() == "PLAYSTORE" && contest_channel.toUpperCase() == "PLAYSTORE") {
                                                                     app.contests.UPCOMING.push(contest);
