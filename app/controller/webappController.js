@@ -858,6 +858,7 @@ module.exports = {
                                     let remainingendseconds = (contestendtime.getTime() - currenttime.getTime()) / 1000;
                                     let max_lives = contestdetails[0].max_lives;
                                     let player_joined = contestdetails[0].player_joined;
+                                    let contest_type = contestdetails[0].contest_type;
                                     contestdetails[0].remainingstartseconds = remainingstartseconds;
                                     contestdetails[0].remainingendseconds = remainingendseconds;
                                     if (parseInt(contestdetails[0].max_players) == 2) {
