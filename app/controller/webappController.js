@@ -10,7 +10,7 @@ var uniqid = require('uniqid');
 var dbConnection = require('../model/dbConnection');
 var sendResp = require('../service/send');
 var userModel = require('../model/UserModel');
-var contestModel = require('../model/contestModel'); 
+var contestModel = require('../model/contestModel');
 var logger = require('tracer').colorConsole();
 var debitcredit = require('../model/debitcredit');
 var redisConnection = require('../model/redisConnection');
@@ -204,7 +204,7 @@ module.exports = {
                                             contest.contest_minutes = contests.contest_minutes;
                                             contest.infinite_users = contests.infinite_users;
                                             contest.matrix_code = contests.matrix_code;
-                                            contest.matrix_desc ="";
+                                            contest.matrix_desc = "";
                                             if (contest.matrix_code != "") {
                                                 gdebitMatrix.forEach(matrix => {
                                                     if (matrix.matrix_code == contest.matrix_code) {
@@ -214,9 +214,9 @@ module.exports = {
                                                     }
                                                 });
                                             }
-                                            if( parseInt(contests.max_players) == 2){
+                                            if (parseInt(contests.max_players) == 2) {
                                                 contest.allow_rejoin = false;
-                                            }else{
+                                            } else {
                                                 contest.allow_rejoin = true;
                                             }
                                             if (contests.contest_icon != undefined && contests.contest_icon != null) {
@@ -276,7 +276,7 @@ module.exports = {
                                                 });
                                             }
 
-                                                   if (contest_channel != "" && contest_channel != null && contest_channel != undefined) {
+                                            if (contest_channel != "" && contest_channel != null && contest_channel != undefined) {
                                                 if (channel.toUpperCase() == "PLAYSTORE" && contest_channel.toUpperCase() == "PLAYSTORE") {
                                                     if (contest.contest_minutes > 0 && contest.play_status == 'FULL') {
                                                     } else {
@@ -602,13 +602,13 @@ module.exports = {
                                                         contest.remainingendseconds = remainingendseconds;
                                                         contest.start_date = (contest.start_date).toString().substring(0, 16).replace('T', ' ');
                                                         contest.end_date = (contest.end_date).toString().substring(0, 16).replace('T', ' ');
-                                                       
-                                                        if( parseInt(contests.max_players) == 2){
+
+                                                        if (parseInt(contests.max_players) == 2) {
                                                             contest.allow_rejoin = false;
-                                                        }else{
+                                                        } else {
                                                             contest.allow_rejoin = true;
                                                         }
-                                                       
+
                                                         if (contest.contest_status == "LIVE") {
 
                                                             let livecontest = contest;
@@ -788,7 +788,7 @@ module.exports = {
         var appSecretKey = req.headers["x-nazara-app-secret-key"];
         var userToken = req.headers["authorization"];
         var checkSum = req.headers["checksum"];
-        var now = new Date(); 
+        var now = new Date();
         var md5checksum = md5(contestId) + "|" +
             md5(appSecretKey + "$" + appId);
         var sha512Checksum = sha512(md5checksum);
@@ -837,33 +837,26 @@ module.exports = {
                             }
                         },
                             function (err_async, result_async) {
-                                //console.log(err_async)
                                 if (err_async) {
                                     sendResp.sendCustomJSON(err_async, req, res, false, [], "Something got wrong")
                                 } else {
-                                    var contestdetails = result_async.contestDetails;
-                                    var winnerDetails = result_async.winnerDetails;
-                                    var rankDetails = result_async.contestRankquery;
+                                    let outJson = {};
+                                    let contestdetails = result_async.contestDetails;
+                                    let winnerDetails = result_async.winnerDetails;
+                                    let rankDetails = result_async.contestRankquery;
                                     let livesCheck = result_async.livesCheck;
-                                    var outJson = {};
-
-
-                                    var currenttime = new Date(contestdetails[0].currenttime);
-                                    var conteststarttime = new Date(contestdetails[0].start_date);
-                                    var contestendtime = new Date(contestdetails[0].end_date);
-
-                                    var remainingstartseconds = (conteststarttime.getTime() - currenttime.getTime()) / 1000;
-                                    var remainingendseconds = (contestendtime.getTime() - currenttime.getTime()) / 1000;
-
+                                    let currenttime = new Date(contestdetails[0].currenttime);
+                                    let conteststarttime = new Date(contestdetails[0].start_date);
+                                    let contestendtime = new Date(contestdetails[0].end_date);
+                                    let remainingstartseconds = (conteststarttime.getTime() - currenttime.getTime()) / 1000;
+                                    let remainingendseconds = (contestendtime.getTime() - currenttime.getTime()) / 1000;
                                     let max_lives = contestdetails[0].max_lives;
-
-
-
+                                    let player_joined = contestdetails[0].player_joined;
                                     contestdetails[0].remainingstartseconds = remainingstartseconds;
                                     contestdetails[0].remainingendseconds = remainingendseconds;
-                                    if( parseInt(contestdetails[0].max_players) == 2){
+                                    if (parseInt(contestdetails[0].max_players) == 2) {
                                         contestdetails[0].allow_rejoin = false;
-                                    }else{
+                                    } else {
                                         contestdetails[0].allow_rejoin = true;
                                     }
                                     contestdetails[0].contest_rank = [];
@@ -877,6 +870,7 @@ module.exports = {
                                             rank.upper_rank = contestRank.upper_rank;
                                             rank.prize_amount = contestRank.prize_amount;
                                             rank.credit_type = contestRank.credit_type;
+                                            rank.is_percent = contestRank.is_percent;
                                             contestdetails[0].contest_rank.push(rank);
                                         }
                                     });
@@ -906,22 +900,49 @@ module.exports = {
                                             playerRankNo = parseInt(players.player_rank);
                                         }
                                         rankDetails.forEach(contestRank => {
-                                            if (contestRank.contest_id == contestdetails[0].contest_id &&
-                                                parseInt(players.player_rank) >= parseInt(contestRank.lower_rank) &&
-                                                parseInt(players.player_rank) <= parseInt(contestRank.upper_rank)) {
-                                                if (players.player_id == playerId) {
-                                                    outJson.PlayerRank.winPrize = contestRank.prize_amount;
-                                                    outJson.PlayerRank.credit_type = contestRank.credit_type;
-                                                    //players.winPrize = contestRank.prize_amount;
-                                                    if (parseFloat(players.total_score) > 0) {
-                                                        players.winPrize = contestRank.prize_amount;
-                                                    } else {
-                                                        players.winPrize = 0;
+                                            if (contestRank.contest_id == contestdetails[0].contest_id) {
+                                                if (!contestRank.is_percent) {
+                                                    if (contestRank.contest_id == contestdetails[0].contest_id &&
+                                                        parseInt(players.player_rank) >= parseInt(contestRank.lower_rank) &&
+                                                        parseInt(players.player_rank) <= parseInt(contestRank.upper_rank)) {
+                                                        if (players.player_id == playerId) {
+                                                            outJson.PlayerRank.winPrize = contestRank.prize_amount;
+                                                            outJson.PlayerRank.credit_type = contestRank.credit_type;
+                                                            //players.winPrize = contestRank.prize_amount;
+                                                            if (parseFloat(players.total_score) > 0) {
+                                                                players.winPrize = contestRank.prize_amount;
+                                                            } else {
+                                                                players.winPrize = 0;
+                                                            }
+                                                            players.credit_type = contestRank.credit_type;
+                                                        } else {
+                                                            players.winPrize = contestRank.prize_amount;
+                                                            players.credit_type = contestRank.credit_type;
+                                                        }
                                                     }
-                                                    players.credit_type = contestRank.credit_type;
-                                                } else {
-                                                    players.winPrize = contestRank.prize_amount;
-                                                    players.credit_type = contestRank.credit_type;
+                                                } else { 
+                                                    let upper_percent = contestRank.upper_rank;//0
+                                                    let lower_percent = contestRank.lower_rank;//20
+                                                    let lowerRank = Math.round((parseInt(player_joined) * upper_percent) / 100);
+                                                    let upperRank = Math.round((parseInt(player_joined) * lower_percent) / 100);
+                                                    if (contestRank.contest_id == contestdetails[0].contest_id &&
+                                                        parseInt(players.player_rank) >= parseInt(lowerRank) &&
+                                                        parseInt(players.player_rank) <= parseInt(upperRank)) {
+                                                        if (players.player_id == playerId) {
+                                                            outJson.PlayerRank.winPrize = contestRank.prize_amount;
+                                                            outJson.PlayerRank.credit_type = contestRank.credit_type;
+                                                            //players.winPrize = contestRank.prize_amount;
+                                                            if (parseFloat(players.total_score) > 0) {
+                                                                players.winPrize = contestRank.prize_amount;
+                                                            } else {
+                                                                players.winPrize = 0;
+                                                            }
+                                                            players.credit_type = contestRank.credit_type;
+                                                        } else {
+                                                            players.winPrize = contestRank.prize_amount;
+                                                            players.credit_type = contestRank.credit_type;
+                                                        }
+                                                    }
                                                 }
                                             }
                                         });
@@ -939,23 +960,50 @@ module.exports = {
                                                 outJson.NextRank = element;
                                                 outJson.NextRank.winPrize = 0;
                                                 rankDetails.forEach(contestRank => {
-                                                    if (contestRank.contest_id == contestdetails[0].contest_id &&
-                                                        parseInt(NextRank) >= parseInt(contestRank.lower_rank) &&
-                                                        parseInt(NextRank) <= parseInt(contestRank.upper_rank)) {
-                                                        outJson.NextRank.winPrize = contestRank.prize_amount;
-                                                        outJson.NextRank.credit_type = contestRank.credit_type;
+                                                    if (contestRank.contest_id == contestdetails[0].contest_id) {
+                                                        if (!contestRank.is_percent) {
+                                                            if (contestRank.contest_id == contestdetails[0].contest_id &&
+                                                                parseInt(NextRank) >= parseInt(contestRank.lower_rank) &&
+                                                                parseInt(NextRank) <= parseInt(contestRank.upper_rank)) {
+                                                                outJson.NextRank.winPrize = contestRank.prize_amount;
+                                                                outJson.NextRank.credit_type = contestRank.credit_type;
+                                                            }
+                                                        } else {
+                                                            let upper_percent = contestRank.upper_rank;//0
+                                                            let lower_percent = contestRank.lower_rank;//20
+                                                            let lowerRank = Math.round((parseInt(player_joined) * upper_percent) / 100);
+                                                            let upperRank = Math.round((parseInt(player_joined) * lower_percent) / 100);
+                                                            if (contestRank.contest_id == contestdetails[0].contest_id &&
+                                                                parseInt(NextRank) >= parseInt(lowerRank) &&
+                                                                parseInt(NextRank) <= parseInt(upperRank)) {
+                                                                outJson.NextRank.winPrize = contestRank.prize_amount;
+                                                                outJson.NextRank.credit_type = contestRank.credit_type;
+                                                            }
+                                                        }
                                                     }
                                                 });
                                             } else if (PrevRank == element.player_rank && parseFloat(element.total_score) > 0) {
                                                 outJson.PreviousRank = element;
                                                 outJson.PreviousRank.winPrize = 0;
                                                 rankDetails.forEach(contestRank => {
-                                                    if (contestRank.contest_id == contestdetails[0].contest_id &&
-                                                        parseInt(PrevRank) >= parseInt(contestRank.lower_rank) &&
-                                                        parseInt(PrevRank) <= parseInt(contestRank.upper_rank)) {
-                                                        outJson.PreviousRank.winPrize = contestRank.prize_amount;
-                                                        outJson.PreviousRank.credit_type = contestRank.credit_type;
+                                                    if (contestRank.contest_id == contestdetails[0].contest_id) {
+                                                        if (!contestRank.is_percent) {
+                                                            if (contestRank.contest_id == contestdetails[0].contest_id &&
+                                                                parseInt(PrevRank) >= parseInt(contestRank.lower_rank) &&
+                                                                parseInt(PrevRank) <= parseInt(contestRank.upper_rank)) {
+                                                                outJson.PreviousRank.winPrize = contestRank.prize_amount;
+                                                                outJson.PreviousRank.credit_type = contestRank.credit_type;
+                                                            }
+                                                        } else {
+                                                            if (contestRank.contest_id == contestdetails[0].contest_id &&
+                                                                parseInt(PrevRank) >= parseInt(lowerRank) &&
+                                                                parseInt(PrevRank) <= parseInt(upperRank)) {
+                                                                outJson.PreviousRank.winPrize = contestRank.prize_amount;
+                                                                outJson.PreviousRank.credit_type = contestRank.credit_type;
+                                                            }
+                                                        }
                                                     }
+
                                                 });
                                             }
                                         }
@@ -964,7 +1012,6 @@ module.exports = {
                                 }
 
                             });
-
                     }
                 }
             })
@@ -1210,7 +1257,7 @@ module.exports = {
         let getUserDetails = " select * from vw_userdetail where token = " + appSecretKey;
         let randomNumber = (Math.floor(Math.random() * 90000) + 1);
         var now = new Date();
-        
+
         console.log('CHANNEL ----------------' + channel)
         // var md5checksum = md5(config.app.client_key + "$"
         //     + appId + "$" +
@@ -1234,20 +1281,20 @@ module.exports = {
             sendResp.sendCustomJSON(null, req, res, false, [], "Invalid checksum!")
         }
         else {
-            userModel.getUserDetails(userToken,async function (err, deails) {
+            userModel.getUserDetails(userToken, async function (err, deails) {
                 if (err) {
                     sendResp.sendCustomJSON(null, req, res, false, [], "Token Is Invalid", false, false);
                 } else {
-                    playerId = deails.playerId;                    
+                    playerId = deails.playerId;
                     if (playerId == "") {
                         sendResp.sendCustomJSON(null, req, res, false, [], "Token Is Invalid", false, false);
                     } else {
                         let redisKey = 'JOIN' + playerId + "|" + contestId;
                         let isInProcess = await redisConnection.getRedisPromise(redisKey);
                         console.log('IS IN PROCESS---' + isInProcess);
-                         if (isInProcess == null) {
+                        if (isInProcess == null) {
 
-                            redisConnection.setRedisPromise(redisKey,true,2);
+                            redisConnection.setRedisPromise(redisKey, true, 2);
                             mobileNumber = deails.phone_number;
                             airpayToken = deails.airpay_token;
                             let player_name = deails.player_name;
@@ -1361,7 +1408,7 @@ module.exports = {
                                                         }
                                                     }
                                                     else if (checkLives && checkLives.length > 0 && checkLives[0].player_status == "GAMEOVER") {
-                                                        getNewLives(contestInfo, playerId, userToken, airpayToken, channel ,function (err, debitResponse) {
+                                                        getNewLives(contestInfo, playerId, userToken, airpayToken, channel, function (err, debitResponse) {
                                                             console.log('NEW LIVES RS---------')
                                                             console.log(err)
                                                             console.log(debitResponse)
@@ -1514,7 +1561,7 @@ module.exports = {
 
                                                                                         var score = 0;//Initial score set to 0
                                                                                         contestModel.insertContestScore(contestId, appId, playerId, score, function (response) {
-                                                                                        },channel);
+                                                                                        }, channel);
 
                                                                                         let checkContestIslive = " select count(1) from tbl_contest where (now() + (5 * interval '1 hour') + " +
                                                                                             " (30 * interval '1 minute'))::TIME between from_time and to_time and contest_id = " + contestId + " "
@@ -1592,7 +1639,7 @@ module.exports = {
                                                                                             var event_id = contestInfo.contest_id;
                                                                                             var event_name = contestInfo.app_name + "(" + contestInfo.contest_name + ")";
                                                                                             debitcredit.debitAmountAirpayContestJoin(userToken, airpayToken, orderId, 'DEBIT', amount,
-                                                                                                event, event_id, event_name, matrix_code,channel, function (err, debitResponse) {
+                                                                                                event, event_id, event_name, matrix_code, channel, function (err, debitResponse) {
 
                                                                                                     if (err) {
                                                                                                         sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
@@ -1614,7 +1661,7 @@ module.exports = {
 
                                                                                                                             var score = 0;//Initial score set to 0
                                                                                                                             contestModel.insertContestScore(contestId, appId, playerId, score, function (response) {
-                                                                                                                            },channel);
+                                                                                                                            }, channel);
 
                                                                                                                             let checkContestIslive = " select count(1) from tbl_contest where (now() + (5 * interval '1 hour') + " +
                                                                                                                                 " (30 * interval '1 minute'))::TIME between from_time and to_time and contest_id = " + contestId + " "
@@ -1718,7 +1765,7 @@ module.exports = {
                                                                                                                 if (isJoined) {
                                                                                                                     var score = 0;//Initial score set to 0
                                                                                                                     contestModel.insertContestScore(contestId, appId, playerId, score, function (response) {
-                                                                                                                    },channel);
+                                                                                                                    }, channel);
 
                                                                                                                     let checkContestIslive = " select count(1) from tbl_contest where (now() + (5 * interval '1 hour') + " +
                                                                                                                         " (30 * interval '1 minute'))::TIME between from_time and to_time and contest_id = " + contestId + " "
@@ -1806,8 +1853,8 @@ module.exports = {
                             });
 
                         } else {
-                             sendResp.sendCustomJSON(null, req, res, false, [], "Your Request In Process!", false, false);
-                         }
+                            sendResp.sendCustomJSON(null, req, res, false, [], "Your Request In Process!", false, false);
+                        }
 
                     }
                 }
@@ -2534,7 +2581,7 @@ module.exports = {
         if (appSecretKey != null && appSecretKey != undefined && appSecretKey != "" &&
             sessionToken != null && sessionToken != undefined && sessionToken != "") {
             validateToken(sessionToken, app_max_game_minute).then(isSessionTokenDetails => {
-                if (isSessionTokenDetails != null && isSessionTokenDetails != undefined 
+                if (isSessionTokenDetails != null && isSessionTokenDetails != undefined
                     && isSessionTokenDetails.length > 0) {
                     console.log(isSessionTokenDetails)
                     var contestId = isSessionTokenDetails[0].contest_id;
@@ -2592,7 +2639,7 @@ module.exports = {
                                                 // let updateUsedLives = `update tbl_contest_players set used_lives = 
                                                 //             COALESCE( used_lives ,0) + 1  where contest_id = ${contestId} and 
                                                 //             player_id = ${playerId} `;
-                                                 console.log('query_leader_board: ' + query_leader_board);
+                                                console.log('query_leader_board: ' + query_leader_board);
                                                 // dbConnection.executeQuery(updateUsedLives, "rmg_db", function (err, dbResult) { });
                                                 dbConnection.executeQuery(query_leader_board, "rmg_db", function (err, dbResult) {
                                                     if (dbResult == null || dbResult == undefined) {
@@ -2750,9 +2797,9 @@ module.exports = {
                                 }
                             });
 
-                            if( parseInt(contestdetails[0].max_players) == 2){
+                            if (parseInt(contestdetails[0].max_players) == 2) {
                                 contestdetails[0].allow_rejoin = false;
-                            }else{
+                            } else {
                                 contestdetails[0].allow_rejoin = true;
                             }
 
@@ -3197,7 +3244,7 @@ module.exports = {
             } else {
                 playerId = userDetails.playerId;
             }
-            let sendOutContest =[];
+            let sendOutContest = [];
             let contestRankquery = " select * from vw_Upcoming_rankDetails where 1=1 ";
             var contestquery = "select * from vw_apps_upcoming_contests_new where 1=1";
             let playerquery = ` select * from vw_playerjoined where player_id = ${playerId} `
@@ -3252,7 +3299,7 @@ module.exports = {
                             if (contests.css_class != null
                                 && contests.css_class.toLowerCase().indexOf('special') > -1
                                 && contests.live_status == true) {
-                                    splContestCt = splContestCt+1;
+                                splContestCt = splContestCt + 1;
                             }
                         });
 
@@ -3284,7 +3331,7 @@ module.exports = {
                                 app.contests = [];
 
                                 //console.log("app.download_path", app.download_path);
-                               
+
 
                                 ContestOut.forEach(contests => {
                                     if (contests.app_id == element.app_id) {
@@ -3417,13 +3464,13 @@ module.exports = {
                             }
                         });
                     }
-                    if(distinctApps.length > 1){
+                    if (distinctApps.length > 1) {
                         console.log(distinctApps.length);
-                       let randomNumber = Math.floor(Math.random() * distinctApps.length-1) + 1 ;
-                      console.log('Random Number -'+randomNumber)
-                      console.log('count-'+distinctApps.length)
-                       sendOutContest.push(distinctApps[randomNumber]);
-                       
+                        let randomNumber = Math.floor(Math.random() * distinctApps.length - 1) + 1;
+                        console.log('Random Number -' + randomNumber)
+                        console.log('count-' + distinctApps.length)
+                        sendOutContest.push(distinctApps[randomNumber]);
+
                     }
                     sendResp.sendCustomJSON(null, req, res, true, sendOutContest, "App List")
                 });
@@ -3456,9 +3503,9 @@ module.exports = {
 
     topwinnersContest: async (req, res) => {
         let contest_id = req.body.contestId;
-        if(contest_id!= undefined && contest_id !=null){
-      
-        let query = `  select tbl_contest_leader_board.total_score, tbl_player.player_id,CASE
+        if (contest_id != undefined && contest_id != null) {
+
+            let query = `  select tbl_contest_leader_board.total_score, tbl_player.player_id,CASE
                         WHEN tbl_player.full_name IS NULL OR tbl_player.full_name = ''::text 
                          THEN replace(tbl_player.phone_number, "substring"(tbl_player.phone_number, 
                           5, 6), 'XXXXXX'::text)
@@ -3474,16 +3521,16 @@ module.exports = {
                         tbl_contest_leader_board.created_at asc   
                         limit 3 `;
 
-                    console.log(query)
-        var result = await dbConnection.executeQueryAll(query, "rmg_db");
-        if (result != null && result != undefined && result.length != 0 &&  result.length ==3) {
-            sendResp.sendCustomJSON(null, req, res, true, result, "Top 3 winners");
-        }else{
-            sendResp.sendCustomJSON(null, req, res, false, [], "Nothing To Show");
+            console.log(query)
+            var result = await dbConnection.executeQueryAll(query, "rmg_db");
+            if (result != null && result != undefined && result.length != 0 && result.length == 3) {
+                sendResp.sendCustomJSON(null, req, res, true, result, "Top 3 winners");
+            } else {
+                sendResp.sendCustomJSON(null, req, res, false, [], "Nothing To Show");
+            }
+        } else {
+            sendResp.sendCustomJSON(null, req, res, false, [], "Contest_id mandatory");
         }
-    }else{
-        sendResp.sendCustomJSON(null, req, res, false, [], "Contest_id mandatory");
-    }
     }
 }
 
@@ -3680,7 +3727,7 @@ function increaseLives(playerId, contestId) {
     dbConnection.executeQuery(updateUsedLives, "rmg_db", function (err, dbResult) { });
 }
 
-function getNewLives(contestInfo, player_id, userToken, airpayToken,channel, callback) {
+function getNewLives(contestInfo, player_id, userToken, airpayToken, channel, callback) {
     console.log('GET NEW LIVES CALLED');
     let orderId = Date.now();
     let event = 'RE-JOIN CONTEST';
@@ -3689,7 +3736,7 @@ function getNewLives(contestInfo, player_id, userToken, airpayToken,channel, cal
     let matrix_code = contestInfo.matrix_code;
     let event_name = contestInfo.app_name + "(" + contestInfo.contest_name + ")";
     debitcredit.debitAmountAirpayContestJoin(userToken, airpayToken, orderId, 'DEBIT', amount,
-        event, event_id, event_name, matrix_code,channel, function (err, debitResponse) {
+        event, event_id, event_name, matrix_code, channel, function (err, debitResponse) {
             console.log('NEW RESPONSE ---------------------------');
             console.log(debitResponse);
             console.log(debitResponse.statusCode)
