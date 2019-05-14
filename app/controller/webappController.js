@@ -195,7 +195,7 @@ module.exports = {
                                             contest.total_amount = contests.total_amount;
                                             contest.win_amount = contests.win_amount;
                                             contest.css_class = contests.css_class;
-                                            if(contest.css_class !=null && contest.css_class.indexOf('mega') > -1){
+                                            if(contest.css_class !=null && contest.css_class.indexOf('special') > -1){
                                                 app.top_text = 'MEGA';
                                             }
                                             contest.win_amount = contests.win_amount;
