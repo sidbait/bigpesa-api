@@ -210,6 +210,7 @@ module.exports = {
                                             contest.contest_minutes = contests.contest_minutes;
                                             contest.infinite_users = contests.infinite_users;
                                             contest.matrix_code = contests.matrix_code;
+                                            contest.contest_type = contests.contest_type;
                                             contest.matrix_desc = "";
                                             if (contest.matrix_code != "") {
                                                 gdebitMatrix.forEach(matrix => {
@@ -220,6 +221,7 @@ module.exports = {
                                                     }
                                                 });
                                             }
+                                            
                                             if (parseInt(contests.max_players) == 2) {
                                                 contest.allow_rejoin = false;
                                             } else {
@@ -230,7 +232,7 @@ module.exports = {
                                             } else {
                                                 contest.contest_icon = "";
                                             }
-                                            let publish_type = contests.publish_type;
+                                             
                                             let contest_channel = contests.channel;
 
                                             var currenttime = new Date(contest.currenttime);
@@ -469,8 +471,6 @@ module.exports = {
                         sendResp.sendCustomJSON(null, req, res, false, [], "Token Is Invalid", false, false);
 
                     } else {
-
-
                         mobileNumber = deails.phone_number;
                         airpayToken = deails.airpay_token;
                         if (playerId == "") {
