@@ -11,8 +11,10 @@ module.exports = {
                 let campaigns = dbResult[0].data;
                 let prizes = dbResult[1].data;
                 let events = dbResult[2].data;
+                let banners = dbResult[3].data;
 
                 campaigns.forEach(campaign => {
+                    campaign.banners = [];
                     campaign.prizes = [];
                     campaign.events = [];
                     prizes.forEach(prize => {
@@ -23,6 +25,11 @@ module.exports = {
                     events.forEach(event => {
                         if (campaign.camp_id == event.camp_id) {
                             campaign.events.push(event);
+                        }
+                    });
+                    banners.forEach(event => {
+                        if (campaign.camp_id == event.camp_id) {
+                            campaign.banners.push(event);
                         }
                     });
                 });
