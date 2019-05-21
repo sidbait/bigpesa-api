@@ -15,7 +15,7 @@ var logger = require('tracer').colorConsole();
 var debitcredit = require('../model/debitcredit');
 var redisConnection = require('../model/redisConnection');
 var push = require('../model/push');
-
+var scratchController = require('./scratchCardController');
 module.exports = {
 
     appListing: function (req, res) {
@@ -23,7 +23,7 @@ module.exports = {
         let query = "select * from tbl_app where app_code != 'BP' and status = 'ACTIVE' order by app_priority";
         console.log(req.headers)
         dbConnection.executeQuery(query, "rmg_db", function (err, dbResult) {
-            //logger.info("app details - ", JSON.stringify(dbResult));
+  
             sendResp.sendCustomJSON(null, req, res, true, dbResult, "App List")
         })
     },
@@ -1704,6 +1704,7 @@ module.exports = {
                                                                                                             sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
                                                                                                         } else {
                                                                                                             //debitResponse = debitResponse.data;
+                                                                                                            scratchController.contestJoinEvent(playerId,amount);
                                                                                                             contestModel.joinContest(contestId, appId, playerId, amount,
                                                                                                                 debitResponse, deails, contestInfo, channel, debit_type, max_lives,
                                                                                                                 function (isJoined) {
