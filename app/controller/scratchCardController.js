@@ -54,6 +54,7 @@ module.exports = {
                         inner join tbl_scratch_prize_master prize_master 
                         on prize_master.prize_id = trans.prize_id
                         where player_id = ${playerId} order by is_claim `;
+                        console.log(query)
                 let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
                 if(dbResult !=null && dbResult!=undefined && dbResult.length >0){
                     sendResp.sendCustomJSON(null, req, res, true, dbResult, "Token Invalid");
