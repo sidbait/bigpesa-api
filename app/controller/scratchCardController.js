@@ -49,7 +49,7 @@ module.exports = {
             if (playerId != "") {
                 let query = ` select  trans.id, prize_master.prize_code,prize_master.prize_description,
                         prize_master.prize_image,prize_master.gratification_type, 
-                        trans.is_claim, trans.winner_date ,trans.credit_date,trans.add_date
+                        trans.is_claim, trans.winner_date ,trans.credit_date,trans.add_date,prize_master.prize_amount
                         from tbl_scratch_transaction trans
                         inner join tbl_scratch_prize_master prize_master 
                         on prize_master.prize_id = trans.prize_id
