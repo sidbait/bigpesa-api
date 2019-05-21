@@ -57,7 +57,7 @@ module.exports = {
                 console.log(query)
                 let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
                 if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
-                    sendResp.sendCustomJSON(null, req, res, true, dbResult, "Token Invalid");
+                    sendResp.sendCustomJSON(null, req, res, true, dbResult, "Success");
                 } else {
                     sendResp.sendCustomJSON(null, req, res, true, [], "No Data Found");
                 }
