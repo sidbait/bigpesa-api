@@ -4,10 +4,10 @@ var scratchCardController = require('../controller/scratchCardController');
 var cors = require('cors'); 
 
  
-webAppRoutes.get('/sratchcard/campaigns' ,scratchCardController.scratchCardContests);
-webAppRoutes.post('/sratchcard/getscratchcards' ,scratchCardController.getScratchCards);
-webAppRoutes.post('/sratchcard/claimscratchcards' ,scratchCardController.claimScratchCard);
-webAppRoutes.post('/sratchcard/checkscratchcard' ,scratchCardController.checkscratchcard);
+webAppRoutes.get('/scratchcard/campaigns' ,scratchCardController.scratchCardContests);
+webAppRoutes.post('/scratchcard/getscratchcards' ,scratchCardController.getScratchCards);
+webAppRoutes.post('/scratchcard/claimscratchcards' ,scratchCardController.claimScratchCard);
+webAppRoutes.post('/scratchcard/checkscratchcard' ,scratchCardController.checkscratchcard);
 
 
 module.exports = webAppRoutes;
