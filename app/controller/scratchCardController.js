@@ -149,6 +149,29 @@ module.exports = {
         } catch (error) {
             console.log(error);
         }
+    },
+
+    checkscratchcard: function(req,res){
+        var userToken = req.headers["authorization"];
+         userModel.getUserDetails(userToken, async function (err, userDetails) {
+            if (err) {
+                playerId = "";
+            } else {
+                playerId = userDetails.playerId;
+            }
+            if (playerId != "") {
+                let query = ` select * from fn_checknewscratch(${playerId}); `; 
+                let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
+                if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
+
+                    sendResp.sendCustomJSON(null, req, res, true, dbResult[0].data[0], "Success");
+                } else {
+                    sendResp.sendCustomJSON(null, req, res, false, [], "No Data Found");
+                }
+            } else {
+                sendResp.sendCustomJSON(null, req, res, true, campaigns, "Token Invalid");
+            }
+        });
     }
 
 }
