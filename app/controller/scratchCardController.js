@@ -47,6 +47,8 @@ module.exports = {
                 playerId = userDetails.playerId;
             }
             if (playerId != "") {
+                let bonusCash = 0;
+                let paytmCash =0;
                 let query = ` select  trans.id, prize_master.prize_code,prize_master.prize_description,
                         prize_master.prize_image,prize_master.gratification_type, 
                         trans.is_claim, trans.winner_date ,trans.credit_date,trans.add_date,prize_master.prize_amount
@@ -57,7 +59,20 @@ module.exports = {
                 console.log(query)
                 let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
                 if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
-                    sendResp.sendCustomJSON(null, req, res, true, dbResult, "Success");
+                    let outJson = {};
+                    
+                    dbResult.forEach(scratchCard => {
+                        if (scratchCard.gratification_type.toLowerCase() == "bonus_cash") {
+                            bonusCash = parseInt(bonusCash) + parseInt(scratchCard.prize_amount);
+                        }
+                        else if (scratchCard.gratification_type.toLowerCase() == "paytm_cash") {
+                            paytmCash = parseInt(paytmCash) + parseInt(scratchCard.prize_amount);
+                        }
+                    });
+                    outJson.bonusCash = bonusCash;
+                    outJson.paytmCash = paytmCash;
+                    outJson.scratchCards = dbResult;
+                    sendResp.sendCustomJSON(null, req, res, true, outJson, "Success");
                 } else {
                     sendResp.sendCustomJSON(null, req, res, true, [], "No Data Found");
                 }
