@@ -59,7 +59,8 @@ module.exports = {
             if (playerId != "") {
                 let bonusCash = 0;
                 let paytmCash = 0;
-                let query = ` select  trans.id, prize_master.prize_code,prize_master.prize_description,
+                let query = ` select  trans.id,prize_master.prize_title, prize_master.prize_code,
+                        prize_master.prize_description,
                         prize_master.prize_image,prize_master.gratification_type, 
                         trans.is_claim, trans.winner_date ,trans.credit_date,trans.add_date,prize_master.prize_amount
                         from tbl_scratch_transaction trans
