@@ -72,14 +72,14 @@ module.exports = {
                     let outJson = {};
 
                     dbResult.forEach(scratchCard => {
-                        if(scratchCard.is_claim){
-                        if (scratchCard.gratification_type.toLowerCase() == "bonus_cash") {
-                            bonusCash = parseInt(bonusCash) + parseInt(scratchCard.prize_amount);
+                        if (scratchCard.is_claim) {
+                            if (scratchCard.gratification_type.toLowerCase() == "bonus_cash") {
+                                bonusCash = parseInt(bonusCash) + parseInt(scratchCard.prize_amount);
+                            }
+                            else if (scratchCard.gratification_type.toLowerCase() == "paytm_cash") {
+                                paytmCash = parseInt(paytmCash) + parseInt(scratchCard.prize_amount);
+                            }
                         }
-                        else if (scratchCard.gratification_type.toLowerCase() == "paytm_cash") {
-                            paytmCash = parseInt(paytmCash) + parseInt(scratchCard.prize_amount);
-                        }
-                    }
                     });
                     outJson.bonusCash = bonusCash;
                     outJson.paytmCash = paytmCash;
@@ -155,7 +155,41 @@ module.exports = {
             console.log(error);
         }
     },
+    contestReferEvent: function (player_id) {
+        try {
+            (async function () {
+                let query = ` select campaign.camp_id,events.scratch_event_id,events.amount from 
+                            tbl_scratch_campaign_master campaign
+                            inner join tbl_scratch_campaign_details details on 
+                            details.camp_id = campaign.camp_id
+                            inner join tbl_scratch_event_master events on 
+                            events.scratch_event_id = details.scratch_event_id
+                            where campaign.valid_from <= nowInd() and 
+                            campaign.valid_to >= nowInd()
+                            and campaign.status = 'ACTIVE' and 
+                            events.event_code = 'REFERRER' `;
+                let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
+                if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
+                    let camp_id = dbResult[0].camp_id;
+                    let scratch_event_id = dbResult[0].scratch_event_id;
+                    let amount = dbResult[0].amount;
+                    let queryScratchCheck = ` select * from fn_referer_join(${camp_id}, 
+                     ${scratch_event_id},${player_id},${amount} )`;
 
+                    let dbScratchCheck = await dbConnection.executeQueryAll(queryScratchCheck, 'rmg_db');
+                    if (dbScratchCheck != null && dbScratchCheck != undefined && dbScratchCheck.length > 0) {
+                        if (dbScratchCheck[0].data[0].is_claim) {
+                            let queryGetScratchCard = ` select * from fn_get_prize(${player_id},${camp_id}) `;
+                            let dbGetScratchCard = await dbConnection.executeQueryAll(queryGetScratchCard, 'rmg_db');
+                            console.log(dbGetScratchCard);
+                        }
+                    }
+                }
+            })();;
+        } catch (error) {
+            console.log(error);
+        }
+    },
     checkscratchcard: function (req, res) {
         var userToken = req.headers["authorization"];
         userModel.getUserDetails(userToken, async function (err, userDetails) {
