@@ -28,4 +28,7 @@ referrerRoutes.post('/claimShareEvent',function(req,res){
 referrerRoutes.get('/referEvent',function(req,res){
     referrerController.referEvent(req, res);
 })
+
+referrerRoutes.post('/addReferrer', referrerController.addReferrer)
+
 module.exports = referrerRoutes;
