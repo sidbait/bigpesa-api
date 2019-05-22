@@ -12,30 +12,33 @@ module.exports = {
                 let prizes = dbResult[1].data;
                 let events = dbResult[2].data;
                 let banners = dbResult[3].data;
-
-                campaigns.forEach(campaign => {
-                    campaign.banners = [];
-                    campaign.prizes = [];
-                    campaign.events = [];
-                    prizes.forEach(prize => {
-                        if (campaign.camp_id == prize.camp_id) {
-                            campaign.prizes.push(prize);
-                        }
+                if (campaigns != null && campaigns != undefined && campaigns.length > 0) {
+                    campaigns.forEach(campaign => {
+                        campaign.banners = [];
+                        campaign.prizes = [];
+                        campaign.events = [];
+                        prizes.forEach(prize => {
+                            if (campaign.camp_id == prize.camp_id) {
+                                campaign.prizes.push(prize);
+                            }
+                        });
+                        events.forEach(event => {
+                            if (campaign.camp_id == event.camp_id) {
+                                campaign.events.push(event);
+                            }
+                        });
+                        banners.forEach(event => {
+                            if (campaign.camp_id == event.camp_id) {
+                                campaign.banners.push(event);
+                            }
+                        });
                     });
-                    events.forEach(event => {
-                        if (campaign.camp_id == event.camp_id) {
-                            campaign.events.push(event);
-                        }
-                    });
-                    banners.forEach(event => {
-                        if (campaign.camp_id == event.camp_id) {
-                            campaign.banners.push(event);
-                        }
-                    });
-                });
 
-                sendResp.sendCustomJSON(null, req, res, true, campaigns, "Scratch Campaign Details");
 
+                    sendResp.sendCustomJSON(null, req, res, true, campaigns, "Scratch Campaign Details");
+                } else {
+                    sendResp.sendCustomJSON(null, req, res, false, [], "No Data Found");
+                }
 
             } else {
                 sendResp.sendCustomJSON(null, req, res, false, [], "Something got wrong");
@@ -55,7 +58,7 @@ module.exports = {
             }
             if (playerId != "") {
                 let bonusCash = 0;
-                let paytmCash =0;
+                let paytmCash = 0;
                 let query = ` select  trans.id, prize_master.prize_code,prize_master.prize_description,
                         prize_master.prize_image,prize_master.gratification_type, 
                         trans.is_claim, trans.winner_date ,trans.credit_date,trans.add_date,prize_master.prize_amount
@@ -67,14 +70,16 @@ module.exports = {
                 let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
                 if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
                     let outJson = {};
-                    
+
                     dbResult.forEach(scratchCard => {
+                        if(scratchCard.is_claim){
                         if (scratchCard.gratification_type.toLowerCase() == "bonus_cash") {
                             bonusCash = parseInt(bonusCash) + parseInt(scratchCard.prize_amount);
                         }
                         else if (scratchCard.gratification_type.toLowerCase() == "paytm_cash") {
                             paytmCash = parseInt(paytmCash) + parseInt(scratchCard.prize_amount);
                         }
+                    }
                     });
                     outJson.bonusCash = bonusCash;
                     outJson.paytmCash = paytmCash;
@@ -100,7 +105,7 @@ module.exports = {
             }
             if (playerId != "") {
                 let query = `  update tbl_scratch_transaction set is_claim = true 
-                        where is_claim = false and id = ${scratchCardId} returning id; `; 
+                        where is_claim = false and id = ${scratchCardId} returning id; `;
                 let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
                 if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
                     sendResp.sendCustomJSON(null, req, res, true, dbResult, "Successfully Claimed.");
@@ -151,16 +156,16 @@ module.exports = {
         }
     },
 
-    checkscratchcard: function(req,res){
+    checkscratchcard: function (req, res) {
         var userToken = req.headers["authorization"];
-         userModel.getUserDetails(userToken, async function (err, userDetails) {
+        userModel.getUserDetails(userToken, async function (err, userDetails) {
             if (err) {
                 playerId = "";
             } else {
                 playerId = userDetails.playerId;
             }
             if (playerId != "") {
-                let query = ` select * from fn_checknewscratch(${playerId}); `; 
+                let query = ` select * from fn_checknewscratch(${playerId}); `;
                 let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
                 if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
 
