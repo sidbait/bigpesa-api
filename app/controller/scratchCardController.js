@@ -128,7 +128,7 @@ module.exports = {
     contestJoinEvent: function (player_id, join_amount, matrix_code) {
         try {
             (async function () {
-                let isMatrix_Code_Valid = false;
+                let isMatrix_Code_Valid = true;
                 let query_matrix = ` select  matrix_code from tbl_wallet_debit_matrix where 
                                      reward_balance = -1 `;
                 let query = ` select campaign.camp_id,events.scratch_event_id,events.amount from 
