@@ -125,9 +125,12 @@ module.exports = {
         });
     },
 
-    contestJoinEvent: function (player_id, join_amount) {
+    contestJoinEvent: function (player_id, join_amount, matrix_code) {
         try {
             (async function () {
+                let isMatrix_Code_Valid = false;
+                let query_matrix = ` select  matrix_code from tbl_wallet_debit_matrix where 
+                                     reward_balance = -1 `;
                 let query = ` select campaign.camp_id,events.scratch_event_id,events.amount from 
                             tbl_scratch_campaign_master campaign
                             inner join tbl_scratch_campaign_details details on 
@@ -138,30 +141,37 @@ module.exports = {
                             campaign.valid_to >= nowInd()
                             and campaign.status = 'ACTIVE' and 
                             events.event_code = 'CONTEST_JOIN' `;
-                let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
-                if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
-                    let camp_id = dbResult[0].camp_id;
-                    let scratch_event_id = dbResult[0].scratch_event_id;
-                    let amount = dbResult[0].amount;
-                    let queryScratchCheck = ` select * from fn_scratch_contest_join(${camp_id}, 
+                let dbquery_matrix = await dbConnection.executeQueryAll(query_matrix, 'rmg_db',true,300);
+                dbquery_matrix.forEach(element => {
+                    if (element.matrix_code == matrix_code) {
+                        isMatrix_Code_Valid = true;
+                    }
+                });
+                if (isMatrix_Code_Valid) {
+                    let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
+                    if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
+                        let camp_id = dbResult[0].camp_id;
+                        let scratch_event_id = dbResult[0].scratch_event_id;
+                        let amount = dbResult[0].amount;
+                        let queryScratchCheck = ` select * from fn_scratch_contest_join(${camp_id}, 
                      ${scratch_event_id},${player_id},${amount},${join_amount})`;
-
-                    let dbScratchCheck = await dbConnection.executeQueryAll(queryScratchCheck, 'rmg_db');
-                    if (dbScratchCheck != null && dbScratchCheck != undefined && dbScratchCheck.length > 0) {
-                        if (dbScratchCheck[0].data[0].is_claim) {
-                            let queryGetScratchCard = ` select * from fn_get_prize(${player_id},${camp_id},${scratch_event_id}) `;
-                            let dbGetScratchCard = await dbConnection.executeQueryAll(queryGetScratchCard, 'rmg_db');
-                            console.log(dbGetScratchCard);
+                        let dbScratchCheck = await dbConnection.executeQueryAll(queryScratchCheck, 'rmg_db');
+                        if (dbScratchCheck != null && dbScratchCheck != undefined && 
+                                dbScratchCheck.length > 0) {
+                            if (dbScratchCheck[0].data[0].is_claim) {
+                                let queryGetScratchCard = ` select * from fn_get_prize(${player_id},${camp_id},${scratch_event_id}) `;
+                                let dbGetScratchCard = await dbConnection.executeQueryAll(queryGetScratchCard, 'rmg_db');
+                                console.log(dbGetScratchCard);
+                            }
                         }
                     }
-
                 }
-
             })();;
         } catch (error) {
             console.log(error);
         }
     },
+
     contestReferEvent: function (player_id) {
         try {
             (async function () {
@@ -197,6 +207,7 @@ module.exports = {
             console.log(error);
         }
     },
+
     checkscratchcard: function (req, res) {
         var userToken = req.headers["authorization"];
         userModel.getUserDetails(userToken, async function (err, userDetails) {
