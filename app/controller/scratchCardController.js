@@ -60,13 +60,19 @@ module.exports = {
                 let bonusCash = 0;
                 let paytmCash = 0;
                 let query = ` select  trans.id,prize_master.prize_title, prize_master.prize_code,
-                        prize_master.prize_description,
-                        prize_master.prize_image,prize_master.gratification_type, 
-                        trans.is_claim, trans.winner_date ,trans.credit_date,trans.add_date,prize_master.prize_amount
-                        from tbl_scratch_transaction trans
-                        inner join tbl_scratch_prize_master prize_master 
-                        on prize_master.prize_id = trans.prize_id
-                        where player_id = ${playerId} order by is_claim,add_date desc `;
+                            prize_master.prize_description,
+                            event_master.event_code,
+                            event_master.name as event_name,
+                            event_master.description,event_master.win_description,
+                            prize_master.prize_image,prize_master.gratification_type, 
+                            trans.is_claim, trans.winner_date ,trans.credit_date,
+                            trans.add_date,prize_master.prize_amount
+                            from tbl_scratch_transaction trans
+                            inner join tbl_scratch_prize_master prize_master 
+                            on prize_master.prize_id = trans.prize_id
+                            inner join tbl_scratch_event_master event_master
+                            on trans.scratch_event_id = event_master.scratch_event_id 
+                            where player_id = ${playerId} order by is_claim,add_date desc `;
                 console.log(query)
                 let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
                 if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
