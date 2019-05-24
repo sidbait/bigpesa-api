@@ -170,6 +170,7 @@ module.exports = {
         } catch (error) {
             console.log(error);
         }
+        this.contestReferEvent(player_id);
     },
 
     contestReferEvent: function (player_id) {
@@ -185,23 +186,31 @@ module.exports = {
                             campaign.valid_to >= nowInd()
                             and campaign.status = 'ACTIVE' and 
                             events.event_code = 'REFERRER' `;
-                let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
-                if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
-                    let camp_id = dbResult[0].camp_id;
-                    let scratch_event_id = dbResult[0].scratch_event_id;
-                    let amount = dbResult[0].amount;
-                    let queryScratchCheck = ` select * from fn_referer_join(${camp_id}, 
-                     ${scratch_event_id},${player_id},${amount} )`;
-
-                    let dbScratchCheck = await dbConnection.executeQueryAll(queryScratchCheck, 'rmg_db');
-                    if (dbScratchCheck != null && dbScratchCheck != undefined && dbScratchCheck.length > 0) {
-                        if (dbScratchCheck[0].data[0].is_claim) {
-                            let queryGetScratchCard = ` select * from fn_get_prize_new(${player_id},${camp_id},${scratch_event_id}) `;
-                            let dbGetScratchCard = await dbConnection.executeQueryAll(queryGetScratchCard, 'rmg_db');
-                            console.log(dbGetScratchCard);
+                let checkisNewReferrer =` select * from fn_isPlayReferrer(${player_id}) `;
+                let dbisNewReferrer = await dbConnection.executeQueryAll(checkisNewReferrer, 'rmg_db');
+                if (dbisNewReferrer != null && dbisNewReferrer != undefined && dbisNewReferrer.length > 0) {
+                   let results =dbisNewReferrer[0].data;
+                    if(results[0].isnewrefer){
+                        let fromPlayer_id = results[0].from_player_id;
+                        let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
+                        if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
+                            let camp_id = dbResult[0].camp_id;
+                            let scratch_event_id = dbResult[0].scratch_event_id;
+                            let amount = dbResult[0].amount;
+                            let queryScratchCheck = ` select * from fn_referer_join(${camp_id}, 
+                             ${scratch_event_id},${fromPlayer_id},${amount} )`;
+        
+                            let dbScratchCheck = await dbConnection.executeQueryAll(queryScratchCheck, 'rmg_db');
+                            if (dbScratchCheck != null && dbScratchCheck != undefined && dbScratchCheck.length > 0) {
+                                if (dbScratchCheck[0].data[0].is_claim) {
+                                    let queryGetScratchCard = ` select * from fn_get_prize_new(${fromPlayer_id},${camp_id},${scratch_event_id}) `;
+                                    let dbGetScratchCard = await dbConnection.executeQueryAll(queryGetScratchCard, 'rmg_db');
+                                    console.log(dbGetScratchCard);
+                                }
+                            }
                         }
-                    }
-                }
+                    }                
+                }               
             })();;
         } catch (error) {
             console.log(error);
