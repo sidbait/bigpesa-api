@@ -128,9 +128,11 @@ module.exports = {
     contestJoinEvent: function (player_id, join_amount, matrix_code) {
         try {
             (async function () {
+
                 let isMatrix_Code_Valid = true;
                 let query_matrix = ` select  matrix_code from tbl_wallet_debit_matrix where 
                                      reward_balance = -1 `;
+                console.log('contestJoinEvent :-player_id-' + player_id + 'join_amount' + join_amount + 'matrix_code' + matrix_code);
                 let query = ` select campaign.camp_id,events.scratch_event_id,events.amount from 
                             tbl_scratch_campaign_master campaign
                             inner join tbl_scratch_campaign_details details on 
@@ -141,7 +143,7 @@ module.exports = {
                             campaign.valid_to >= nowInd()
                             and campaign.status = 'ACTIVE' and 
                             events.event_code = 'CONTEST_JOIN' `;
-                let dbquery_matrix = await dbConnection.executeQueryAll(query_matrix, 'rmg_db',true,300);
+                let dbquery_matrix = await dbConnection.executeQueryAll(query_matrix, 'rmg_db', true, 300);
                 dbquery_matrix.forEach(element => {
                     if (element.matrix_code == matrix_code) {
                         isMatrix_Code_Valid = true;
@@ -156,8 +158,8 @@ module.exports = {
                         let queryScratchCheck = ` select * from fn_scratch_contest_join(${camp_id}, 
                      ${scratch_event_id},${player_id},${amount},${join_amount})`;
                         let dbScratchCheck = await dbConnection.executeQueryAll(queryScratchCheck, 'rmg_db');
-                        if (dbScratchCheck != null && dbScratchCheck != undefined && 
-                                dbScratchCheck.length > 0) {
+                        if (dbScratchCheck != null && dbScratchCheck != undefined &&
+                            dbScratchCheck.length > 0) {
                             if (dbScratchCheck[0].data[0].is_claim) {
                                 let queryGetScratchCard = ` select * from fn_get_prize_new(${player_id},${camp_id},${scratch_event_id}) `;
                                 let dbGetScratchCard = await dbConnection.executeQueryAll(queryGetScratchCard, 'rmg_db');
@@ -186,11 +188,11 @@ module.exports = {
                             campaign.valid_to >= nowInd()
                             and campaign.status = 'ACTIVE' and 
                             events.event_code = 'REFERRER' `;
-                let checkisNewReferrer =` select * from fn_isPlayReferrer(${player_id}) `;
+                let checkisNewReferrer = ` select * from fn_isPlayReferrer(${player_id}) `;
                 let dbisNewReferrer = await dbConnection.executeQueryAll(checkisNewReferrer, 'rmg_db');
                 if (dbisNewReferrer != null && dbisNewReferrer != undefined && dbisNewReferrer.length > 0) {
-                   let results =dbisNewReferrer[0].data;
-                    if(results[0].isnewrefer){
+                    let results = dbisNewReferrer[0].data;
+                    if (results[0].isnewrefer) {
                         let fromPlayer_id = results[0].from_player_id;
                         let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
                         if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
@@ -199,7 +201,7 @@ module.exports = {
                             let amount = dbResult[0].amount;
                             let queryScratchCheck = ` select * from fn_referer_join(${camp_id}, 
                              ${scratch_event_id},${fromPlayer_id},${amount} )`;
-        
+
                             let dbScratchCheck = await dbConnection.executeQueryAll(queryScratchCheck, 'rmg_db');
                             if (dbScratchCheck != null && dbScratchCheck != undefined && dbScratchCheck.length > 0) {
                                 if (dbScratchCheck[0].data[0].is_claim) {
@@ -209,8 +211,8 @@ module.exports = {
                                 }
                             }
                         }
-                    }                
-                }               
+                    }
+                }
             })();;
         } catch (error) {
             console.log(error);
