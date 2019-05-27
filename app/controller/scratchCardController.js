@@ -157,7 +157,7 @@ module.exports = {
                         let amount = dbResult[0].amount;
                         let queryScratchCheck = ` select * from fn_scratch_contest_join(${camp_id}, 
                      ${scratch_event_id},${player_id},${amount},${join_amount})`;
-                     console.log(queryScratchCheck);
+                        console.log(queryScratchCheck);
                         let dbScratchCheck = await dbConnection.executeQueryAll(queryScratchCheck, 'rmg_db');
                         if (dbScratchCheck != null && dbScratchCheck != undefined &&
                             dbScratchCheck.length > 0) {
@@ -241,6 +241,24 @@ module.exports = {
                 sendResp.sendCustomJSON(null, req, res, true, campaigns, "Token Invalid");
             }
         });
+    },
+
+    scratchWinnerBanners: async function (req, res) {
+        try {
+
+            let query = `    select * from tbl_scratch_winner_banners where nowInd() between from_date and to_date
+                       and status = 'ACTIVE' order by banner_priority `;
+
+            let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db', true, 3000);
+            if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
+                sendResp.sendCustomJSON(null, req, res, true, dbResult, "Success");
+            } else {
+                sendResp.sendCustomJSON(null, req, res, true, [], "No Data Found");
+            }
+        } catch (error) {
+            sendResp.sendCustomJSON(null, req, res, true, [], "something got wrong");
+
+        }
     }
 
 }
