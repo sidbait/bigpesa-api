@@ -157,6 +157,7 @@ module.exports = {
                         let amount = dbResult[0].amount;
                         let queryScratchCheck = ` select * from fn_scratch_contest_join(${camp_id}, 
                      ${scratch_event_id},${player_id},${amount},${join_amount})`;
+                     console.log(queryScratchCheck);
                         let dbScratchCheck = await dbConnection.executeQueryAll(queryScratchCheck, 'rmg_db');
                         if (dbScratchCheck != null && dbScratchCheck != undefined &&
                             dbScratchCheck.length > 0) {
