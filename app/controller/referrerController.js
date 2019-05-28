@@ -490,6 +490,40 @@ module.exports = {
         }
 
     },
+
+    getReferrerDetails: async function (req, res) {
+
+        let player_id = req.body.player_id ? req.body.player_id : null;
+
+        try {
+
+            if (player_id) {
+                let query = `select * from fn_referrer_player_stat_details(${player_id})`;
+
+                // console.log(query);
+                
+                let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
+
+                if (dbResult != undefined && dbResult != null) {
+
+                    sendResp.sendCustomJSON(null, req, res, true, dbResult, "Success");
+
+                } else {
+
+                    sendResp.sendCustomJSON(null, req, res, false, [], "Something Got Wrong");
+
+                }
+            } else {
+                sendResp.sendCustomJSON(null, req, res, false, [], "param missing");
+            }
+
+        } catch (error) {
+            console.log(error);
+
+            sendResp.sendCustomJSON(null, req, res, false, [], "Something got wrong!");
+        }
+
+    },
 }
 
 function checkOneTimeEvent(playerId, eventId, callback) {
