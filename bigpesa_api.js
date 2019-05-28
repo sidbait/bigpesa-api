@@ -19,6 +19,7 @@ gTopReferer = [];
 gAppList = [];
 gTopGameWinners = [];
 gValidScores = [];
+gdebitMatrix = [];
 iIsGlobal = false;
 //code require
 config = require('config');
