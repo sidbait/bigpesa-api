@@ -196,7 +196,7 @@ module.exports = {
                                                 " values (" + eventId + "," + refererId + "," + fromPlayerId 
                                                 + "," + playerId + ",'',false,now(),'"+ channel +"') ";
                                             console.log(checkRepeatReferer);                                    
-                                            scratchCardController.contestReferEvent(fromPlayerId);
+                                           // scratchCardController.contestReferEvent(fromPlayerId);
                                             dbConnection.executeQuery(checkIsNewuser, "rmg_db", function (err, checkIsNewuserResult) {
                                                 if (err) {
                                                     sendResp.sendCustomJSON(null, req, res, false, [], "Reference Code Not Valid");
