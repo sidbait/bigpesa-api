@@ -33,7 +33,7 @@ module.exports = {
                        if (callbackCount == dbResult.length) {
                            if (popupOut.length > 0) {
                                console.log('out')
-                               sendResp.sendCustomJSON(null, req, res, true, popupOut, "No Popup Available");
+                               sendResp.sendCustomJSON(null, req, res, true, popupOut, "Popup Available");
                            } else {
                                console.log('out')
                                sendResp.sendCustomJSON(null, req, res, false, null, "No Popup Available");
