@@ -7,7 +7,7 @@
     },
     "web_url":"http://stg.bigpesa.in",
     "api_url":"https://stg-api.bigpesa.in/",
-    "uri_server": "http://192.168.5.123:4091/v1/",
+    "uri_server": "http://localhost:4091/v1/",
     "jwt_sessions": {      
       "expires_in": 3600,
       "refresh_time": 300
@@ -44,6 +44,6 @@
       "baseHost": "payments.airpay.co.in",
       "topUpURL": "https://payments.airpay.co.in/pay/index.php"
     },
-    "webapp_api_server": "http://192.168.5.123:4091/",
+    "webapp_api_server": "http://localhost:4091/",
     "client_key": "yXzLPeD4f3FXHsK33aExnuKyBHAFr8AmxYyWMAvaH2jaMhMTap" 
   }
