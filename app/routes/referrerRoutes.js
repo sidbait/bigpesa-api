@@ -30,5 +30,6 @@ referrerRoutes.get('/referEvent',function(req,res){
 })
 
 referrerRoutes.post('/addReferrer', referrerController.addReferrer)
+referrerRoutes.post('/getReferrerDetails', referrerController.getReferrerDetails)
 
 module.exports = referrerRoutes;
