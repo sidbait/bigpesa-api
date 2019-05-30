@@ -146,7 +146,7 @@ module.exports = {
         try {
             (async function () {
 
-                let isMatrix_Code_Valid = true;
+                let isMatrix_Code_Valid = false;
                 let query_matrix = ` select  matrix_code from tbl_wallet_debit_matrix where 
                                      reward_balance = -1 `;
                 console.log('contestJoinEvent :-player_id-' + player_id + 'join_amount' + join_amount + 'matrix_code' + matrix_code);
