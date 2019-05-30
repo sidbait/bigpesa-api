@@ -524,6 +524,35 @@ module.exports = {
         }
 
     },
+    getReferUrl : async function(channel,playerId,callback){ 
+        let referCode = btoa(playerId);
+        let eventId = "";
+        gEventMaster.forEach(event => {
+            if (event.event_type == 'referrer') {
+                eventId = event.event_id;
+            }                
+        });
+        let query = "insert into tbl_referrer(event_id,player_id,referer_code,expiry_date) " +
+            " values (" + eventId + "," + playerId + ",'" + referCode + "', " +
+            " ( now() + (50000::int * '1m'::interval)) ) returning referer_id";
+        dbConnection.executeQuery(query, "rmg_db", function (err, dbResult) {
+            if (dbResult != null && dbResult != undefined) {
+                var refId = dbResult[0].referer_id;
+                var refCode = referCode;
+                var refUrl ="";
+                if(channel.toLowerCase() =="playstore"){
+                    refUrl = `https://bigpesangs.app.link?referrerId=${refId}&code=${refCode}&eventId=${eventId}`;
+                }else{
+                    refUrl = `https://bigpesa.in/download?referrerId=${refId}&code=${refCode}&eventId=${eventId}`;
+                }
+               
+                callback(null,refUrl);
+                
+            } else {
+                callback('error');
+            }
+        });
+    }
 }
 
 function checkOneTimeEvent(playerId, eventId, callback) {

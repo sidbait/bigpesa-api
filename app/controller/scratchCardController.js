@@ -2,6 +2,7 @@ var dbConnection = require('../model/dbConnection');
 var sendResp = require('../service/send');
 var userModel = require('../model/UserModel');
 var config = require('config');
+var refer_module = require('./referrerController');
 module.exports = {
     scratchCardContests: async function (req, res) {
         try {
@@ -50,6 +51,7 @@ module.exports = {
 
     getScratchCards: function (req, res) {
         var userToken = req.headers["authorization"];
+        var channel = req.body.channel;
         userModel.getUserDetails(userToken, async function (err, userDetails) {
             if (err) {
                 playerId = "";
@@ -77,34 +79,36 @@ module.exports = {
                 let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
                 if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
                     let outJson = {};
-
-                    dbResult.forEach(scratchCard => {
-                        if (scratchCard.is_claim) {
-                            if (scratchCard.gratification_type.toLowerCase() == "bonus_cash") {
-                                scratchCard.refer_text = "I have won Bonus Cash of " + scratchCard.prize_amount + " through BigPesa. Hurry up and join using below url";
-                                bonusCash = parseInt(bonusCash) + parseInt(scratchCard.prize_amount);
-                            }
-                            else if (scratchCard.gratification_type.toLowerCase() == "paytm_cash") {
-                                scratchCard.refer_text = "I have won Bonus Cash of " + scratchCard.prize_amount + " through BigPesa. Hurry up and join using below url";
-                                paytmCash = parseInt(paytmCash) + parseInt(scratchCard.prize_amount);
-                            }else if (scratchCard.gratification_type.toLowerCase() == "gift"){
-                                scratchCard.refer_text = "I have won " + scratchCard.prize_title + " through BigPesa. Hurry up and join using below url";
-                            }
-                        }
-                        if (scratchCard.gratification_type.toLowerCase() == "bonus_cash") {
-                            scratchCard.refer_text = "I have won Bonus Cash of " + scratchCard.prize_amount + " through BigPesa. Hurry up and join using below url";
-                        }
-                        else if (scratchCard.gratification_type.toLowerCase() == "paytm_cash") {
-                            scratchCard.refer_text = "I have won Bonus Cash of " + scratchCard.prize_amount + " through BigPesa. Hurry up and join using below url";
-                        } else if (scratchCard.gratification_type.toLowerCase() == "gift") {
-                            scratchCard.refer_text = "I have won " + scratchCard.prize_title + " through BigPesa. Hurry up and join using below url";
+                    refer_module.getReferUrl(channel,player_id,function(err,ref_url){
+                        if(err){
+                            sendResp.sendCustomJSON(null, req, res, true, [], "Something got wrong");
+                        }else{
+                            dbResult.forEach(scratchCard => {
+                                if (scratchCard.is_claim) {
+                                    if (scratchCard.gratification_type.toLowerCase() == "bonus_cash") {
+                                        bonusCash = parseInt(bonusCash) + parseInt(scratchCard.prize_amount);
+                                    }
+                                    else if (scratchCard.gratification_type.toLowerCase() == "paytm_cash") {
+                                        paytmCash = parseInt(paytmCash) + parseInt(scratchCard.prize_amount);
+                                    } 
+                                }
+                                if (scratchCard.gratification_type.toLowerCase() == "bonus_cash") {
+                                    scratchCard.refer_text = "I have won Bonus Cash of " + scratchCard.prize_amount + " through BigPesa. Hurry up and join using below url " +ref_url;
+                                }
+                                else if (scratchCard.gratification_type.toLowerCase() == "paytm_cash") {
+                                    scratchCard.refer_text = "I have won Bonus Cash of " + scratchCard.prize_amount + " through BigPesa. Hurry up and join using below url " +ref_url;
+                                } else if (scratchCard.gratification_type.toLowerCase() == "gift") {
+                                    scratchCard.refer_text = "I have won " + scratchCard.prize_title + " through BigPesa. Hurry up and join using below url " +ref_url;
+                                }
+                            });
+                            outJson.bonusCash = bonusCash;
+                            outJson.paytmCash = paytmCash;
+                            outJson.scratchCards = dbResult;
+                            console.log(JSON.stringify(outJson))
+                            sendResp.sendCustomJSON(null, req, res, true, outJson, "Success");
                         }
                     });
-                    outJson.bonusCash = bonusCash;
-                    outJson.paytmCash = paytmCash;
-                    outJson.scratchCards = dbResult;
-                    //console.log(JSON.stringify(outJson))
-                    sendResp.sendCustomJSON(null, req, res, true, outJson, "Success");
+                   
                 } else {
                     sendResp.sendCustomJSON(null, req, res, true, [], "No Data Found");
                 }
