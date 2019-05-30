@@ -93,10 +93,10 @@ module.exports = {
                                     } 
                                 }
                                 if (scratchCard.gratification_type.toLowerCase() == "bonus_cash") {
-                                    scratchCard.refer_text = "I have won Bonus Cash of " + scratchCard.prize_amount + " through BigPesa. Hurry up and join using below url " +ref_url;
+                                    scratchCard.refer_text = "I have won Bonus Cash of " + scratchCard.prize_amount + " Rs. through BigPesa. Hurry up and join using below url " +ref_url;
                                 }
                                 else if (scratchCard.gratification_type.toLowerCase() == "paytm_cash") {
-                                    scratchCard.refer_text = "I have won Bonus Cash of " + scratchCard.prize_amount + " through BigPesa. Hurry up and join using below url " +ref_url;
+                                    scratchCard.refer_text = "I have won Bonus Cash of " + scratchCard.prize_amount + " Rs. through BigPesa. Hurry up and join using below url " +ref_url;
                                 } else if (scratchCard.gratification_type.toLowerCase() == "gift") {
                                     scratchCard.refer_text = "I have won " + scratchCard.prize_title + " through BigPesa. Hurry up and join using below url " +ref_url;
                                 }
@@ -104,7 +104,7 @@ module.exports = {
                             outJson.bonusCash = bonusCash;
                             outJson.paytmCash = paytmCash;
                             outJson.scratchCards = dbResult;
-                            console.log(JSON.stringify(outJson))
+                            //console.log(JSON.stringify(outJson))
                             sendResp.sendCustomJSON(null, req, res, true, outJson, "Success");
                         }
                     });
