@@ -163,6 +163,7 @@ module.exports = {
                             dbScratchCheck.length > 0) {
                             if (dbScratchCheck[0].data[0].is_claim) {
                                 let queryGetScratchCard = ` select * from fn_get_prize_new(${player_id},${camp_id},${scratch_event_id},${channel}) `;
+                                console.log(queryGetScratchCard)
                                 let dbGetScratchCard = await dbConnection.executeQueryAll(queryGetScratchCard, 'rmg_db');
                                 console.log(dbGetScratchCard);
                             }
