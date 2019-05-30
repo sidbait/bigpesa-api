@@ -125,7 +125,7 @@ module.exports = {
         });
     },
 
-    contestJoinEvent: function (player_id, join_amount, matrix_code) {
+    contestJoinEvent: function (player_id, join_amount, matrix_code,channel) {
         try {
             (async function () {
 
@@ -162,7 +162,7 @@ module.exports = {
                         if (dbScratchCheck != null && dbScratchCheck != undefined &&
                             dbScratchCheck.length > 0) {
                             if (dbScratchCheck[0].data[0].is_claim) {
-                                let queryGetScratchCard = ` select * from fn_get_prize_new(${player_id},${camp_id},${scratch_event_id}) `;
+                                let queryGetScratchCard = ` select * from fn_get_prize_new(${player_id},${camp_id},${scratch_event_id},${channel}) `;
                                 let dbGetScratchCard = await dbConnection.executeQueryAll(queryGetScratchCard, 'rmg_db');
                                 console.log(dbGetScratchCard);
                             }
@@ -173,10 +173,10 @@ module.exports = {
         } catch (error) {
             console.log(error);
         }
-        this.contestReferEvent(player_id);
+        this.contestReferEvent(player_id,channel);
     },
 
-    contestReferEvent: function (player_id) {
+    contestReferEvent: function (player_id,channel) {
         try {
             (async function () {
                 let query = ` select campaign.camp_id,events.scratch_event_id,events.amount from 
@@ -206,7 +206,7 @@ module.exports = {
                             let dbScratchCheck = await dbConnection.executeQueryAll(queryScratchCheck, 'rmg_db');
                             if (dbScratchCheck != null && dbScratchCheck != undefined && dbScratchCheck.length > 0) {
                                 if (dbScratchCheck[0].data[0].is_claim) {
-                                    let queryGetScratchCard = ` select * from fn_get_prize_new(${fromPlayer_id},${camp_id},${scratch_event_id}) `;
+                                    let queryGetScratchCard = ` select * from fn_get_prize_new(${fromPlayer_id},${camp_id},${scratch_event_id},${channel}) `;
                                     let dbGetScratchCard = await dbConnection.executeQueryAll(queryGetScratchCard, 'rmg_db');
                                     console.log(dbGetScratchCard);
                                 }
@@ -246,7 +246,8 @@ module.exports = {
     scratchWinnerBanners: async function (req, res) {
         try {
 
-            let query = `    select * from tbl_scratch_winner_banners where nowInd() between from_date and to_date
+            let query = `    select * from tbl_scratch_winner_banners where nowInd() 
+                        between from_date and to_date
                        and status = 'ACTIVE' order by banner_priority `;
 
             let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db', true, 3000);

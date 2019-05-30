@@ -1705,7 +1705,7 @@ module.exports = {
                                                                                                         } else {
                                                                                                             //debitResponse = debitResponse.data;
                                                                                                             if (contestInfo.max_players != 2) {
-                                                                                                                scratchController.contestJoinEvent(playerId, amount, matrix_code);
+                                                                                                                scratchController.contestJoinEvent(playerId, amount, matrix_code,channel);
                                                                                                             }
                                                                                                             contestModel.joinContest(contestId, appId, playerId, amount,
                                                                                                                 debitResponse, deails, contestInfo, channel, debit_type, max_lives,
