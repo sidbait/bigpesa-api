@@ -88,7 +88,7 @@ module.exports = {
                                 scratchCard.referText = "I have won Bonus Cash of " + scratchCard.prize_amount + " through BigPesa. Hurry up and join using below url";
                                 paytmCash = parseInt(paytmCash) + parseInt(scratchCard.prize_amount);
                             }else if (scratchCard.gratification_type.toLowerCase() == "gift"){
-                                scratchCard.referText = "I have won " + prize_title + " through BigPesa. Hurry up and join using below url";
+                                scratchCard.referText = "I have won " + scratchCard.prize_title + " through BigPesa. Hurry up and join using below url";
                             }
                         }
                     });
