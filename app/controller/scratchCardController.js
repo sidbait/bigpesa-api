@@ -95,7 +95,7 @@ module.exports = {
                     outJson.bonusCash = bonusCash;
                     outJson.paytmCash = paytmCash;
                     outJson.scratchCards = dbResult;
-                    console.log(dbResult[0])
+                    console.log(JSON.stringify(outJson))
                     sendResp.sendCustomJSON(null, req, res, true, outJson, "Success");
                 } else {
                     sendResp.sendCustomJSON(null, req, res, true, [], "No Data Found");
