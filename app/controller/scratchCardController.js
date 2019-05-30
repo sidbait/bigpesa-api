@@ -81,23 +81,23 @@ module.exports = {
                     dbResult.forEach(scratchCard => {
                         if (scratchCard.is_claim) {
                             if (scratchCard.gratification_type.toLowerCase() == "bonus_cash") {
-                                scratchCard.referText = "I have won Bonus Cash of " + scratchCard.prize_amount + " through BigPesa. Hurry up and join using below url";
+                                scratchCard.refer_text = "I have won Bonus Cash of " + scratchCard.prize_amount + " through BigPesa. Hurry up and join using below url";
                                 bonusCash = parseInt(bonusCash) + parseInt(scratchCard.prize_amount);
                             }
                             else if (scratchCard.gratification_type.toLowerCase() == "paytm_cash") {
-                                scratchCard.referText = "I have won Bonus Cash of " + scratchCard.prize_amount + " through BigPesa. Hurry up and join using below url";
+                                scratchCard.refer_text = "I have won Bonus Cash of " + scratchCard.prize_amount + " through BigPesa. Hurry up and join using below url";
                                 paytmCash = parseInt(paytmCash) + parseInt(scratchCard.prize_amount);
                             }else if (scratchCard.gratification_type.toLowerCase() == "gift"){
-                                scratchCard.referText = "I have won " + scratchCard.prize_title + " through BigPesa. Hurry up and join using below url";
+                                scratchCard.refer_text = "I have won " + scratchCard.prize_title + " through BigPesa. Hurry up and join using below url";
                             }
                         }
                         if (scratchCard.gratification_type.toLowerCase() == "bonus_cash") {
-                            scratchCard.referText = "I have won Bonus Cash of " + scratchCard.prize_amount + " through BigPesa. Hurry up and join using below url";
+                            scratchCard.refer_text = "I have won Bonus Cash of " + scratchCard.prize_amount + " through BigPesa. Hurry up and join using below url";
                         }
                         else if (scratchCard.gratification_type.toLowerCase() == "paytm_cash") {
-                            scratchCard.referText = "I have won Bonus Cash of " + scratchCard.prize_amount + " through BigPesa. Hurry up and join using below url";
+                            scratchCard.refer_text = "I have won Bonus Cash of " + scratchCard.prize_amount + " through BigPesa. Hurry up and join using below url";
                         } else if (scratchCard.gratification_type.toLowerCase() == "gift") {
-                            scratchCard.referText = "I have won " + scratchCard.prize_title + " through BigPesa. Hurry up and join using below url";
+                            scratchCard.refer_text = "I have won " + scratchCard.prize_title + " through BigPesa. Hurry up and join using below url";
                         }
                     });
                     outJson.bonusCash = bonusCash;
