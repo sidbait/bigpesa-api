@@ -79,7 +79,7 @@ module.exports = {
                 let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
                 if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
                     let outJson = {};
-                    refer_module.getReferUrl(channel,player_id,function(err,ref_url){
+                    refer_module.getReferUrl(channel,playerId,function(err,ref_url){
                         if(err){
                             sendResp.sendCustomJSON(null, req, res, true, [], "Something got wrong");
                         }else{
