@@ -3,6 +3,8 @@ var sendResp = require('../service/send');
 var userModel = require('../model/UserModel');
 var config = require('config');
 var refer_module = require('./referrerController');
+var push = require('../model/push');
+let msg = "Congratulations! You've earned a scratch card, Big Prizes waiting for you!";
 module.exports = {
     scratchCardContests: async function (req, res) {
         try {
@@ -182,6 +184,9 @@ module.exports = {
                                 console.log(queryGetScratchCard)
                                 let dbGetScratchCard = await dbConnection.executeQueryAll(queryGetScratchCard, 'rmg_db');
                                 console.log(dbGetScratchCard);
+                                if(dbGetScratchCard[0].data[0].isscratch){                                   
+                                    push.sendPushPlayerId(player_id,'Scratch Card',msg);
+                                }
                             }
                         }
                     }
@@ -226,6 +231,9 @@ module.exports = {
                                     let queryGetScratchCard = ` select * from fn_get_prize_new(${fromPlayer_id},${camp_id},${scratch_event_id},'${channel}') `;
                                     let dbGetScratchCard = await dbConnection.executeQueryAll(queryGetScratchCard, 'rmg_db');
                                     console.log(dbGetScratchCard);
+                                    if(dbGetScratchCard[0].data[0].isscratch){                                       
+                                        push.sendPushPlayerId(player_id,'Scratch Card',msg);
+                                    }
                                 }
                             }
                         }
