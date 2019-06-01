@@ -128,8 +128,7 @@ module.exports = {
                 playerId = userDetails.playerId;
             }
             if (playerId != "") {
-                let query = `  update tbl_scratch_transaction set is_claim = true 
-                        where is_claim = false and id = ${scratchCardId} returning id; `;
+                let query = ` select * from fn_scratch_claim(${scratchCardId})`; 
                 let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
                 if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
                     sendResp.sendCustomJSON(null, req, res, true, dbResult, "Successfully Claimed.");
