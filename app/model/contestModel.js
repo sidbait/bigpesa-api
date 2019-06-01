@@ -109,6 +109,7 @@ module.exports = {
         credit_type ,
         tbl_app.send_params,
         tbl_contest.game_conf,
+        COALESCE(tbl_contest.min_player,0) as min_player ,
         COALESCE(tbl_contest.max_lives,0) as max_lives, 
         COALESCE(tbl_contest.matrix_code, ''::text) AS matrix_code
     from
@@ -136,6 +137,7 @@ module.exports = {
         credit_type,
         tbl_app.send_params,
         tbl_contest.game_conf,
+        COALESCE(tbl_contest.min_player,0),
         COALESCE(tbl_contest.max_lives,0),
         COALESCE(tbl_contest.matrix_code, ''::text) 
     order by

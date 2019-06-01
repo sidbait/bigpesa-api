@@ -1704,7 +1704,7 @@ module.exports = {
                                                                                                             sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
                                                                                                         } else {
                                                                                                             //debitResponse = debitResponse.data;
-                                                                                                            if (contestInfo.max_players != 2) {
+                                                                                                            if (contestInfo.min_player == 0) {
                                                                                                                 scratchController.contestJoinEvent(playerId, amount, matrix_code,channel);
                                                                                                             }
                                                                                                             contestModel.joinContest(contestId, appId, playerId, amount,
