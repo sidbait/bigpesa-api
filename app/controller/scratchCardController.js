@@ -75,8 +75,9 @@ module.exports = {
                             inner join tbl_scratch_prize_master prize_master 
                             on prize_master.prize_id = trans.prize_id
                             inner join tbl_scratch_event_master event_master
-                            on trans.scratch_event_id = event_master.scratch_event_id 
-                            where player_id = ${playerId} order by is_claim,add_date desc `;
+                            on trans.scratch_event_id = event_master.scratch_event_id  
+                            where player_id = ${playerId} and 
+                            trans.status in('ACTIVE','SUCCESS') order by is_claim,add_date desc `;
                 console.log(query)
                 let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
                 if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
