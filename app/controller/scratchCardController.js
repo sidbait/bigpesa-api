@@ -63,21 +63,33 @@ module.exports = {
             if (playerId != "") {
                 let bonusCash = 0;
                 let paytmCash = 0;
-                let query = ` select  trans.id,prize_master.prize_title, prize_master.prize_code,
-                            prize_master.prize_description,
-                            event_master.event_code,
-                            event_master.name as event_name,event_master.image,
-                            event_master.description,event_master.win_description,
-                            prize_master.prize_image,prize_master.gratification_type, 
-                            trans.is_claim, trans.winner_date ,trans.credit_date,
-                            trans.add_date,prize_master.prize_amount
-                            from tbl_scratch_transaction trans
-                            inner join tbl_scratch_prize_master prize_master 
-                            on prize_master.prize_id = trans.prize_id
-                            inner join tbl_scratch_event_master event_master
-                            on trans.scratch_event_id = event_master.scratch_event_id  
-                            where player_id = ${playerId} and 
-                            trans.status in('ACTIVE','SUCCESS') order by is_claim,add_date desc `;
+                // let query = ` select  trans.id,prize_master.prize_title, prize_master.prize_code,
+                //             prize_master.prize_description,
+                //             event_master.event_code,
+                //             event_master.name as event_name,event_master.image,
+                //             event_master.description,event_master.win_description,
+                //             prize_master.prize_image,prize_master.gratification_type, 
+                //             trans.is_claim, trans.winner_date ,trans.credit_date,
+                //             trans.add_date,prize_master.prize_amount
+                //             from tbl_scratch_transaction trans
+                //             inner join tbl_scratch_prize_master prize_master 
+                //             on prize_master.prize_id = trans.prize_id
+                //             inner join tbl_scratch_event_master event_master
+                //             on trans.scratch_event_id = event_master.scratch_event_id  
+                //             where player_id = ${playerId} and 
+                //             trans.status in('ACTIVE','SUCCESS') order by is_claim,add_date desc `;
+                let query = `select id,prizemaster.prize_title,prizemaster.prize_code,
+                                prizemaster.prize_description,event_master.event_code,
+                                event_master.name as event_name,event_master.image ,event_master.description,event_master.win_description,
+                                prizemaster.prize_image,prizemaster.gratification_type ,prize_details.is_claim,prize_details.winner_date, 
+                                prize_details.credit_date,prize_details.add_date,prizemaster.prize_amount
+                                from tbl_scratch_campaign_prizes_details  prize_details
+                                inner join tbl_scratch_prize_master  prizemaster on  
+                                prize_details.prize_id = prizemaster.prize_id
+                                inner join tbl_scratch_event_master event_master on event_master.scratch_event_id =  prize_details.scratch_event_id
+                                where is_win = true 
+                                and  player_id =  ${playerId}
+                                order by is_claim,winner_date desc `
                 console.log(query)
                 let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
                 if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
@@ -131,7 +143,7 @@ module.exports = {
                 playerId = userDetails.playerId;
             }
             if (playerId != "") {
-                let query = ` select * from fn_scratch_claim(${scratchCardId})`; 
+                let query = ` select * from fn_scratch_claim_new(${scratchCardId})`; 
                 let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
                 if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
                     sendResp.sendCustomJSON(null, req, res, true, dbResult, "Successfully Claimed.");
