@@ -231,6 +231,7 @@ let getUserDetailPromise = function(token){
             userdetails.playerId = "";
             userdetails.phone_number = "";
             userdetails.airpay_token = "";
+            userdetails.player_name = "";
             resolve(userdetails);
         } else {
             let getUserDetails = " SELECT tbl_player.player_id,tbl_player.phone_number, " +
@@ -247,6 +248,7 @@ let getUserDetailPromise = function(token){
                     userdetails.playerId = "";
                     userdetails.phone_number = "";
                     userdetails.airpay_token = "";
+                    userdetails.player_name="";
                     resolve(userdetails);
                 } else {
                     if (dbResult != null && dbResult.length != 0) {
@@ -254,6 +256,7 @@ let getUserDetailPromise = function(token){
                         userdetails.playerId = dbResult[0].player_id;
                         userdetails.phone_number = dbResult[0].phone_number;
                         userdetails.airpay_token = dbResult[0].airpay_token;
+                        userdetails.player_name = dbResult[0].player_name;
                         resolve(userdetails);
                     } else {
                         var userdetails = {}
