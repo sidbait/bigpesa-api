@@ -144,10 +144,9 @@ module.exports = {
             }
             if (playerId != "") {
                 
-                let msgTemplate = [
-                    "{player_name}, jeete hai scratch card, Aap bhi jeet sakte hai. Participate kijiye.",
-                    "{player_name}, jeete hai Rs. ({amount}) {type}, Aap bhi jeet sakte hai. Participate kijiye.",
-                    "{player_name}, has won Rs ({amount}) {type}, participate to play and win big."
+                let msgTemplate = [ 
+                    //"{player_name}, jeete hai Rs. ({amount}) {type}, Aap bhi jeet sakte hai. Participate kijiye.",
+                    "{player_name}, has won Rs {amount} {type}, play cash contest to win grand prizes!"
                 ];
                 let randomNumber = Math.round(Math.random() * (msgTemplate.length-1 - 0) + 0);
                 let player_name = userDetails.player_name;
