@@ -151,7 +151,7 @@ module.exports = {
                 let randomNumber = Math.round(Math.random() * (msgTemplate.length-1 - 0) + 0);
                 let player_name = userDetails.player_name;
                 let query = ` select * from fn_scratch_claim_new(${scratchCardId})`; 
-                let queryGetFollowers = ` select * from tbl_follow  where player_id = ${playerId} `;
+                let queryGetFollowers = ` select * from tbl_follow  where player_id = ${playerId} and status = 'ACTIVE' `;
                 let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
                 if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
                     let msg = msgTemplate[randomNumber];

@@ -1,6 +1,7 @@
 var dbConnection = require('../model/dbConnection');
 var sendResp = require('../service/send');
 var userModel = require('../model/UserModel');
+var push =require('../model/push');
 var config = require('config')
 module.exports = {
     playerProfile: async function (req, res) {
@@ -79,6 +80,7 @@ module.exports = {
         let userDetails = await userModel.getUserDetailPromise(userToken);
         let playerIdToFollow = req.body.playerIdToFollow ? req.body.playerIdToFollow : '';
         let playerId = userDetails.playerId;
+        let player_name = userDetails.player_name;
         if (playerId == "" || playerIdToFollow == "") {
             sendResp.sendCustomJSON(null, req, res, false, [], "Invalid Token/Player");
         } else {
@@ -98,6 +100,8 @@ module.exports = {
             } else {
                 let insertResult = await dbConnection.executeQueryAll(insertFollow, 'rmg_db');
                 if (insertResult[0].follow_id > 0) {
+                    let followMst = player_name + " has followed you";
+                    push.sendPushPlayerId(playerIdToFollow,'Follow Friend',followMst);
                     sendResp.sendCustomJSON(null, req, res, true, [], "Followed Successfully", true);
                 } else {
                     sendResp.sendCustomJSON(null, req, res, false, [], "Please Try again after some time");;
