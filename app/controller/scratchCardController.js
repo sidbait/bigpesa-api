@@ -133,7 +133,7 @@ module.exports = {
         });
     },
 
-    claimScratchCard: function (req, res) {
+    claimScratchCard:async function (req, res) {
         var userToken = req.headers["authorization"];
         let scratchCardId = req.body.scratch_card_id;
         userModel.getUserDetails(userToken, async function (err, userDetails) {
@@ -143,9 +143,44 @@ module.exports = {
                 playerId = userDetails.playerId;
             }
             if (playerId != "") {
+                
+                let msgTemplate = [
+                    "{player_name}, jeete hai scratch card, Aap bhi jeet sakte hai. Participate kijiye.",
+                    "{player_name}, jeete hai Rs. ({amount}) {type}, Aap bhi jeet sakte hai. Participate kijiye.",
+                    "{player_name}, has won Rs ({amount}) {type}, participate to play and win big."
+                ];
+                let randomNumber = Math.round(Math.random() * (msgTemplate.length-1 - 0) + 0);
+                let player_name = userDetails.player_name;
                 let query = ` select * from fn_scratch_claim_new(${scratchCardId})`; 
+                let queryGetFollowers = ` select * from tbl_follow  where player_id = ${playerId} `;
                 let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
                 if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
+                    let msg = msgTemplate[randomNumber];
+                    console.log( dbResult[0].data[0].prize_type)
+                     msg =  msg.replace('{player_name}',player_name);
+                    let prize_type = dbResult[0].data[0].prize_type;
+                    let amount = dbResult[0].data[0].amount;
+                    msg =  msg.replace('{amount}',amount);  
+                    let sendPush = false;
+                    if(prize_type.toLowerCase() == "bonus_cash"){
+                        sendPush=true;
+                        msg =  msg.replace('{type}','Bonus Cash');                       
+                    }else if(prize_type.toLowerCase() == "paytm_cash"){
+                        sendPush=true;
+                        msg =  msg.replace('{type}','Paytm Cash');                        
+                    }
+                    //console.log(msg)
+                    if (sendPush) {
+                       // console.log(queryGetFollowers)
+                        var dbFollower = await dbConnection.executeQueryAll(queryGetFollowers,'rmg_db');
+                      //  console.log(dbFollower)
+                        if (dbFollower != null && dbFollower != undefined && dbFollower.length > 0) {
+                            dbFollower.forEach(player => {
+                                let player_id = player.from_player_id;
+                                push.sendPushPlayerId(player_id, 'Scratch Card', msg);
+                            });
+                        }
+                    }
                     sendResp.sendCustomJSON(null, req, res, true, dbResult, "Successfully Claimed.");
                 } else {
                     sendResp.sendCustomJSON(null, req, res, false, [], "No Data Found");
