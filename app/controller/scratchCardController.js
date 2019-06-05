@@ -36,6 +36,12 @@ module.exports = {
                                 });
                                 events.forEach(event => {
                                     if (campaign.camp_id == event.camp_id) {
+                                        if (event.event_code == 'CONTEST_JOIN') {
+                                            campaign.msg = 'Play for ' + event.remaining_amount + 'Rs. more to get next scratch card.'
+                                        } else if (event.event_code == 'REFERRER') {
+                                            campaign.msg = 'Refer '+ event.remaining_amount + ' more friend to get next scratch card.'
+                                        }
+
                                         campaign.events.push(event);
                                     }
                                 });
