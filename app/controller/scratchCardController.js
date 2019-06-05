@@ -35,6 +35,7 @@ module.exports = {
                                     }
                                 });
                                 events.forEach(event => {
+                                    campaign.msg="";
                                     if (campaign.camp_id == event.camp_id) {
                                         if (event.event_code == 'CONTEST_JOIN') {
                                             campaign.msg = 'Play for ' + event.remaining_amount + 'Rs. more to get next scratch card.'
