@@ -34,9 +34,9 @@ module.exports = {
                                         campaign.prizes.push(prize);
                                     }
                                 });
-                                events.forEach(event => {
-                                    event.msg="";
+                                events.forEach(event => {                                   
                                     if (campaign.camp_id == event.camp_id) {
+                                        event.msg="";
                                         if (event.event_code == 'CONTEST_JOIN') {
                                             event.msg = 'Play for ' + event.remaining_amount + 'Rs. more to get next scratch card.'
                                         } else if (event.event_code == 'REFERRER') {
