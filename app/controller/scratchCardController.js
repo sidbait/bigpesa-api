@@ -38,9 +38,8 @@ module.exports = {
                                     if (campaign.camp_id == event.camp_id) {
                                         event.msg="";
                                         if (event.event_code == 'CONTEST_JOIN') {
-                                            event.msg = 'Play for ' + event.remaining_amount + 'Rs. more to get next scratch card.'
-                                        } else if (event.event_code == 'REFERRER') {
-                                            event.msg = 'Refer '+ event.remaining_amount + ' more friend to get next scratch card.'
+                                            event.msg =`You are falling short of Rs ${event.remaining_amount} to earn a scratch card. Play cash contest’s now.`                                        } else if (event.event_code == 'REFERRER') {
+                                            event.msg = `Refer more ${event.remaining_amount} friends and earn a scratch card.`
                                         }
                                         campaign.events.push(event);
                                     }
