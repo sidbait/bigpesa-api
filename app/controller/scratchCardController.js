@@ -8,44 +8,60 @@ let msg = "Congratulations! You've earned a scratch card, Big Prizes waiting for
 module.exports = {
     scratchCardContests: async function (req, res) {
         try {
-            let query = `  select * from fn_scratch_contest_details() `;
-            let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
-            if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
-                let campaigns = dbResult[0].data;
-                let prizes = dbResult[1].data;
-                let events = dbResult[2].data;
-                let banners = dbResult[3].data;
-                if (campaigns != null && campaigns != undefined && campaigns.length > 0) {
-                    campaigns.forEach(campaign => {
-                        campaign.banners = [];
-                        campaign.prizes = [];
-                        campaign.events = [];
-                        prizes.forEach(prize => {
-                            if (campaign.camp_id == prize.camp_id) {
-                                campaign.prizes.push(prize);
-                            }
-                        });
-                        events.forEach(event => {
-                            if (campaign.camp_id == event.camp_id) {
-                                campaign.events.push(event);
-                            }
-                        });
-                        banners.forEach(event => {
-                            if (campaign.camp_id == event.camp_id) {
-                                campaign.banners.push(event);
-                            }
-                        });
-                    });
-
-
-                    sendResp.sendCustomJSON(null, req, res, true, campaigns, "Scratch Campaign Details");
+            var userToken = req.headers["authorization"];
+            userModel.getUserDetails(userToken, async function (err, userDetails) {
+                if (err) {
+                    playerId = "";
                 } else {
-                    sendResp.sendCustomJSON(null, req, res, false, [], "No Data Found");
+                    playerId = userDetails.playerId;
                 }
+                if (playerId != "") {
 
-            } else {
-                sendResp.sendCustomJSON(null, req, res, false, [], "Something got wrong");
-            }
+                    let query = `  select * from fn_scratch_contest_details(${playerId}) `;
+                    let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
+                    if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
+                        let campaigns = dbResult[0].data;
+                        let prizes = dbResult[1].data;
+                        let events = dbResult[2].data;
+                        let banners = dbResult[3].data;
+                        if (campaigns != null && campaigns != undefined && campaigns.length > 0) {
+                            campaigns.forEach(campaign => {
+                                campaign.banners = [];
+                                campaign.prizes = [];
+                                campaign.events = [];
+                                prizes.forEach(prize => {
+                                    if (campaign.camp_id == prize.camp_id) {
+                                        campaign.prizes.push(prize);
+                                    }
+                                });
+                                events.forEach(event => {
+                                    if (campaign.camp_id == event.camp_id) {
+                                        campaign.events.push(event);
+                                    }
+                                });
+                                banners.forEach(event => {
+                                    if (campaign.camp_id == event.camp_id) {
+                                        campaign.banners.push(event);
+                                    }
+                                });
+                            });
+
+
+                            sendResp.sendCustomJSON(null, req, res, true, campaigns, "Scratch Campaign Details");
+                        } else {
+                            sendResp.sendCustomJSON(null, req, res, false, [], "No Data Found");
+                        }
+
+                    } else {
+                        sendResp.sendCustomJSON(null, req, res, false, [], "Something got wrong");
+                    }
+
+                } else {
+                    sendResp.sendCustomJSON(null, req, res, false, [], "Invalid Token");
+
+                }
+            });
+
         } catch (error) {
             sendResp.sendCustomJSON(null, req, res, false, [], "Something got wrong");
         }
@@ -94,10 +110,10 @@ module.exports = {
                 let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
                 if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
                     let outJson = {};
-                    refer_module.getReferUrl(channel,playerId,function(err,ref_url){
-                        if(err){
+                    refer_module.getReferUrl(channel, playerId, function (err, ref_url) {
+                        if (err) {
                             sendResp.sendCustomJSON(null, req, res, true, [], "Something got wrong");
-                        }else{
+                        } else {
                             dbResult.forEach(scratchCard => {
                                 if (scratchCard.is_claim) {
                                     if (scratchCard.gratification_type.toLowerCase() == "bonus_cash") {
@@ -105,15 +121,15 @@ module.exports = {
                                     }
                                     else if (scratchCard.gratification_type.toLowerCase() == "paytm_cash") {
                                         paytmCash = parseInt(paytmCash) + parseInt(scratchCard.prize_amount);
-                                    } 
+                                    }
                                 }
                                 if (scratchCard.gratification_type.toLowerCase() == "bonus_cash") {
-                                    scratchCard.refer_text = "I have won Bonus Cash of " + scratchCard.prize_amount + " Rs. through BigPesa. Hurry up and join using below url " +ref_url;
+                                    scratchCard.refer_text = "I have won Bonus Cash of " + scratchCard.prize_amount + " Rs. through BigPesa. Hurry up and join using below url " + ref_url;
                                 }
                                 else if (scratchCard.gratification_type.toLowerCase() == "paytm_cash") {
-                                    scratchCard.refer_text = "I have won Bonus Cash of " + scratchCard.prize_amount + " Rs. through BigPesa. Hurry up and join using below url " +ref_url;
+                                    scratchCard.refer_text = "I have won Bonus Cash of " + scratchCard.prize_amount + " Rs. through BigPesa. Hurry up and join using below url " + ref_url;
                                 } else if (scratchCard.gratification_type.toLowerCase() == "gift") {
-                                    scratchCard.refer_text = "I have won " + scratchCard.prize_title + " through BigPesa. Hurry up and join using below url " +ref_url;
+                                    scratchCard.refer_text = "I have won " + scratchCard.prize_title + " through BigPesa. Hurry up and join using below url " + ref_url;
                                 }
                             });
                             outJson.bonusCash = bonusCash;
@@ -123,7 +139,7 @@ module.exports = {
                             sendResp.sendCustomJSON(null, req, res, true, outJson, "Success");
                         }
                     });
-                   
+
                 } else {
                     sendResp.sendCustomJSON(null, req, res, true, [], "No Data Found");
                 }
@@ -133,7 +149,7 @@ module.exports = {
         });
     },
 
-    claimScratchCard:async function (req, res) {
+    claimScratchCard: async function (req, res) {
         var userToken = req.headers["authorization"];
         let scratchCardId = req.body.scratch_card_id;
         userModel.getUserDetails(userToken, async function (err, userDetails) {
@@ -143,36 +159,36 @@ module.exports = {
                 playerId = userDetails.playerId;
             }
             if (playerId != "") {
-                
-                let msgTemplate = [ 
+
+                let msgTemplate = [
                     //"{player_name}, jeete hai Rs. ({amount}) {type}, Aap bhi jeet sakte hai. Participate kijiye.",
                     "{player_name}, has won Rs {amount} {type}, play cash contest to win grand prizes!"
                 ];
-                let randomNumber = Math.round(Math.random() * (msgTemplate.length-1 - 0) + 0);
+                let randomNumber = Math.round(Math.random() * (msgTemplate.length - 1 - 0) + 0);
                 let player_name = userDetails.player_name;
-                let query = ` select * from fn_scratch_claim_new(${scratchCardId})`; 
+                let query = ` select * from fn_scratch_claim_new(${scratchCardId})`;
                 let queryGetFollowers = ` select * from tbl_follow  where player_id = ${playerId} and status = 'ACTIVE' `;
                 let dbResult = await dbConnection.executeQueryAll(query, 'rmg_db');
                 if (dbResult != null && dbResult != undefined && dbResult.length > 0) {
                     let msg = msgTemplate[randomNumber];
-                    console.log( dbResult[0].data[0].prize_type)
-                     msg =  msg.replace('{player_name}',player_name);
+                    console.log(dbResult[0].data[0].prize_type)
+                    msg = msg.replace('{player_name}', player_name);
                     let prize_type = dbResult[0].data[0].prize_type;
                     let amount = dbResult[0].data[0].amount;
-                    msg =  msg.replace('{amount}',amount);  
+                    msg = msg.replace('{amount}', amount);
                     let sendPush = false;
-                    if(prize_type.toLowerCase() == "bonus_cash"){
-                        sendPush=true;
-                        msg =  msg.replace('{type}','Bonus Cash');                       
-                    }else if(prize_type.toLowerCase() == "paytm_cash"){
-                        sendPush=true;
-                        msg =  msg.replace('{type}','Paytm Cash');                        
+                    if (prize_type.toLowerCase() == "bonus_cash") {
+                        sendPush = true;
+                        msg = msg.replace('{type}', 'Bonus Cash');
+                    } else if (prize_type.toLowerCase() == "paytm_cash") {
+                        sendPush = true;
+                        msg = msg.replace('{type}', 'Paytm Cash');
                     }
                     //console.log(msg)
                     if (sendPush) {
-                       // console.log(queryGetFollowers)
-                        var dbFollower = await dbConnection.executeQueryAll(queryGetFollowers,'rmg_db');
-                      //  console.log(dbFollower)
+                        // console.log(queryGetFollowers)
+                        var dbFollower = await dbConnection.executeQueryAll(queryGetFollowers, 'rmg_db');
+                        //  console.log(dbFollower)
                         if (dbFollower != null && dbFollower != undefined && dbFollower.length > 0) {
                             dbFollower.forEach(player => {
                                 let player_id = player.from_player_id;
@@ -190,7 +206,7 @@ module.exports = {
         });
     },
 
-    contestJoinEvent: function (player_id, join_amount, matrix_code,channel) {
+    contestJoinEvent: function (player_id, join_amount, matrix_code, channel) {
         try {
             (async function () {
 
@@ -232,8 +248,8 @@ module.exports = {
                                 console.log(queryGetScratchCard)
                                 let dbGetScratchCard = await dbConnection.executeQueryAll(queryGetScratchCard, 'rmg_db');
                                 console.log(dbGetScratchCard);
-                                if(dbGetScratchCard[0].data[0].isscratch){                                   
-                                    push.sendPushPlayerId(player_id,'Scratch Card',msg);
+                                if (dbGetScratchCard[0].data[0].isscratch) {
+                                    push.sendPushPlayerId(player_id, 'Scratch Card', msg);
                                 }
                             }
                         }
@@ -243,10 +259,10 @@ module.exports = {
         } catch (error) {
             console.log(error);
         }
-        this.contestReferEvent(player_id,channel);
+        this.contestReferEvent(player_id, channel);
     },
 
-    contestReferEvent: function (player_id,channel) {
+    contestReferEvent: function (player_id, channel) {
         try {
             (async function () {
                 let query = ` select campaign.camp_id,events.scratch_event_id,events.amount from 
@@ -280,8 +296,8 @@ module.exports = {
                                     let queryGetScratchCard = ` select * from fn_get_prize_new(${fromPlayer_id},${camp_id},${scratch_event_id},'${channel}') `;
                                     let dbGetScratchCard = await dbConnection.executeQueryAll(queryGetScratchCard, 'rmg_db');
                                     console.log(dbGetScratchCard);
-                                    if(dbGetScratchCard[0].data[0].isscratch){                                       
-                                        push.sendPushPlayerId(player_id,'Scratch Card',msg);
+                                    if (dbGetScratchCard[0].data[0].isscratch) {
+                                        push.sendPushPlayerId(player_id, 'Scratch Card', msg);
                                     }
                                 }
                             }
