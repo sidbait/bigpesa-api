@@ -16,6 +16,7 @@ var debitcredit = require('../model/debitcredit');
 var redisConnection = require('../model/redisConnection');
 var push = require('../model/push');
 var scratchController = require('./scratchCardController');
+var loyalityEvents = require('../controller/loyalityEvents');
 module.exports = {
 
     appListing: function (req, res) {
@@ -1304,6 +1305,7 @@ module.exports = {
         let playerId = null;
         let airpayToken = null;
         var appSecretKey = req.headers["x-nazara-app-secret-key"];
+        var loyalityToken = req.headers["x-nazara-app-secret-key"];
         var userToken = req.headers["authorization"];
         var checkSum = req.headers["checksum"];
         var sessionToken = tokgen2.generate();
@@ -1704,6 +1706,7 @@ module.exports = {
                                                                                                             sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
                                                                                                         } else {
                                                                                                             //debitResponse = debitResponse.data;
+                                                                                                            loyalityEvents.contestJoinEvent(loyalty-token,matrix_code);
                                                                                                             if (contestInfo.min_player == 0) {
                                                                                                                 scratchController.contestJoinEvent(playerId, amount, matrix_code,channel);
                                                                                                             }

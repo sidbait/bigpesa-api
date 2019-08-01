@@ -49,5 +49,7 @@
     "topUpURL": "https://payments.airpay.co.in/pay/index.php"
   },
   "webapp_api_server": "http://localhost:4091/",
-  "client_key": "yXzLPeD4f3FXHsK33aExnuKyBHAFr8AmxYyWMAvaH2jaMhMTap"
+  "client_key": "yXzLPeD4f3FXHsK33aExnuKyBHAFr8AmxYyWMAvaH2jaMhMTap",
+  "loyality_app_key":"asdsawrsadasdwxfadwfasq",
+  "loyality_domain":"http://rmg-api.nazarapg.com/v1/ngs/"
 }
