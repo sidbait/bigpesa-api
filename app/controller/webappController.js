@@ -2236,7 +2236,7 @@ module.exports = {
                     dt =  momentdt(dt).format('L');
                     console.log(dt);
                     let traxid = uniqid();
-                    if (dt == "08/14/2019") {
+                    if (dt == "08/15/2019") {
                         let OfferAugDepCt = `  select count(1) as count   from tbl_wallet_transaction  
                         where player_id = ${playerId}  and  
                         nz_txn_status = 'SUCCESS'  
