@@ -1706,9 +1706,9 @@ module.exports = {
                                                                                                         if (!debitResponse) {
                                                                                                             sendResp.sendCustomJSON(null, req, res, false, [], "Sorry, please refresh the screen and try again");
                                                                                                         } else {
-                                                                                                            //debitResponse = debitResponse.data;
-                                                                                                            loyalityEvents.contestJoinEvent(loyalityToken, matrix_code);
+                                                                                                            //debitResponse = debitResponse.data; 
                                                                                                             if (contestInfo.min_player == 0) {
+                                                                                                                loyalityEvents.contestJoinEvent(loyalityToken, matrix_code);
                                                                                                                 scratchController.contestJoinEvent(playerId, amount, matrix_code, channel);
                                                                                                             }
                                                                                                             contestModel.joinContest(contestId, appId, playerId, amount,
