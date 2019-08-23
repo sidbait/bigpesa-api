@@ -2237,7 +2237,7 @@ module.exports = {
                     dt =  momentdt(dt).format('L');
                     console.log(dt);
                     let traxid = uniqid();
-                    if (dt == "08/15/2019") {
+                    if (dt == "08/23/2019" || dt == "08/24/2019") {
                         let OfferAugDepCt = `  select count(1) as count   from tbl_wallet_transaction  
                         where player_id = ${playerId}  and  
                         nz_txn_status = 'SUCCESS'  
@@ -2246,8 +2246,11 @@ module.exports = {
                         var transctAug = await dbConnection.executeQueryOnlyResolve(OfferAugDepCt, 'rmg_db');
                         depositeCount = transctAug.result[0].count; 
                         if (depositeCount == 1) {
-                            if (parseInt(amount) > 100) {
-                                amount = 100;
+                            if (parseInt(amount) >= 25) {
+                                amount =Math.round(parseInt(amount) * 1.5);
+                                if(amount > 750){
+                                    amount = 750;
+                                }
                             }
                             console.log('INSERT GIVING MONEY 15 AUG');
                             debitcredit.insertIntoWalletQue(traxid, 'DepositBonus', txnId,
