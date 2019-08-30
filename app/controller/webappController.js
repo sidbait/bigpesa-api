@@ -2234,29 +2234,39 @@ module.exports = {
                     let dt = totalDepositCount.result[0].date;
                     console.log('DATE TO BE CHECK')
                     console.log(dt);
-                    dt =  momentdt(dt).format('L');
+                    dt =  momentdt(dt).format('L');                                                                                                                                                                                                                                                                 
                     console.log(dt);
                     let traxid = uniqid();
-                    if (dt == "08/23/2019" || dt == "08/24/2019") {
+                    if (dt == "09/02/2019" ||
+                    dt == "09/03/2019" ||
+                    dt == "09/04/2019" ||
+                    dt == "09/05/2019" ||
+                    dt == "09/06/2019" ||
+                    dt == "09/07/2019" ||
+                    dt == "09/08/2019" ||
+                    dt == "09/09/2019" ||
+                    dt == "09/10/2019" ||
+                    dt == "09/11/2019" ||
+                    dt == "09/12/2019" ) {
                         let OfferAugDepCt = `  select count(1) as count   from tbl_wallet_transaction  
                         where player_id = ${playerId}  and  
                         nz_txn_status = 'SUCCESS'  
                         and nz_txn_type = 'DEPOSIT'
                         and ( created_at  + (330 * interval '1 minute'))::date = '2019-08-15'  `;
                         var transctAug = await dbConnection.executeQueryOnlyResolve(OfferAugDepCt, 'rmg_db');
-                        depositeCount = transctAug.result[0].count; 
+                        depositeCount = 1;// transctAug.result[0].count; 
                         if (depositeCount == 1) {
                             if (parseInt(amount) >= 25) {
-                                amount =Math.round(parseInt(amount) * 1.5);
-                                if(amount > 750){
-                                    amount = 750;
+                              //  amount =Math.round(parseInt(amount) * 1.5);                                                  
+                                if(amount > 100){
+                                    amount = 100;
                                 }
                             }
                             console.log('INSERT GIVING MONEY 15 AUG');
-                            debitcredit.insertIntoWalletQue(traxid, 'DepositBonus', txnId,
-                                Math.round(amount), 'Deposit Bonus', playerId, true, function (isSuccess, data) {
-                                    if (isSuccess) {
-                                        data.amout = Math.round(amount);
+                            debitcredit.insertIntoWalletQue(traxid, 'DepositBonus', txnId,                                  
+                                Math.round(amount), 'Deposit Bonus', playerId, true, function (isSuccess, data) {                   
+                                    if (isSuccess) {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                                        data.amout = Math.round(amount);                                                                                                                                                                                                                                                    
                                         sendResp.sendCustomJSON(null, req, res, true, data, "Updated Successfully", true);
                                     } else {
                                         sendResp.sendCustomJSON(null, req, res, false, [], "Transaction Failed");
@@ -2274,7 +2284,7 @@ module.exports = {
                                 } else {
                                     sendResp.sendCustomJSON(null, req, res, false, [], "Transaction Failed");
                                 }
-                            });
+                            });                            
                         } else if (Math.round(amount) >= 100 && depositeCount == 1) {
                             amount = Math.round(amount);
                             if (amount >= 500) {
