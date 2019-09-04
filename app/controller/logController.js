@@ -166,7 +166,7 @@ module.exports = {
                                         " credit_type, credit_bonus, is_credited,type,status,next_retry,channel ) " +
                                         " VALUES( " + playerId + ", now(), '" + TimeSlotRow.fromtime + "' " +
                                         " , '" + TimeSlotRow.totime + "', '" + TimeSlotRow.credit_type + "', " +
-                                        " " + TimeSlotRow.credit_bonus + ", false,'TIME-BONUS','ACTIVE',now(),'"+ channel +"');"
+                                        " " + TimeSlotRow.credit_bonus + ", false,'TIME-BONUS','ACTIVE',now(),'" + channel + "');"
                                     //console.log(insertVisitBonusLog);
                                     dbConnection.executeQuery(insertVisitBonusLog, "rmg_db", function (err, ress) {
                                         if (!err) {
@@ -214,7 +214,7 @@ module.exports = {
                                                                     " credit_type, credit_bonus, is_credited,type,status,next_retry,channel ) " +
                                                                     " VALUES( " + playerId + ", now(), '00:00:00' " +
                                                                     " , '00:00:00', '" + data.dailybonus.credit_type + "', " +
-                                                                    " " + data.dailybonus.amount + ", false,'DAILY-BONUS','ACTIVE',now(),'"+channel+"');";
+                                                                    " " + data.dailybonus.amount + ", false,'DAILY-BONUS','ACTIVE',now(),'" + channel + "');";
                                                                 // console.log(insertDailyBonusLog)
                                                                 dbConnection.executeQuery(insertDailyBonusLog, "rmg_db", function (err, visitLog) {
                                                                     if (err) {
@@ -253,7 +253,7 @@ module.exports = {
                                                     " credit_type, credit_bonus, is_credited,type,status,next_retry,channel ) " +
                                                     " VALUES( " + playerId + ", now(), '00:00:00' " +
                                                     " , '00:00:00', '" + data.dailybonus.credit_type + "', " +
-                                                    " " + data.dailybonus.amount + ", false,'DAILY-BONUS','ACTIVE',now(),'"+ channel +"');";
+                                                    " " + data.dailybonus.amount + ", false,'DAILY-BONUS','ACTIVE',now(),'" + channel + "');";
                                                 // console.log(insertDailyBonusLog)
                                                 dbConnection.executeQuery(insertDailyBonusLog, "rmg_db", function (err, visitLog) {
                                                     if (err) {
@@ -546,7 +546,8 @@ module.exports = {
                         data = { visitor_id: null };
                     }
                 }
-
+                sendResp.sendCustomJSON(null, req, res, true, data, "Visitor Log Entry Success!");
+                /* spinweel daily bonus stop for optimization
                 if (data.visitor_id != null) {
                     if (playerId != null) {
                         let chkQeury = 'select  tbl_visitbonus_master.credit_type, ' +
@@ -720,6 +721,7 @@ module.exports = {
                 }
                 else
                     sendResp.sendCustomJSON(null, req, res, false, data, "Visitor Log Entry Failed!");
+                    */
             });
         });
     },
@@ -748,9 +750,9 @@ module.exports = {
                     let query_claim = ` update  tbl_visit_bonus_log set status = 'ACTIVE' where id = ${que_id} `;
                     let dbResultClaim = await dbConnection.executeQueryAll(query_claim, 'rmg_db');
                     console.log(dbResultClaim)
-                    sendResp.sendCustomJSON(null, req, res, true, {claim:"SUCCESS"}, "Claim Successfully!"); 
-                }else{
-                    sendResp.sendCustomJSON(null, req, res, false, [], "Come back tommarow!"); 
+                    sendResp.sendCustomJSON(null, req, res, true, { claim: "SUCCESS" }, "Claim Successfully!");
+                } else {
+                    sendResp.sendCustomJSON(null, req, res, false, [], "Come back tommarow!");
                 }
             } else {
                 sendResp.sendCustomJSON(null, req, res, false, [], "Come back tommarow!");
