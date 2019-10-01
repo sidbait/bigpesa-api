@@ -2237,29 +2237,26 @@ module.exports = {
                     dt =  momentdt(dt).format('L');                                                                                                                                                                                                                                                                 
                     console.log(dt);
                     let traxid = uniqid();
-                    if (dt == "09/02/2019" ||
-                    dt == "09/03/2019" ||
-                    dt == "09/04/2019" ||
-                    dt == "09/05/2019" ||
-                    dt == "09/06/2019" ||
-                    dt == "09/07/2019" ||
-                    dt == "09/08/2019" ||
-                    dt == "09/09/2019" ||
-                    dt == "09/10/2019" ||
-                    dt == "09/11/2019" ||
-                    dt == "09/12/2019" ) {
+                    if (dt == "10/01/2019" ||
+                        dt == "10/02/2019" ||
+                        dt == "10/03/2019" ||
+                        dt == "10/04/2019" ||
+                        dt == "10/05/2019" ||
+                        dt == "10/06/2019" ||
+                        dt == "10/07/2019" ||
+                        dt == "10/08/2019") {
                         let OfferAugDepCt = `  select count(1) as count   from tbl_wallet_transaction  
                         where player_id = ${playerId}  and  
                         nz_txn_status = 'SUCCESS'  
                         and nz_txn_type = 'DEPOSIT'
-                        and ( created_at  + (330 * interval '1 minute'))::date = '2019-08-15'  `;
+                        and ( created_at  + (330 * interval '1 minute'))::date = '${dt}'  `;
                         var transctAug = await dbConnection.executeQueryOnlyResolve(OfferAugDepCt, 'rmg_db');
-                        depositeCount = 1;// transctAug.result[0].count; 
+                        depositeCount =  transctAug.result[0].count; 
                         if (depositeCount == 1) {
-                            if (parseInt(amount) >= 25) {
-                              //  amount =Math.round(parseInt(amount) * 1.5);                                                  
-                                if(amount > 100){
-                                    amount = 100;
+                            if (parseInt(amount) >= 100) {
+                               amount =Math.round(parseInt(amount) * 0.5);                                                  
+                                if(amount >= 500){
+                                    amount = 500;
                                 }
                             }
                             console.log('INSERT GIVING MONEY 15 AUG');
