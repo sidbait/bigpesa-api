@@ -2237,14 +2237,10 @@ module.exports = {
                     dt =  momentdt(dt).format('L');                                                                                                                                                                                                                                                                 
                     console.log(dt);
                     let traxid = uniqid();
-                    if (dt == "10/01/2019" ||
-                        dt == "10/02/2019" ||
-                        dt == "10/03/2019" ||
-                        dt == "10/04/2019" ||
-                        dt == "10/05/2019" ||
-                        dt == "10/06/2019" ||
-                        dt == "10/07/2019" ||
-                        dt == "10/08/2019") {
+                    if (dt == "10/26/2019" ||
+                        dt == "10/27/2019" ||
+                        dt == "10/28/2019" ||
+                        dt == "10/29/2019") {
                         let OfferAugDepCt = `  select count(1) as count   from tbl_wallet_transaction  
                         where player_id = ${playerId}  and  
                         nz_txn_status = 'SUCCESS'  
