@@ -26,7 +26,7 @@
     "jsonwebtoken-refresh": "^5.7.0",
     "md5": "^2.2.1",
     "moment-timezone": "^0.5.21",
-    "mongodb": "^2.2.16",
+    "mongodb": "^3.1.13",
     "morgan": "^1.9.1",
     "multer": "*",
     "mv": "^2.1.1",
