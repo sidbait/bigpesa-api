@@ -21,7 +21,7 @@
     "image-size": "^0.5.1",
     "jimp": "^0.2.27",
     "js-sha512": "^0.8.0",
-    "json-bigint": "^0.3.0",
+    "json-bigint": "^1.0.0",
     "jsonwebtoken": "^7.2.1",
     "jsonwebtoken-refresh": "^5.7.0",
     "md5": "^2.2.1",
